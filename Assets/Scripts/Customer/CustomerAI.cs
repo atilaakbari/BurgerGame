@@ -20,8 +20,11 @@ public class CustomerAI : MonoBehaviour
 
     [Header("Burger")]
     [SerializeField] private Transform burgerHoldPoint;
-    
-    
+
+
+    private RestaurantTable currentTable;
+    private bool goingToSeat;
+
     private DeliveryStation deliveryStation;
 
     private Transform currentTarget;
@@ -47,6 +50,7 @@ public class CustomerAI : MonoBehaviour
 
     private void Awake()
     {
+
         agent =
             GetComponent<NavMeshAgent>();
 
@@ -120,6 +124,14 @@ public class CustomerAI : MonoBehaviour
         agent.isStopped = false;
         agent.stoppingDistance = 0f;
 
+        Vector3 direction = target.position - transform.position;
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude > 0.01f)
+        {
+            transform.rotation = Quaternion.LookRotation(direction);
+        }
+
         agent.SetDestination(
             target.position
         );
@@ -169,20 +181,26 @@ public class CustomerAI : MonoBehaviour
         if (ReachedTarget)
             return;
 
-
         ReachedTarget = true;
-
 
         currentTarget = null;
 
-
         agent.isStopped = true;
-
 
         agent.ResetPath();
 
-
         SetWalk(false);
+
+        if (currentTable != null && !goingToSeat)
+        {
+            goingToSeat = true;
+
+            MoveTo(
+                currentTable.SeatPoint
+            );
+
+            return;
+        }
     }
 
 
@@ -426,19 +444,14 @@ public class CustomerAI : MonoBehaviour
             return;
         }
 
-        // ?????? ???? ?? ??? ?????
-        burger.transform.SetParent(
-            burgerHoldPoint
-        );
 
-        burger.transform.localPosition =
-            Vector3.zero;
 
-        burger.transform.localRotation =
-            Quaternion.identity;
+        // Burger goes into customer's hand
+        burger.transform.SetParent(burgerHoldPoint);
 
-        // ??? Scale ???? ????? ???? ??? ????? ?????
-        // ????? ????????? Scale ????? ??? ?? ????? ????.
+        burger.transform.localPosition = Vector3.zero;
+
+        burger.transform.localRotation = Quaternion.identity;
 
         Rigidbody rb =
             burger.GetComponent<Rigidbody>();
@@ -457,8 +470,34 @@ public class CustomerAI : MonoBehaviour
         if (col != null)
             col.enabled = false;
 
-        // ???? DeliveryStation ??????? ???? ?? ??? ??? ??????? ???
         deliveryStation.ClearDeliveredBurger();
+
+        // Customer is carrying the burger
+        SetCarry(true);
+
+        // Find a free table
+        RestaurantTable freeTable =
+            TableManager.Instance.GetFreeTable();
+
+        if (freeTable != null)
+        {
+            if (freeTable.AssignCustomer(this))
+            {
+                currentTable = freeTable;
+
+                goingToSeat = false;
+
+                MoveTo(
+                    currentTable.TablePoint
+                );
+            }
+        }
+        else
+        {
+            Debug.LogWarning(
+                "No free table available!"
+            );
+        }
 
         Debug.Log("Customer took the burger!");
     }

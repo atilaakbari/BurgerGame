@@ -225,6 +225,8 @@ public class DeliveryStation : MonoBehaviour
 
         SpawnDeliveryMoney();
 
+        customer.TakeBurgerFromDelivery();
+
         Debug.Log(
             "Burger delivered to table!"
         );
@@ -483,7 +485,6 @@ public class DeliveryStation : MonoBehaviour
         );
     }
 
-
     // =====================================================
     // MONEY COLLECTED
     // =====================================================
@@ -506,9 +507,5 @@ public class DeliveryStation : MonoBehaviour
         // CUSTOMER TAKES BURGER
         // =========================================
 
-        if (deliveredCustomer != null)
-        {
-            deliveredCustomer.TakeBurgerFromDelivery();
-        }
     }
 }
