@@ -1,0 +1,384 @@
+fileFormatVersion: 2
+guid: 8055fb9d931562d4fa969e453934a879
+ModelImporter:
+  serializedVersion: 24501
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.001
+    second: {fileID: 2100000, guid: 1cf759931ee25cc4585b8b5e4cfea1e1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.002
+    second: {fileID: 2100000, guid: fb6e2fac04846584595ca49147fc7373, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.003
+    second: {fileID: 2100000, guid: 29745698512691b4487f9e3bfc8ff0b0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.004
+    second: {fileID: 2100000, guid: 54f4697360f50a14fbb172c053425f8b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant
+    second: {fileID: 2100000, guid: b149f230968f4f6468c7709c4da05b2c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.001
+    second: {fileID: 2100000, guid: 8c39f7713cd341949a13fe7f41cd13ae, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.002
+    second: {fileID: 2100000, guid: e4f4af269b95a6f44b3d6befbc8c39aa, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.003
+    second: {fileID: 2100000, guid: 7730c0fabc0ef1a4eb00f67ad140efdb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.004
+    second: {fileID: 2100000, guid: 625433f4f182a0848859064574bdca7a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.005
+    second: {fileID: 2100000, guid: 7a3065f9249009e4082fb08e159fcf4b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.006
+    second: {fileID: 2100000, guid: a5c9a341a5e40b54d8985755442132a4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.007
+    second: {fileID: 2100000, guid: 39be2e8338b540c499dc5d46e8640b61, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.008
+    second: {fileID: 2100000, guid: 4adde03a3a04fb1468cb9c6277096ec5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.009
+    second: {fileID: 2100000, guid: 75a9f72417668da45a4429b40a041894, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.010
+    second: {fileID: 2100000, guid: 99ded0670b685bf468599b2ba6188244, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.011
+    second: {fileID: 2100000, guid: 3d075049257ca104283f3788a33c1aee, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.012
+    second: {fileID: 2100000, guid: 45a49872559585149915ac2e2d24356d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.013
+    second: {fileID: 2100000, guid: 68bc46eb999c8b74ca9da775bbb3eade, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.014
+    second: {fileID: 2100000, guid: 28f0b1fd15376464b90fff37c37f9e27, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.015
+    second: {fileID: 2100000, guid: d0c294a18bc4fe04896254a427e4c0b5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.016
+    second: {fileID: 2100000, guid: cc586f08771841a41ad4d09eaf5ea513, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.017
+    second: {fileID: 2100000, guid: b57071ceaf837ed4da98262949b7516e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.018
+    second: {fileID: 2100000, guid: 46f8620d7b77fde45bb48b3cb948af03, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.019
+    second: {fileID: 2100000, guid: 931d1b68f85d1164e83587899678e90e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.020
+    second: {fileID: 2100000, guid: 2c4442118c0d4474e8c22b110c896fb6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.021
+    second: {fileID: 2100000, guid: 74630835a8dea8a44a865652e1f96038, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.022
+    second: {fileID: 2100000, guid: 4d8dee6668444104097bd619ce1a6e4e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.023
+    second: {fileID: 2100000, guid: 8c96f6990c655774ba87221de432a42e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.024
+    second: {fileID: 2100000, guid: 8546af4d1cfd6b84dbb0c2c3d8b0643b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.025
+    second: {fileID: 2100000, guid: 79adeee78a0e7a2409671bc109c37404, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.026
+    second: {fileID: 2100000, guid: e6290f80c2144c94a9b32dd61f0cdbc0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.027
+    second: {fileID: 2100000, guid: 8554debffc2127b4c9a7ad31b38c7e4e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.028
+    second: {fileID: 2100000, guid: 2a54033d4c2e35540b3424dbc883ee5d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.029
+    second: {fileID: 2100000, guid: 9c345607b54d97d498cffd9e1d7b54ef, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.030
+    second: {fileID: 2100000, guid: 3fd38b22975d2894598a60d7ebdcef79, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.031
+    second: {fileID: 2100000, guid: 1f8f86999d25ddd4cad4e54953a46f74, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.032
+    second: {fileID: 2100000, guid: c306cd8d602d0b346b9255d0de2296e9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.033
+    second: {fileID: 2100000, guid: b465c31b1c7f16046ba37f82c0040c8f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.034
+    second: {fileID: 2100000, guid: 724b17884f630f44ca4f300facbfd932, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.035
+    second: {fileID: 2100000, guid: 52bb931559f26654d9b754ed4e83dff2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.036
+    second: {fileID: 2100000, guid: ebcb438f706a3ea4eaca197ccede5a4f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.037
+    second: {fileID: 2100000, guid: 3cc794618898d5c4f92fee81708b5058, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.038
+    second: {fileID: 2100000, guid: 0bd93e90f11fb034e8f174856b8ae307, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.039
+    second: {fileID: 2100000, guid: 38f2320ab256b4d4b8fc1c7b6e8af888, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.040
+    second: {fileID: 2100000, guid: ce42f285d5874f643b7d741f68b5a1aa, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.041
+    second: {fileID: 2100000, guid: b22c21e2e3964574ebaf5af307ecb3fd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.042
+    second: {fileID: 2100000, guid: b11d7896e0c811d478000848b0d672da, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.043
+    second: {fileID: 2100000, guid: 933d2b25e26a02a49b63ed8be331cd1f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.044
+    second: {fileID: 2100000, guid: 4c75d7deadd7aac4594324316605764d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.045
+    second: {fileID: 2100000, guid: 4c720a4cf185b9b44bf1e026fe99c331, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.046
+    second: {fileID: 2100000, guid: d0f019a1d37d616478199cedab2b5a50, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.047
+    second: {fileID: 2100000, guid: 2b6170aa26704614fb3feb79454f0f20, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.048
+    second: {fileID: 2100000, guid: 9bc35242cb98caa43ad466a23a75abaa, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: restaurant.049
+    second: {fileID: 2100000, guid: 63b4dc14842fd304a9a9bf422594abbe, type: 2}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+    searchTexturesGlobally: 0
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
+    importUVs: -1
+    importVertexColors: 1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+    calculateBlendshapeNormalsDeltaFromImportedNormals: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
