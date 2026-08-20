@@ -5,9 +5,13 @@ public class RestaurantTable : MonoBehaviour
     [Header("Table Points")]
     [SerializeField] private Transform tablePoint;
     [SerializeField] private Transform seatPoint;
+    [SerializeField] private Transform burgerPoint;
 
     [Header("Settings")]
     [SerializeField] private float stayDuration = 10f;
+
+
+    public Transform BurgerPoint => burgerPoint;
 
     private CustomerAI currentCustomer;
 

@@ -17,6 +17,7 @@ public class CustomerAI : MonoBehaviour
 
     [Header("Movement")]
     [SerializeField] private float reachDistance = 0.2f;
+    [SerializeField] private float seatHeightOffset = 1f;
 
     [Header("Burger")]
     [SerializeField] private Transform burgerHoldPoint;
@@ -183,25 +184,50 @@ public class CustomerAI : MonoBehaviour
 
         ReachedTarget = true;
 
-        currentTarget = null;
-
         agent.isStopped = true;
-
         agent.ResetPath();
 
         SetWalk(false);
 
+        // ????? ?? TablePoint
         if (currentTable != null && !goingToSeat)
         {
             goingToSeat = true;
 
-            MoveTo(
-                currentTable.SeatPoint
-            );
+            // ?????? Agent ?? ???? ???? ?? SeatPoint ???? ??? ????????
+            MoveTo(currentTable.SeatPoint);
 
             return;
         }
+
+
+        // ????? ?? SeatPoint
+        if (currentTable != null && goingToSeat)
+        {
+            // ???? NavMeshAgent ????? ?????? ????? ?? ????? ???
+            agent.isStopped = true;
+            agent.ResetPath();
+            agent.enabled = false;
+
+            // ???? ????? ???? ??? SeatPoint
+            transform.position =
+                currentTable.SeatPoint.position;
+
+            // ???? ???? ?? ??? ???? ?????
+            transform.rotation =
+                currentTable.SeatPoint.rotation;
+
+            // ?????
+            SetSit(true);
+
+            PlaceBurgerOnTable();
+
+            return;
+        }
+
+        currentTarget = null;
     }
+
 
 
     // =========================================================
@@ -502,5 +528,38 @@ public class CustomerAI : MonoBehaviour
         Debug.Log("Customer took the burger!");
     }
 
+    private void PlaceBurgerOnTable()
+    {
+        if (burgerHoldPoint == null)
+            return;
+
+        if (currentTable == null)
+            return;
+
+        Transform burgerPoint =
+            currentTable.BurgerPoint;
+
+        if (burgerPoint == null)
+        {
+            Debug.LogWarning(
+                "Burger Point is not assigned!"
+            );
+
+            return;
+        }
+
+        if (burgerHoldPoint.childCount == 0)
+            return;
+
+        Transform burger =
+            burgerHoldPoint.GetChild(0);
+
+        burger.SetParent(burgerPoint);
+
+        burger.localPosition = Vector3.zero;
+        burger.localRotation = Quaternion.identity;
+
+        SetCarry(false);
+    }
 
 }

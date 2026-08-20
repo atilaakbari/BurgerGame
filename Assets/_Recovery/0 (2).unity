@@ -555,13 +555,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 228654655}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.07391272, y: 0.7032332, z: 0.07391272, w: 0.7032332}
-  m_LocalPosition: {x: 0.018999975, y: 0.85, z: 0}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0.072, y: 0.505, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 504361121}
-  m_LocalEulerAnglesHint: {x: -12, y: 90, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &262209358
 GameObject:
   m_ObjectHideFlags: 0
@@ -1271,7 +1271,6 @@ Transform:
   - {fileID: 969759953}
   - {fileID: 228654656}
   - {fileID: 347866021}
-  - {fileID: 2021007519}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &504361122
@@ -1288,7 +1287,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RestaurantTable
   tablePoint: {fileID: 347866021}
   seatPoint: {fileID: 228654656}
-  burgerPoint: {fileID: 2021007519}
   stayDuration: 10
 --- !u!1 &576908112
 GameObject:
@@ -2298,6 +2296,63 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8376834574582868249, guid: 6d701f6242c7d6945b74dc4d60d46b3d, type: 3}
   m_PrefabInstance: {fileID: 1308096624}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1319064127
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1683783497542078537, guid: 6d4e27ba60fdadf41bda9152d0788480, type: 3}
+      propertyPath: m_Name
+      value: Stickman_4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2023752886266710771, guid: 6d4e27ba60fdadf41bda9152d0788480, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 3.2738295
+      objectReference: {fileID: 0}
+    - target: {fileID: 2023752886266710771, guid: 6d4e27ba60fdadf41bda9152d0788480, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.81999993
+      objectReference: {fileID: 0}
+    - target: {fileID: 2023752886266710771, guid: 6d4e27ba60fdadf41bda9152d0788480, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -14.018772
+      objectReference: {fileID: 0}
+    - target: {fileID: 2023752886266710771, guid: 6d4e27ba60fdadf41bda9152d0788480, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2023752886266710771, guid: 6d4e27ba60fdadf41bda9152d0788480, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2023752886266710771, guid: 6d4e27ba60fdadf41bda9152d0788480, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2023752886266710771, guid: 6d4e27ba60fdadf41bda9152d0788480, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2023752886266710771, guid: 6d4e27ba60fdadf41bda9152d0788480, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2023752886266710771, guid: 6d4e27ba60fdadf41bda9152d0788480, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2023752886266710771, guid: 6d4e27ba60fdadf41bda9152d0788480, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6d4e27ba60fdadf41bda9152d0788480, type: 3}
 --- !u!1 &1348885101
 GameObject:
   m_ObjectHideFlags: 0
@@ -3244,37 +3299,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7862218590715133620, guid: 5e1d8e762cbf156499303ad4ddb5e5d5, type: 3}
   m_PrefabInstance: {fileID: 4887758264237591759}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &2021007518
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2021007519}
-  m_Layer: 0
-  m_Name: BurgerPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2021007519
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2021007518}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.715, y: 1, z: -0.073}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 504361121}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2029172063
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4098,3 +4122,4 @@ SceneRoots:
   - {fileID: 1430218208}
   - {fileID: 1308040722}
   - {fileID: 504361121}
+  - {fileID: 1319064127}

@@ -64,15 +64,16 @@ public class BurgerAssemblyStation : MonoBehaviour
         }
 
 
+        // ==========================================
+        // ???? ???? ???? ?????
+        // ==========================================
 
         GameObject item =
             playerPickup.GetTopItem();
 
 
-
         if (item == null)
             return;
-
 
 
         Item itemData =
@@ -83,107 +84,49 @@ public class BurgerAssemblyStation : MonoBehaviour
             return;
 
 
+        // ==========================================
+        // TOP BUN
+        // ==========================================
 
-        if (!itemData.CanAssemble)
+        if (playerPickup.HasItem(ItemType.BunTop))
         {
-            Debug.Log("Cannot assemble");
-            return;
-        }
+            GameObject topBun =
+                playerPickup.RemoveItem(ItemType.BunTop);
+
+            if (topBun == null)
+                return;
 
 
+            Item topBunData =
+                topBun.GetComponent<Item>();
 
 
+            if (topBunData == null)
+                return;
 
-        // ????? ???? ??? ??? ?????
-        if (burgerItems.Count == 0)
-        {
-            if (itemData.Type != ItemType.BunBottem)
+
+            // Top Bun ???? ??? ?? ????? ?? ???? ???? ?????
+            if (burgerItems.Count == 0)
             {
-                Debug.Log("First item must be bottom bun");
+                Debug.Log(
+                    "Cannot place top bun first!"
+                );
+
+                // ??? ??????? Top Bun ?? ?????????
+                // ????? ??? ??????????
+                playerPickup.TryPickup(topBun);
+
                 return;
             }
-        }
 
 
-
-
-
-        // ??? ???? ??? ???
-        if (itemData.Type == ItemType.BunTop)
-        {
-            if (playerPickup.CurrentCarryCount > 1)
-            {
-                Debug.Log("Top bun must be last");
-                return;
-            }
-        }
-
-
-
-
-
-        // ??? ?? ???
-        GameObject placedItem =
-            playerPickup.RemoveTopItem();
-
-
-
-        if (placedItem == null)
-            return;
-
-
-
-        placedItem.transform.SetParent(
-            assemblyPoint,
-            false
-        );
-
-        placedItem.transform.localPosition = Vector3.zero;
-        placedItem.transform.localRotation = Quaternion.identity;
-        placedItem.transform.localScale = Vector3.one;
-
-
-
-        float bottom =
-            GetBottomPoint(placedItem);
-
-
-
-        float offset =
-            currentTop - bottom + stackGap;
-
-
-
-        placedItem.transform.localPosition =
-            new Vector3(
-                0,
-                placedItem.transform.localPosition.y + offset,
-                0
+            PlaceItemOnBurger(
+                topBun,
+                topBunData
             );
 
 
-
-        burgerItems.Add(placedItem);
-
-        if (burger != null)
-        {
-            burger.AddItem(itemData.Type);
-        }
-
-
-
-        currentTop =
-            GetTopPoint(placedItem);
-
-
-
-
-
-        // ???? ???? ??
-        if (itemData.Type == ItemType.BunTop)
-        {
             burgerClosed = true;
-
 
 
             BurgerPickupStation pickup =
@@ -196,9 +139,52 @@ public class BurgerAssemblyStation : MonoBehaviour
             }
 
 
+            Debug.Log(
+                "Burger Completed!"
+            );
 
-            Debug.Log("Burger Completed!");
+            return;
         }
+
+
+        // ==========================================
+        // ???????? ??????
+        // ==========================================
+
+        if (!itemData.CanAssemble)
+        {
+            Debug.Log("Cannot assemble");
+            return;
+        }
+
+
+        // ????? ???? ???? Bottom Bun ????
+        if (burgerItems.Count == 0)
+        {
+            if (itemData.Type != ItemType.BunBottem)
+            {
+                Debug.Log(
+                    "First item must be bottom bun"
+                );
+
+                return;
+            }
+        }
+
+
+        // ???? ?????? ?? ?? ????? Stack ?????
+        GameObject placedItem =
+            playerPickup.RemoveTopItem();
+
+
+        if (placedItem == null)
+            return;
+
+
+        PlaceItemOnBurger(
+            placedItem,
+            itemData
+        );
     }
 
 
@@ -316,6 +302,62 @@ public class BurgerAssemblyStation : MonoBehaviour
         Debug.Log(
             "Burger Assembly Completely Reset!"
         );
+    }
+
+    private void PlaceItemOnBurger(
+    GameObject placedItem,
+    Item itemData
+)
+    {
+        placedItem.transform.SetParent(
+            assemblyPoint,
+            false
+        );
+
+        placedItem.transform.localPosition =
+            Vector3.zero;
+
+        placedItem.transform.localRotation =
+            Quaternion.identity;
+
+        placedItem.transform.localScale =
+            Vector3.one;
+
+
+        float bottom =
+            GetBottomPoint(placedItem);
+
+
+        float offset =
+            currentTop -
+            bottom +
+            stackGap;
+
+
+        placedItem.transform.localPosition =
+            new Vector3(
+                0,
+                placedItem.transform.localPosition.y +
+                offset,
+                0
+            );
+
+
+        burgerItems.Add(
+            placedItem
+        );
+
+
+        if (burger != null)
+        {
+            burger.AddItem(
+                itemData.Type
+            );
+        }
+
+
+        currentTop =
+            GetTopPoint(placedItem);
     }
 
 }

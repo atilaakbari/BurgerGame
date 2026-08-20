@@ -7713,6 +7713,7 @@ MonoBehaviour:
   orderUI: {fileID: 2131853390394974234}
   orderUIController: {fileID: 6763194058963849824}
   reachDistance: 0.15
+  seatHeightOffset: 0
   burgerHoldPoint: {fileID: 1234772136443818740}
 --- !u!136 &-5804906466210047398
 CapsuleCollider:

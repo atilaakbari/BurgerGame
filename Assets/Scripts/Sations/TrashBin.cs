@@ -63,53 +63,31 @@ public class TrashBin : MonoBehaviour
     {
         while (playerInside)
         {
-
-            // ??? ???? ??? ?????? ???
+            // ??? ???????? ???? ???/Inventory ???? ?? ??? ??
             if (playerPickup.IsCarrying)
             {
                 GameObject item =
                     playerPickup.DropItem();
 
-
                 if (item != null)
                 {
                     Destroy(item);
-
 
                     Debug.Log(
                         "Item Destroyed By Trash"
                     );
                 }
             }
-
-
-
-            // ??? ???? ??? ???? ???
-            else if (burgerRoot != null &&
-                    burgerRoot.parent != null)
-            {
-                Destroy(burgerRoot.gameObject);
-
-
-                playerPickup.SetBurgerCarry(false);
-
-
-                Debug.Log(
-                    "Burger Destroyed By Trash"
-                );
-            }
             else
             {
+                // ??? ???? ???? ???? ???? ???
                 break;
             }
-
-
 
             yield return new WaitForSeconds(
                 trashDelay
             );
         }
-
 
         trashCoroutine = null;
     }

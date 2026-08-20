@@ -3094,6 +3094,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9068853739972132079}
   - component: {fileID: 2564506417412419855}
+  - component: {fileID: 7872999989834764206}
   m_Layer: 0
   m_Name: Shirt
   m_TagString: Untagged
@@ -3345,6 +3346,28 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.0002527237, y: 0.37885416, z: 0.009299487}
     m_Extent: {x: 0.4620254, y: 0.30263603, z: 0.19313216}
   m_DirtyAABB: 0
+--- !u!95 &7872999989834764206
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2633959836891670911}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d775052a2343ab9488c661fe53148a87, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2672172684273696446
 GameObject:
   m_ObjectHideFlags: 0
@@ -8732,6 +8755,7 @@ MonoBehaviour:
   orderUI: {fileID: 654531673321434880}
   orderUIController: {fileID: 5285872885208325498}
   reachDistance: 0.15
+  seatHeightOffset: 0
   burgerHoldPoint: {fileID: 5875204787166986449}
 --- !u!136 &7232260515888585022
 CapsuleCollider:
