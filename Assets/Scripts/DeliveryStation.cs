@@ -35,9 +35,37 @@ public class DeliveryStation : MonoBehaviour
     private List<GameObject> spawnedMoney = new List<GameObject>();
     private bool waitingForMoney;
 
+    private List<GameObject> spawnedEatingMoney =
+    new List<GameObject>();
 
+    private bool waitingForEatingMoney;
+
+    private CustomerAI eatingCustomer;
     private GameObject deliveredBurger;
     private CustomerAI deliveredCustomer;
+    private GameObjectPool moneyPool;
+
+    private const int MoneyBillValue = 5;
+
+    private void Awake()
+    {
+        if (moneyPrefab != null)
+            moneyPool = new GameObjectPool(moneyPrefab, transform, 24);
+    }
+
+    public void RecycleMoney(GameObject moneyObject)
+    {
+        if (moneyObject == null)
+            return;
+
+        spawnedMoney.Remove(moneyObject);
+        spawnedEatingMoney.Remove(moneyObject);
+
+        if (moneyPool != null)
+            moneyPool.Release(moneyObject);
+        else
+            Destroy(moneyObject);
+    }
 
 
     private void OnTriggerEnter(Collider other)
@@ -175,6 +203,8 @@ public class DeliveryStation : MonoBehaviour
             customer;
 
         deliveredCustomer.SetDeliveryStation(this);
+
+        deliveredCustomer.SetQueueManager(queueManager);
 
 
         // ???? ??? ??? ???? ???????
@@ -356,13 +386,7 @@ public class DeliveryStation : MonoBehaviour
         // CLEAR OLD MONEY
         // =========================================
 
-        foreach (GameObject money in spawnedMoney)
-        {
-            if (money != null)
-                Destroy(money);
-        }
-
-        spawnedMoney.Clear();
+        RecycleMoneyList(spawnedMoney);
 
 
         // =========================================
@@ -438,39 +462,24 @@ public class DeliveryStation : MonoBehaviour
             // SPAWN
             // =====================================
 
-            GameObject moneyObject =
-                Instantiate(
-                    moneyPrefab,
-                    spawnPosition,
-                    Quaternion.Euler(90f, 0f, 0f)
-                );
+            GameObject moneyObject = SpawnMoneyBill(
+                spawnPosition,
+                Quaternion.Euler(90f, 0f, 0f)
+            );
 
+            if (moneyObject == null)
+                continue;
 
-            DeliveryMoney money =
-                moneyObject.GetComponent<DeliveryMoney>();
-
+            DeliveryMoney money = moneyObject.GetComponent<DeliveryMoney>();
 
             if (money == null)
             {
-                Debug.LogError(
-                    "DeliveryMoney component missing on Money Prefab!"
-                );
-
-                Destroy(moneyObject);
+                RecycleMoney(moneyObject);
                 continue;
             }
 
-
-            // ?? ??? = 5
-            money.Setup(
-                moneyValue,
-                this
-            );
-
-
-            spawnedMoney.Add(
-                moneyObject
-            );
+            money.Setup(MoneyBillValue, this);
+            spawnedMoney.Add(moneyObject);
         }
 
 
@@ -489,23 +498,249 @@ public class DeliveryStation : MonoBehaviour
     // MONEY COLLECTED
     // =====================================================
 
-    public void OnMoneyCollected()
+    public void OnMoneyCollected(DeliveryMoney collectedMoney)
     {
-        if (!waitingForMoney)
+        if (collectedMoney != null)
+            spawnedMoney.Remove(collectedMoney.gameObject);
+
+        if (spawnedMoney.Count == 0)
+            waitingForMoney = false;
+    }
+
+    public void SpawnEatingMoney(
+    CustomerAI customer,
+    RestaurantTable table
+)
+    {
+        if (customer == null)
+        {
+            Debug.LogError(
+                "SpawnEatingMoney: Customer is null!"
+            );
+
             return;
+        }
 
-        waitingForMoney = false;
+        if (table == null)
+        {
+            Debug.LogError(
+                "SpawnEatingMoney: Table is null!"
+            );
 
-        spawnedMoney.Clear();
+            return;
+        }
+
+        if (moneyPrefab == null)
+        {
+            Debug.LogError(
+                "Money Prefab is not assigned!"
+            );
+
+            return;
+        }
+
+        if (table.MoneyPoint == null)
+        {
+            Debug.LogError(
+                "Money Point is not assigned on RestaurantTable!"
+            );
+
+            return;
+        }
+
+
+        BurgerOrder order =
+            customer.CurrentOrder;
+
+        if (order == null)
+        {
+            Debug.LogError(
+                "Customer has no order!"
+            );
+
+            return;
+        }
+
+
+        // =========================================
+        // MONEY VALUE
+        // =========================================
+
+        const int moneyValue = 5;
+
+        int eatingMoney =
+            order.eatingMoney;
+
+        int moneyCount =
+            eatingMoney / moneyValue;
+
+
+        if (moneyCount <= 0)
+        {
+            Debug.LogWarning(
+                "Eating money is too low to spawn money!"
+            );
+
+            eatingCustomer = customer;
+            waitingForEatingMoney = false;
+
+           // customer.OnEatingMoneyCollected();
+
+            return;
+        }
+
+
+        // =========================================
+        // CLEAR OLD EATING MONEY
+        // =========================================
+
+        RecycleMoneyList(spawnedEatingMoney);
+
+
+        // =========================================
+        // SAVE CUSTOMER
+        // =========================================
+
+        eatingCustomer = customer;
+
+
+        // =========================================
+        // MONEY PER LAYER
+        // =========================================
+
+        int moneyPerLayer =
+            moneyColumns * moneyRows;
+
+
+        // =========================================
+        // SPAWN
+        // =========================================
+
+        for (int i = 0; i < moneyCount; i++)
+        {
+            int layer =
+                i / moneyPerLayer;
+
+
+            int indexInLayer =
+                i % moneyPerLayer;
+
+
+            int column =
+                indexInLayer % moneyColumns;
+
+
+            int row =
+                indexInLayer / moneyColumns;
+
+
+            // Center rectangle
+            float offsetX =
+                (column -
+                (moneyColumns - 1) * 0.5f)
+                * moneySpacingX;
+
+
+            float offsetZ =
+                (row -
+                (moneyRows - 1) * 0.5f)
+                * moneySpacingZ;
+
+
+            float offsetY =
+                layer * moneyLayerHeight;
+
+
+            Vector3 localOffset =
+                new Vector3(
+                    offsetX,
+                    offsetY,
+                    offsetZ
+                );
+
+
+            Vector3 spawnPosition =
+                table.MoneyPoint.TransformPoint(
+                    localOffset
+                );
+
+
+            GameObject moneyObject = SpawnMoneyBill(
+                spawnPosition,
+                table.MoneyPoint.rotation * Quaternion.Euler(90f, 0f, 0f)
+            );
+
+            if (moneyObject == null)
+                continue;
+
+            DeliveryMoney money = moneyObject.GetComponent<DeliveryMoney>();
+
+            if (money == null)
+            {
+                RecycleMoney(moneyObject);
+                continue;
+            }
+
+            money.SetupEatingMoney(MoneyBillValue, this);
+            spawnedEatingMoney.Add(moneyObject);
+        }
+
+
+        waitingForEatingMoney = true;
+
 
         Debug.Log(
-            "Delivery money collected!"
+            "Spawned " +
+            moneyCount +
+            " eating money. Total value = " +
+            (moneyCount * moneyValue)
         );
+    }
 
+    public void OnEatingMoneyCollected(DeliveryMoney collectedMoney)
+    {
+        if (collectedMoney != null)
+            spawnedEatingMoney.Remove(collectedMoney.gameObject);
 
-        // =========================================
-        // CUSTOMER TAKES BURGER
-        // =========================================
+        if (spawnedEatingMoney.Count == 0)
+        {
+            waitingForEatingMoney = false;
+            eatingCustomer = null;
+        }
+    }
 
+    private GameObject SpawnMoneyBill(Vector3 position, Quaternion rotation)
+    {
+        GameObject moneyObject;
+
+        if (moneyPool != null)
+            moneyObject = moneyPool.Get(position, rotation);
+        else if (moneyPrefab != null)
+            moneyObject = Instantiate(moneyPrefab, position, rotation);
+        else
+            return null;
+
+        Renderer[] renderers = moneyObject.GetComponentsInChildren<Renderer>();
+        for (int i = 0; i < renderers.Length; i++)
+            renderers[i].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+
+        return moneyObject;
+    }
+
+    private void RecycleMoneyList(List<GameObject> moneyList)
+    {
+        for (int i = 0; i < moneyList.Count; i++)
+        {
+            GameObject moneyObject = moneyList[i];
+            if (moneyObject == null)
+                continue;
+
+            if (moneyPool != null)
+                moneyPool.Release(moneyObject);
+            else
+                Destroy(moneyObject);
+        }
+
+        moneyList.Clear();
     }
 }

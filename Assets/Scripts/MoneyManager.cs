@@ -1,31 +1,37 @@
+using System;
 using UnityEngine;
 
 public class MoneyManager : MonoBehaviour
 {
-    public static MoneyManager Instance;
+    public static MoneyManager Instance { get; private set; }
+    public static event Action<int> OnMoneyChanged;
 
-
-    [SerializeField]
-    private int money = 0;
-
+    [SerializeField] private int money;
 
     public int Money => money;
-
-
 
     private void Awake()
     {
         Instance = this;
+        OnMoneyChanged?.Invoke(money);
     }
-
-
 
     public void AddMoney(int amount)
     {
-        money += amount;
+        if (amount == 0)
+            return;
 
-        Debug.Log(
-            "Money: " + money
-        );
+        money += amount;
+        OnMoneyChanged?.Invoke(money);
+    }
+
+    public bool TrySpend(int amount)
+    {
+        if (amount <= 0 || money < amount)
+            return false;
+
+        money -= amount;
+        OnMoneyChanged?.Invoke(money);
+        return true;
     }
 }

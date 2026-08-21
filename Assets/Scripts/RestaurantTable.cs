@@ -10,13 +10,27 @@ public class RestaurantTable : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private float stayDuration = 10f;
 
+    [SerializeField] private Transform moneyPoint;
 
+
+    public Transform MoneyPoint => moneyPoint;
     public Transform BurgerPoint => burgerPoint;
+
 
     private CustomerAI currentCustomer;
 
     public Transform TablePoint => tablePoint;
     public Transform SeatPoint => seatPoint;
+
+    public Vector3 GetWaitPosition()
+    {
+        Transform point = tablePoint != null ? tablePoint : seatPoint;
+
+        if (point == null)
+            return transform.position + transform.right * 0.9f;
+
+        return point.position + point.right * 0.9f;
+    }
 
     public float StayDuration => stayDuration;
 

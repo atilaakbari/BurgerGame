@@ -1,12 +1,21 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class QueueManager : MonoBehaviour
 {
+    public event Action OnQueueChanged;
+
     [Header("Queue Points")]
     [SerializeField]
     private List<Transform> queuePoints =
         new List<Transform>();
+
+    [Header("Exit")]
+    [SerializeField]
+    private Transform exitPoint;
+
+    public Transform ExitPoint => exitPoint;
 
     private readonly List<CustomerAI> customers =
         new List<CustomerAI>();
@@ -75,8 +84,8 @@ public class QueueManager : MonoBehaviour
             slot
         );
 
-
         UpdateOrderUI();
+        OnQueueChanged?.Invoke();
     }
 
 
@@ -147,6 +156,7 @@ public class QueueManager : MonoBehaviour
 
 
         UpdateOrderUI();
+        OnQueueChanged?.Invoke();
     }
 
 

@@ -64,13 +64,9 @@ public class BurgerAssemblyStation : MonoBehaviour
         }
 
 
-        // ==========================================
-        // ???? ???? ???? ?????
-        // ==========================================
-
+        // ??? ???????? ???? ??? ????
         GameObject item =
             playerPickup.GetTopItem();
-
 
         if (item == null)
             return;
@@ -79,53 +75,78 @@ public class BurgerAssemblyStation : MonoBehaviour
         Item itemData =
             item.GetComponent<Item>();
 
-
         if (itemData == null)
             return;
+
+
+        // ???? ???? ???? Assembly ????
+        if (!itemData.CanAssemble)
+        {
+            Debug.Log("Cannot assemble");
+            return;
+        }
+
+
+        // ==========================================
+        // ????? ???? ???? Bottom Bun ????
+        // ==========================================
+
+        if (burgerItems.Count == 0)
+        {
+            if (itemData.Type != ItemType.BunBottem)
+            {
+                Debug.Log(
+                    "First item must be bottom bun"
+                );
+
+                return;
+            }
+        }
 
 
         // ==========================================
         // TOP BUN
         // ==========================================
 
-        if (playerPickup.HasItem(ItemType.BunTop))
+        if (itemData.Type == ItemType.BunTop)
         {
-            GameObject topBun =
-                playerPickup.RemoveItem(ItemType.BunTop);
+            // ??? item ?? GetTopItem ?????
+            // ???? Top Bun ????? ???????? ???? ???.
 
-            if (topBun == null)
-                return;
-
-
-            Item topBunData =
-                topBun.GetComponent<Item>();
-
-
-            if (topBunData == null)
-                return;
-
-
-            // Top Bun ???? ??? ?? ????? ?? ???? ???? ?????
             if (burgerItems.Count == 0)
             {
                 Debug.Log(
-                    "Cannot place top bun first!"
+                    "Top bun cannot be placed first!"
                 );
-
-                // ??? ??????? Top Bun ?? ?????????
-                // ????? ??? ??????????
-                playerPickup.TryPickup(topBun);
 
                 return;
             }
+        }
 
 
-            PlaceItemOnBurger(
-                topBun,
-                topBunData
-            );
+        // ==========================================
+        // ??????? ???? ?? ???
+        // ==========================================
+
+        GameObject placedItem =
+            playerPickup.RemoveTopItem();
+
+        if (placedItem == null)
+            return;
 
 
+        PlaceItemOnBurger(
+            placedItem,
+            itemData
+        );
+
+
+        // ==========================================
+        // ???? ??? Burger
+        // ==========================================
+
+        if (itemData.Type == ItemType.BunTop)
+        {
             burgerClosed = true;
 
 
@@ -142,49 +163,7 @@ public class BurgerAssemblyStation : MonoBehaviour
             Debug.Log(
                 "Burger Completed!"
             );
-
-            return;
         }
-
-
-        // ==========================================
-        // ???????? ??????
-        // ==========================================
-
-        if (!itemData.CanAssemble)
-        {
-            Debug.Log("Cannot assemble");
-            return;
-        }
-
-
-        // ????? ???? ???? Bottom Bun ????
-        if (burgerItems.Count == 0)
-        {
-            if (itemData.Type != ItemType.BunBottem)
-            {
-                Debug.Log(
-                    "First item must be bottom bun"
-                );
-
-                return;
-            }
-        }
-
-
-        // ???? ?????? ?? ?? ????? Stack ?????
-        GameObject placedItem =
-            playerPickup.RemoveTopItem();
-
-
-        if (placedItem == null)
-            return;
-
-
-        PlaceItemOnBurger(
-            placedItem,
-            itemData
-        );
     }
 
 

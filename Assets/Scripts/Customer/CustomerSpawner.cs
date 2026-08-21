@@ -147,15 +147,10 @@ public class CustomerSpawner : MonoBehaviour
         }
 
 
-        // =====================================================
-        // ???:
-        // ??? QueueManager ????? ???? ????? ???.
-        // ????? MoveTo ??????.
-        // =====================================================
+        customer.SetQueueManager(queueManager);
+        customer.SetExitPoint(queueManager.ExitPoint);
 
-        queueManager.AddCustomer(
-            customer
-        );
+        queueManager.AddCustomer(customer);
     }
 
 

@@ -6,14 +6,19 @@ public class CameraFollow : MonoBehaviour
     [SerializeField] private Vector3 offset = new Vector3(0f, 8f, -8f);
     [SerializeField] private float smoothSpeed = 5f;
 
-    void LateUpdate()
-    {
-        Vector3 targetPosition = player.position + offset;
+    private Vector3 velocity;
 
-        transform.position = Vector3.Lerp(
+    private void LateUpdate()
+    {
+        if (player == null)
+            return;
+
+        Vector3 targetPosition = player.position + offset;
+        transform.position = Vector3.SmoothDamp(
             transform.position,
             targetPosition,
-            smoothSpeed * Time.deltaTime
+            ref velocity,
+            1f / Mathf.Max(smoothSpeed, 0.01f)
         );
     }
 }

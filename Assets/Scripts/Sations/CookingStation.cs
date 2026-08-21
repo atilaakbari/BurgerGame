@@ -1,5 +1,4 @@
 using System.Collections;
-using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -34,10 +33,17 @@ public class CookingStation : MonoBehaviour
 
     private void Start()
     {
-        timerObject.SetActive(false);
-        timerTick.SetActive(false);
-        animationRawPatty.SetActive(false);
-        animationCookedPatty.SetActive(false);
+        if (timerObject != null)
+            timerObject.SetActive(false);
+
+        if (timerTick != null)
+            timerTick.SetActive(false);
+
+        if (animationRawPatty != null)
+            animationRawPatty.SetActive(false);
+
+        if (animationCookedPatty != null)
+            animationCookedPatty.SetActive(false);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -117,13 +123,20 @@ public class CookingStation : MonoBehaviour
     {
         isCooking = true;
 
-        cookingAnimator.SetBool("IsCooking", true);
+        if (cookingAnimator != null)
+            cookingAnimator.SetBool("IsCooking", true);
 
-        timerObject.SetActive(true);
-        timerTick.SetActive(false);
-        animationRawPatty.SetActive(true);
+        if (timerObject != null)
+            timerObject.SetActive(true);
 
-        timerFill.fillAmount = 0f;
+        if (timerTick != null)
+            timerTick.SetActive(false);
+
+        if (animationRawPatty != null)
+            animationRawPatty.SetActive(true);
+
+        if (timerFill != null)
+            timerFill.fillAmount = 0f;
 
         float timer = 0f;
 
@@ -135,39 +148,38 @@ public class CookingStation : MonoBehaviour
             float progress = timer / cookingTime;
 
             // ?? ??? ?????
-            timerFill.fillAmount = progress;
-
-            // ????? ?????? ??? ?? ???? ?? ???
-            timerFill.color = Color.Lerp(
-                Color.red,
-                Color.green,
-                progress
-            );
+            if (timerFill != null)
+            {
+                timerFill.fillAmount = progress;
+                timerFill.color = Color.Lerp(Color.red, Color.green, progress);
+            }
 
             yield return null;
         }
 
-        // ??????? ?? ???? ???
-        timerFill.fillAmount = 1f;
-
-        // ??? ????? ???
-        timerFill.color = Color.green;
-
-        if (cookingAnimator != null)
+        if (timerFill != null)
         {
-            cookingAnimator.SetBool("IsCooking", false);
+            timerFill.fillAmount = 1f;
+            timerFill.color = Color.green;
         }
 
-        cookedReady = true;
-        animationRawPatty.SetActive(false);
-        animationCookedPatty.SetActive(true);
-        cookingAnimator.SetBool("IsCooking", false);
-        isCooking = false;
+        if (cookingAnimator != null)
+            cookingAnimator.SetBool("IsCooking", false);
 
+        cookedReady = true;
+
+        if (animationRawPatty != null)
+            animationRawPatty.SetActive(false);
+
+        if (animationCookedPatty != null)
+            animationCookedPatty.SetActive(true);
+
+        isCooking = false;
 
         yield return new WaitForSeconds(TickDelay);
 
-        timerTick.SetActive(true);
+        if (timerTick != null)
+            timerTick.SetActive(true);
     }
 
 

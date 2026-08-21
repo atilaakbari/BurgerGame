@@ -10,100 +10,70 @@ public class OrderManager : MonoBehaviour
 
     private BurgerOrder lastOrder;
 
-    private void Update()
+    private void OnEnable()
     {
-        CheckFirstCustomer();
+        if (queueManager != null)
+            queueManager.OnQueueChanged += AssignOrderToFirstCustomer;
+
+        AssignOrderToFirstCustomer();
     }
 
-    private void CheckFirstCustomer()
+    private void OnDisable()
+    {
+        if (queueManager != null)
+            queueManager.OnQueueChanged -= AssignOrderToFirstCustomer;
+    }
+
+    private void AssignOrderToFirstCustomer()
     {
         if (queueManager == null)
             return;
 
-        CustomerAI customer =
-            queueManager.GetFirstCustomer();
+        CustomerAI customer = queueManager.GetFirstCustomer();
 
-        if (customer == null)
+        if (customer == null || customer.CurrentOrder != null)
             return;
 
-        if (customer.CurrentOrder != null)
-            return;
-
-        GiveRandomOrder(customer);
+        BurgerOrder order = PickOrder();
+        if (order != null)
+            customer.SetOrder(order);
     }
 
-    private void GiveRandomOrder(CustomerAI customer)
+    private BurgerOrder PickOrder()
     {
-        if (availableOrders == null ||
-            availableOrders.Length == 0)
-        {
-            Debug.LogError("No Burger Orders assigned!");
-            return;
-        }
+        if (availableOrders == null || availableOrders.Length == 0)
+            return null;
 
-        // ????? Order??? ?????
+        BurgerOrder fallback = null;
         int validCount = 0;
 
-        foreach (BurgerOrder order in availableOrders)
+        for (int i = 0; i < availableOrders.Length; i++)
         {
-            if (order != null)
-                validCount++;
+            BurgerOrder order = availableOrders[i];
+            if (order == null)
+                continue;
+
+            fallback = order;
+            validCount++;
         }
 
         if (validCount == 0)
-        {
-            Debug.LogError("All Burger Orders are NULL!");
-            return;
-        }
+            return null;
 
-        // ??? ??? ?? Order ??????
-        // ??????? ???? ?? ?????? ????
         if (validCount == 1)
-        {
-            foreach (BurgerOrder order in availableOrders)
-            {
-                if (order != null)
-                {
-                    lastOrder = order;
-                    customer.SetOrder(order);
+            return fallback;
 
-                    Debug.Log(
-                        "Random Order: " +
-                        order.name
-                    );
-
-                    return;
-                }
-            }
-        }
-
-        // ?????? ??????? ??? ?????? ?? ????
-        BurgerOrder selectedOrder;
+        BurgerOrder selected;
+        int guard = 0;
 
         do
         {
-            int randomIndex =
-                Random.Range(
-                    0,
-                    availableOrders.Length
-                );
-
-            selectedOrder =
-                availableOrders[randomIndex];
-
+            selected = availableOrders[Random.Range(0, availableOrders.Length)];
+            guard++;
         }
-        while (
-            selectedOrder == null ||
-            selectedOrder == lastOrder
-        );
+        while ((selected == null || selected == lastOrder) && guard < 16);
 
-        lastOrder = selectedOrder;
-
-        customer.SetOrder(selectedOrder);
-
-        Debug.Log(
-            "Random Order: " +
-            selectedOrder.name
-        );
+        lastOrder = selected;
+        return selected;
     }
 }

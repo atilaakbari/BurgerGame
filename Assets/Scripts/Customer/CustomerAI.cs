@@ -1,3 +1,4 @@
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -16,21 +17,49 @@ public class CustomerAI : MonoBehaviour
     [SerializeField] private OrderUI orderUIController;
 
     [Header("Movement")]
-    [SerializeField] private float reachDistance = 0.2f;
+    [SerializeField] private float reachDistance = 0.4f;
     [SerializeField] private float seatHeightOffset = 1f;
 
     [Header("Burger")]
     [SerializeField] private Transform burgerHoldPoint;
 
+    //[Space]
+
+    // [SerializeField] private QueueManager queueManager;
+
+    private Transform exitPoint;
+
+    public void SetExitPoint(Transform point)
+    {
+        exitPoint = point;
+    }
+
+    private QueueManager queueManager;
+
+    public void SetQueueManager(QueueManager manager)
+    {
+        queueManager = manager;
+    }
 
     private RestaurantTable currentTable;
     private bool goingToSeat;
+    private bool waitingForTable;
+    private bool usingWorldTarget;
+    private Vector3 worldTarget;
 
     private DeliveryStation deliveryStation;
 
     private Transform currentTarget;
 
     private BurgerOrder currentOrder;
+
+    private float eatingTimer;
+
+    private bool eatingFinished;
+    private GameObject servedBurger;
+    private bool walkState;
+    private bool carryState;
+    private bool sitState;
 
     public BurgerOrder CurrentOrder =>
         currentOrder;
@@ -68,6 +97,13 @@ public class CustomerAI : MonoBehaviour
         }
 
 
+        if (agent != null)
+        {
+            agent.obstacleAvoidanceType = ObstacleAvoidanceType.LowQualityObstacleAvoidance;
+            agent.autoBraking = true;
+            agent.acceleration = 12f;
+        }
+
         if (animator == null)
         {
             Debug.LogError(
@@ -88,6 +124,9 @@ public class CustomerAI : MonoBehaviour
     private void Update()
     {
         CheckArrival();
+        UpdateEating();
+        TryTakeFreeTable();
+        UpdateLocomotionAnimation();
     }
 
 
@@ -97,27 +136,17 @@ public class CustomerAI : MonoBehaviour
 
     public void MoveTo(Transform target)
     {
-
-        Debug.Log(
-    gameObject.name +
-    " MOVETO ? " +
-    target.name
-);
-
         if (target == null)
             return;
 
         if (agent == null)
             return;
 
-        // ???????? ?? ?? ??? ???? ???
-        // ???? ????? ???? QueueManager ??????? ???.
-        if (IsLeaving && target != currentTarget)
-            return;
+        if (!agent.enabled)
+            agent.enabled = true;
 
-
+        usingWorldTarget = false;
         currentTarget = target;
-
         ReachedTarget = false;
 
         SetSit(false);
@@ -133,10 +162,35 @@ public class CustomerAI : MonoBehaviour
             transform.rotation = Quaternion.LookRotation(direction);
         }
 
-        agent.SetDestination(
-            target.position
-        );
+        agent.SetDestination(target.position);
+        SetWalk(true);
+    }
 
+    public void MoveToPosition(Vector3 position)
+    {
+        if (agent == null)
+            return;
+
+        if (!agent.enabled)
+            agent.enabled = true;
+
+        usingWorldTarget = true;
+        worldTarget = position;
+        currentTarget = null;
+        ReachedTarget = false;
+
+        SetSit(false);
+
+        agent.isStopped = false;
+        agent.stoppingDistance = 0f;
+
+        Vector3 direction = position - transform.position;
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude > 0.01f)
+            transform.rotation = Quaternion.LookRotation(direction);
+
+        agent.SetDestination(position);
         SetWalk(true);
     }
 
@@ -147,33 +201,35 @@ public class CustomerAI : MonoBehaviour
 
     private void CheckArrival()
     {
-        if (agent == null)
+        if (agent == null || ReachedTarget)
             return;
 
-
-        if (currentTarget == null)
+        if (!agent.enabled)
             return;
 
-
-        if (ReachedTarget)
+        if (currentTarget == null && !usingWorldTarget)
             return;
 
+        Vector3 from = transform.position;
+        Vector3 to = usingWorldTarget ? worldTarget : currentTarget.position;
+        from.y = 0f;
+        to.y = 0f;
 
-        if (agent.pathPending)
-            return;
+        bool closeToTarget =
+            Vector3.Distance(from, to) <= reachDistance;
 
+        bool agentReached = false;
 
-        if (!agent.hasPath)
-            return;
-
-
-        if (
-            agent.remainingDistance
-            <= reachDistance
-        )
+        if (!agent.pathPending)
         {
-            Arrived();
+            if (agent.hasPath)
+                agentReached = agent.remainingDistance <= reachDistance;
+            else
+                agentReached = closeToTarget;
         }
+
+        if (agentReached || closeToTarget)
+            Arrived();
     }
 
 
@@ -189,43 +245,50 @@ public class CustomerAI : MonoBehaviour
 
         SetWalk(false);
 
-        // ????? ?? TablePoint
         if (currentTable != null && !goingToSeat)
         {
             goingToSeat = true;
-
-            // ?????? Agent ?? ???? ???? ?? SeatPoint ???? ??? ????????
             MoveTo(currentTable.SeatPoint);
-
             return;
         }
 
-
-        // ????? ?? SeatPoint
         if (currentTable != null && goingToSeat)
         {
-            // ???? NavMeshAgent ????? ?????? ????? ?? ????? ???
             agent.isStopped = true;
             agent.ResetPath();
             agent.enabled = false;
 
-            // ???? ????? ???? ??? SeatPoint
-            transform.position =
-                currentTable.SeatPoint.position;
+            transform.position = currentTable.SeatPoint.position;
+            transform.rotation = currentTable.SeatPoint.rotation;
 
-            // ???? ???? ?? ??? ???? ?????
-            transform.rotation =
-                currentTable.SeatPoint.rotation;
-
-            // ?????
-            SetSit(true);
-
-            PlaceBurgerOnTable();
-
+            BeginEating();
             return;
         }
 
+        if (IsLeaving)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        PlayStandingIdle();
         currentTarget = null;
+        usingWorldTarget = false;
+    }
+
+    private void PlayStandingIdle()
+    {
+        SetSit(false);
+        SetWalk(false);
+        SetCarry(IsHoldingBurger());
+    }
+
+    private bool IsHoldingBurger()
+    {
+        if (servedBurger != null)
+            return true;
+
+        return burgerHoldPoint != null && burgerHoldPoint.childCount > 0;
     }
 
 
@@ -247,9 +310,34 @@ public class CustomerAI : MonoBehaviour
         currentTarget = null;
 
         ReachedTarget = true;
+        PlayStandingIdle();
+    }
 
+    private void UpdateLocomotionAnimation()
+    {
+        if (sitState)
+            return;
 
-        SetWalk(false);
+        if (agent == null || !agent.enabled)
+        {
+            PlayStandingIdle();
+            return;
+        }
+
+        bool moving =
+            !agent.isStopped &&
+            (agent.velocity.sqrMagnitude > 0.05f ||
+             (agent.hasPath && agent.remainingDistance > reachDistance));
+
+        if (moving)
+        {
+            SetSit(false);
+            SetWalk(true);
+            SetCarry(IsHoldingBurger());
+            return;
+        }
+
+        PlayStandingIdle();
     }
 
 
@@ -259,86 +347,53 @@ public class CustomerAI : MonoBehaviour
 
     private void SetWalk(bool value)
     {
-        if (animator == null)
+        if (animator == null || walkState == value)
             return;
 
-
-        animator.SetBool(
-            isWalkParameter,
-            value
-        );
+        walkState = value;
+        animator.SetBool(isWalkParameter, value);
     }
-
-
-    // =========================================================
-    // CARRY
-    // =========================================================
 
     public void SetCarry(bool value)
     {
-        if (animator == null)
+        if (animator == null || carryState == value)
             return;
 
-
-        animator.SetBool(
-            isCarryParameter,
-            value
-        );
+        carryState = value;
+        animator.SetBool(isCarryParameter, value);
     }
-
 
     public bool IsCarrying()
     {
-        if (animator == null)
-            return false;
-
-
-        return animator.GetBool(
-            isCarryParameter
-        );
+        return carryState;
     }
-
-
-    // =========================================================
-    // SIT
-    // =========================================================
 
     public void SetSit(bool value)
     {
         if (animator == null)
             return;
 
-
-        animator.SetBool(
-            isSitParameter,
-            value
-        );
-
+        if (sitState != value)
+        {
+            sitState = value;
+            animator.SetBool(isSitParameter, value);
+        }
 
         if (value)
         {
             SetWalk(false);
 
-
             if (agent != null)
             {
                 agent.isStopped = true;
-
                 agent.ResetPath();
             }
         }
     }
 
-
     public bool IsSitting()
     {
-        if (animator == null)
-            return false;
-
-
-        return animator.GetBool(
-            isSitParameter
-        );
+        return sitState;
     }
 
 
@@ -413,38 +468,59 @@ public class CustomerAI : MonoBehaviour
 
     public void Leave()
     {
-        IsLeaving = true;
-
-
-        SetSit(false);
-
-        SetCarry(false);
-
-        SetWalk(true);
+        StartLeaving();
     }
 
-    public void Leave(Transform exitPoint)
+    public void Leave(Transform point)
     {
-        if (exitPoint == null)
+        if (point != null)
+            exitPoint = point;
+
+        StartLeaving();
+    }
+
+    private void StartLeaving()
+    {
+        if (IsLeaving && currentTarget == exitPoint && exitPoint != null)
             return;
 
         IsLeaving = true;
+        goingToSeat = false;
+        waitingForTable = false;
 
         SetSit(false);
         SetCarry(false);
-
-        currentTarget = exitPoint;
-
-        ReachedTarget = false;
-
-        agent.isStopped = false;
-        agent.stoppingDistance = 0f;
-
-        agent.SetDestination(
-            exitPoint.position
-        );
-
         SetWalk(true);
+
+        PlaceAgentOnNavMesh();
+
+        if (exitPoint == null && queueManager != null)
+            exitPoint = queueManager.ExitPoint;
+
+        if (exitPoint == null)
+        {
+            Debug.LogError("Exit Point is not assigned on " + gameObject.name);
+            Destroy(gameObject);
+            return;
+        }
+
+        MoveTo(exitPoint);
+    }
+
+    private void PlaceAgentOnNavMesh()
+    {
+        if (agent == null)
+            return;
+
+        if (!agent.enabled)
+            agent.enabled = true;
+
+        Vector3 sampleOrigin = transform.position;
+
+        if (NavMesh.SamplePosition(sampleOrigin, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+        {
+            agent.Warp(hit.position);
+        }
     }
 
     public void TakeBurgerFromDelivery()
@@ -473,6 +549,8 @@ public class CustomerAI : MonoBehaviour
 
 
         // Burger goes into customer's hand
+        servedBurger = burger;
+
         burger.transform.SetParent(burgerHoldPoint);
 
         burger.transform.localPosition = Vector3.zero;
@@ -498,41 +576,231 @@ public class CustomerAI : MonoBehaviour
 
         deliveryStation.ClearDeliveredBurger();
 
-        // Customer is carrying the burger
+        if (queueManager != null)
+        {
+            if (exitPoint == null)
+                SetExitPoint(queueManager.ExitPoint);
+
+            queueManager.RemoveCustomer(this);
+        }
+
         SetCarry(true);
 
-        // Find a free table
-        RestaurantTable freeTable =
-            TableManager.Instance.GetFreeTable();
+        if (!TryGoToTable())
+            WaitNearSeatedCustomer();
+    }
 
-        if (freeTable != null)
-        {
-            if (freeTable.AssignCustomer(this))
-            {
-                currentTable = freeTable;
+    private bool TryGoToTable()
+    {
+        if (TableManager.Instance == null)
+            return false;
 
-                goingToSeat = false;
+        RestaurantTable freeTable = TableManager.Instance.GetFreeTable();
 
-                MoveTo(
-                    currentTable.TablePoint
-                );
-            }
-        }
+        if (freeTable == null)
+            return false;
+
+        if (!freeTable.AssignCustomer(this))
+            return false;
+
+        waitingForTable = false;
+        currentTable = freeTable;
+        goingToSeat = false;
+        MoveTo(currentTable.TablePoint);
+        return true;
+    }
+
+    private void WaitNearSeatedCustomer()
+    {
+        waitingForTable = true;
+        currentTable = null;
+        goingToSeat = false;
+
+        RestaurantTable busyTable = null;
+
+        if (TableManager.Instance != null)
+            busyTable = TableManager.Instance.GetNearestOccupiedTable(transform.position);
+
+        if (busyTable != null)
+            MoveToPosition(busyTable.GetWaitPosition());
         else
-        {
-            Debug.LogWarning(
-                "No free table available!"
-            );
-        }
+            StopMoving();
+    }
 
-        Debug.Log("Customer took the burger!");
+    private void TryTakeFreeTable()
+    {
+        if (!waitingForTable || IsLeaving || IsSitting())
+            return;
+
+        TryGoToTable();
+    }
+
+    private void BeginEating()
+    {
+        waitingForTable = false;
+        PlaceBurgerOnTable();
+        SetCarry(false);
+        SetSit(true);
+
+        if (currentOrder != null)
+            eatingTimer = currentOrder.eatingTime;
     }
 
     private void PlaceBurgerOnTable()
     {
-        if (burgerHoldPoint == null)
+        if (servedBurger == null && burgerHoldPoint != null && burgerHoldPoint.childCount > 0)
+            servedBurger = burgerHoldPoint.GetChild(0).gameObject;
+
+        if (servedBurger == null)
             return;
 
+        Transform burger = servedBurger.transform;
+        Transform burgerPoint = currentTable != null ? currentTable.BurgerPoint : null;
+
+        Vector3 placePos;
+        Quaternion placeRot = Quaternion.identity;
+
+        if (burgerPoint != null)
+        {
+            burger.SetParent(burgerPoint, true);
+            placePos = burgerPoint.position;
+            placeRot = burgerPoint.rotation;
+        }
+        else
+        {
+            Transform seat = currentTable != null ? currentTable.SeatPoint : null;
+
+            if (seat != null)
+            {
+                placePos = seat.position + seat.forward * 0.45f + Vector3.up * 0.2f;
+                placeRot = Quaternion.LookRotation(seat.forward);
+            }
+            else
+            {
+                placePos = transform.position + transform.forward * 0.45f + Vector3.up * 0.85f;
+            }
+
+            if (currentTable != null)
+                burger.SetParent(currentTable.transform, true);
+            else
+                burger.SetParent(null, true);
+        }
+
+        burger.SetPositionAndRotation(placePos, placeRot);
+        SnapBurgerOntoPoint(burger, placePos);
+
+        Rigidbody rb = burger.GetComponent<Rigidbody>();
+
+        if (rb != null)
+        {
+            rb.isKinematic = true;
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+
+        foreach (Collider col in burger.GetComponentsInChildren<Collider>())
+            col.enabled = false;
+    }
+
+    private void SnapBurgerOntoPoint(Transform burger, Vector3 point)
+    {
+        Renderer[] renderers = burger.GetComponentsInChildren<Renderer>();
+
+        if (renderers == null || renderers.Length == 0)
+            return;
+
+        Bounds bounds = renderers[0].bounds;
+
+        for (int i = 1; i < renderers.Length; i++)
+            bounds.Encapsulate(renderers[i].bounds);
+
+        Vector3 bottomCenter = new Vector3(
+            bounds.center.x,
+            bounds.min.y,
+            bounds.center.z
+        );
+
+        burger.position += point - bottomCenter;
+    }
+
+    private void UpdateEating()
+    {
+        if (!IsSitting())
+            return;
+
+        if (currentTable == null)
+            return;
+
+        if (currentOrder == null)
+            return;
+
+        if (eatingFinished)
+            return;
+
+
+        eatingTimer -= Time.deltaTime;
+
+
+        if (eatingTimer <= 0f)
+        {
+            eatingFinished = true;
+
+            FinishEating();
+        }
+    }
+
+    private void FinishEating()
+    {
+        if (currentTable == null)
+            return;
+
+        Debug.Log(
+            gameObject.name +
+            " finished eating!"
+        );
+
+
+        if (servedBurger != null)
+        {
+            Destroy(servedBurger);
+            servedBurger = null;
+        }
+
+        if (deliveryStation != null)
+        {
+            deliveryStation.SpawnEatingMoney(
+                this,
+                currentTable
+            );
+        }
+
+        RestaurantTable tableToLeave = currentTable;
+        tableToLeave.ReleaseTable();
+        currentTable = null;
+        waitingForTable = false;
+
+        if (queueManager != null)
+            queueManager.RemoveCustomer(this);
+
+        StartCoroutine(StandUpAndLeave());
+    }
+
+    private IEnumerator StandUpAndLeave()
+    {
+        SetSit(false);
+        SetCarry(false);
+
+        yield return null;
+
+        SetWalk(true);
+
+        yield return new WaitForSeconds(0.15f);
+
+        StartLeaving();
+    }
+
+    private void RemoveBurgerFromTable()
+    {
         if (currentTable == null)
             return;
 
@@ -540,26 +808,15 @@ public class CustomerAI : MonoBehaviour
             currentTable.BurgerPoint;
 
         if (burgerPoint == null)
-        {
-            Debug.LogWarning(
-                "Burger Point is not assigned!"
-            );
-
-            return;
-        }
-
-        if (burgerHoldPoint.childCount == 0)
             return;
 
-        Transform burger =
-            burgerHoldPoint.GetChild(0);
+        if (burgerPoint.childCount == 0)
+            return;
 
-        burger.SetParent(burgerPoint);
+        GameObject burger =
+            burgerPoint.GetChild(0).gameObject;
 
-        burger.localPosition = Vector3.zero;
-        burger.localRotation = Quaternion.identity;
-
-        SetCarry(false);
+        Destroy(burger);
     }
 
 }
