@@ -14,6 +14,9 @@ public class CookingStationUpgrade : MonoBehaviour
     [SerializeField] private ParticleSystem upgradeEffect;
     [SerializeField] private AudioSource upgradeSound;
 
+    [Header("Available Indicator (??? + ??????? ?????)")]
+    [SerializeField] private UpgradeAvailableFX availableIndicator;
+
     [Header("Current Level")]
     [SerializeField] private int currentLevel = 1;
 
@@ -25,6 +28,19 @@ public class CookingStationUpgrade : MonoBehaviour
     private void Start()
     {
         ApplyLevelVisuals(false);
+        RefreshAvailableIndicator();
+    }
+
+    // ??? ???? ???? ?????? ???? ??? ?? ???? ??? ????? ?????? ??
+    private void RefreshAvailableIndicator()
+    {
+        if (availableIndicator == null)
+            return;
+
+        if (CanUpgrade())
+            availableIndicator.Show();
+        else
+            availableIndicator.Hide();
     }
 
     public bool CanUpgrade()
@@ -34,16 +50,19 @@ public class CookingStationUpgrade : MonoBehaviour
 
     public void Upgrade()
     {
-        if (!CanUpgrade())
-            return;
+        if (!CanUpgrade()) return;
 
         currentLevel++;
         ApplyLevelVisuals(true);
         OnStationUpgraded?.Invoke(this);
+
+        // ??? ??? ???? ?? ???? ????? ?????? ??? ?? ???? ?? ?? ?????? ????? ???? ???? ?????? ???
+        RefreshAvailableIndicator();
     }
 
     private void ApplyLevelVisuals(bool playEffect)
     {
+        // ??? ??? ????? ?? ??? ???? ?? ???? ??
         for (int i = 0; i < levelModels.Length; i++)
         {
             if (levelModels[i] != null)
@@ -54,11 +73,8 @@ public class CookingStationUpgrade : MonoBehaviour
 
         if (playEffect)
         {
-            if (upgradeEffect != null)
-                upgradeEffect.Play();
-
-            if (upgradeSound != null)
-                upgradeSound.Play();
+            if (upgradeEffect != null) upgradeEffect.Play();
+            if (upgradeSound != null) upgradeSound.Play();
         }
     }
 
