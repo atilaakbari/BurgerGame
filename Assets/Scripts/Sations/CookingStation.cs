@@ -1,77 +1,68 @@
-using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class CookingStation : MonoBehaviour
 {
     [Header("Player")]
     [SerializeField] private PlayerPickup playerPickup;
 
-    [Header("Cooking")]
-    [SerializeField] private float cookingTime = 5f;
+    [Header("Pans (????? CookingSlot ??? ??? ?? 3 ??? ??? ?? ????? ???)")]
+    [SerializeField] private CookingSlot[] pans;
 
-    [Header("Items")]
+    [Header("Item")]
     [SerializeField] private GameObject cookedPattyPrefab;
-
-    [Header("Timer UI")]
-    [SerializeField] private GameObject timerObject;
-    [SerializeField] private Image timerFill;
-    [SerializeField] private GameObject timerTick;
-    [SerializeField] private float TickDelay;
-
-    [SerializeField] private Color cookingColor = Color.red;
-    [SerializeField] private Color readyColor = Color.green;
-
-    [Header("Animation")]
-    [SerializeField] private Animator cookingAnimator;
-    [SerializeField] private GameObject animationRawPatty;
-    [SerializeField] private GameObject animationCookedPatty;
-
-    private bool isCooking = false;
-    private bool cookedReady = false;
-
-
-    private void Start()
-    {
-        if (timerObject != null)
-            timerObject.SetActive(false);
-
-        if (timerTick != null)
-            timerTick.SetActive(false);
-
-        if (animationRawPatty != null)
-            animationRawPatty.SetActive(false);
-
-        if (animationCookedPatty != null)
-            animationCookedPatty.SetActive(false);
-    }
 
     private void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag("Player"))
             return;
 
+        // ???: ??? ?? ?? ????? ? ???? ?????? ?????
+        CookingSlot readySlot = GetActiveReadySlot();
 
-        // ??? ???? ???? ????? ???
-        if (cookedReady)
+        if (readySlot != null)
         {
-            TakeCookedPatty();
+            TakeCookedPatty(readySlot);
             return;
         }
 
+        // ???: ??? ???? ??? ????? ???? ?? ?? ?? ???? ? ????
+        TryPlaceRawPatty();
+    }
 
-        // ??? ?? ??? ??? ???
-        if (isCooking)
+    // ==========================================================
+    // ??? ??????? ?? ???? ???? ?? ???? ????? (???? ?????? ??????) ?? ?? ??? ????????.
+    // ??? CookingStationUpgrade ???? ?? ??? ?? ??? ?? SetActive/??????? ???????
+    // ?????? ??????? ??? ?????? ??????? ???? ??????? ??????? - ????? ?? ????? ???? ????.
+    // ==========================================================
+
+    private CookingSlot GetActiveReadySlot()
+    {
+        foreach (CookingSlot slot in pans)
         {
-            Debug.Log("Patty is still cooking!");
-            return;
+            if (slot != null && slot.gameObject.activeInHierarchy && slot.IsReady)
+                return slot;
         }
 
+        return null;
+    }
 
+    private CookingSlot GetActiveEmptySlot()
+    {
+        foreach (CookingSlot slot in pans)
+        {
+            if (slot != null && slot.gameObject.activeInHierarchy && slot.IsEmpty)
+                return slot;
+        }
 
-        // ????? ???? ????? ???
+        return null;
+    }
+
+    private void TryPlaceRawPatty()
+    {
+        if (playerPickup == null)
+            return;
+
         GameObject topItem = playerPickup.GetTopItem();
-
 
         if (topItem == null)
         {
@@ -79,152 +70,58 @@ public class CookingStation : MonoBehaviour
             return;
         }
 
+        Item itemData = topItem.GetComponent<Item>();
 
-
-        Item itemData =
-            topItem.GetComponent<Item>();
-
-
-        if (itemData == null)
-            return;
-
-
-
-        // ??? RawPatty
-        if (itemData.Type != ItemType.RawPatty)
+        if (itemData == null || itemData.Type != ItemType.RawPatty)
         {
             Debug.Log("Top item is not Raw Patty!");
             return;
         }
 
+        CookingSlot emptySlot = GetActiveEmptySlot();
 
+        if (emptySlot == null)
+        {
+            Debug.Log("All pans are busy or locked!");
+            return;
+        }
 
-        // ??? ???? ???? ????
-        GameObject rawPatty =
-            playerPickup.RemoveTopItem();
-
-
+        GameObject rawPatty = playerPickup.RemoveTopItem();
 
         if (rawPatty == null)
             return;
 
-        if (isCooking == false)
-        {
-            Destroy(rawPatty);
+        Destroy(rawPatty);
 
-
-            StartCoroutine(CookPatty());
-        }
-        else { return; }
+        emptySlot.TryStartCooking();
     }
 
-
-    private IEnumerator CookPatty()
+    private void TakeCookedPatty(CookingSlot slot)
     {
-        isCooking = true;
-
-        if (cookingAnimator != null)
-            cookingAnimator.SetBool("IsCooking", true);
-
-        if (timerObject != null)
-            timerObject.SetActive(true);
-
-        if (timerTick != null)
-            timerTick.SetActive(false);
-
-        if (animationRawPatty != null)
-            animationRawPatty.SetActive(true);
-
-        if (timerFill != null)
-            timerFill.fillAmount = 0f;
-
-        float timer = 0f;
-
-        while (timer < cookingTime)
-        {
-            timer += Time.deltaTime;
-
-            // ???? ?????? ???
-            float progress = timer / cookingTime;
-
-            // ?? ??? ?????
-            if (timerFill != null)
-            {
-                timerFill.fillAmount = progress;
-                timerFill.color = Color.Lerp(Color.red, Color.green, progress);
-            }
-
-            yield return null;
-        }
-
-        if (timerFill != null)
-        {
-            timerFill.fillAmount = 1f;
-            timerFill.color = Color.green;
-        }
-
-        if (cookingAnimator != null)
-            cookingAnimator.SetBool("IsCooking", false);
-
-        cookedReady = true;
-
-        if (animationRawPatty != null)
-            animationRawPatty.SetActive(false);
-
-        if (animationCookedPatty != null)
-            animationCookedPatty.SetActive(true);
-
-        isCooking = false;
-
-        yield return new WaitForSeconds(TickDelay);
-
-        if (timerTick != null)
-            timerTick.SetActive(true);
-    }
-
-
-
-    private void TakeCookedPatty()
-    {
-        // ??? ???? ????? ????
-        if (!cookedReady)
-            return;
-
-        // ??? Inventory ?? ???
-        if (!playerPickup.HasSpace)
+        if (playerPickup == null || !playerPickup.HasSpace)
         {
             Debug.Log("Inventory is Full!");
             return;
         }
 
-        // ???? ???? ????
-        GameObject cookedItem =
-            Instantiate(cookedPattyPrefab);
+        if (cookedPattyPrefab == null)
+        {
+            Debug.LogError("Cooked Patty Prefab is not assigned!");
+            return;
+        }
 
-        // ???? ???? ?????
-        bool success =
-            playerPickup.TryPickup(cookedItem);
+        GameObject cookedItem = Instantiate(cookedPattyPrefab);
+
+        bool success = playerPickup.TryPickup(cookedItem);
 
         if (success)
         {
-            // Station ???? ??????
-            cookedReady = false;
-
-            // ???? ???? ?????
-            timerObject.SetActive(false);
-            animationCookedPatty.SetActive(false);
-            // ?????????? ??? ???? ???? ??? ????
-            timerFill.color = cookingColor;
-
-            // ?????????? ????? ?????
-            timerFill.fillAmount = 0f;
-
+            slot.Collect();
             Debug.Log("Cooked Patty Picked Up!");
         }
         else
         {
             Destroy(cookedItem);
-
             Debug.Log("Could not pickup Cooked Patty!");
         }
     }

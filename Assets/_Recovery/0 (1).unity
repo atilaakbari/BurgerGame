@@ -466,6 +466,17 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 10, y: 2.220446e-16, z: 10}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &124447395 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4699206846115110268, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+  m_PrefabInstance: {fileID: 6835377534877077281}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: beca30b4cb22f5f40b989c9d67d962e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CookingSlot
 --- !u!4 &138765155 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6243235114162809188, guid: 7ef327d448950cf45adf3e69fa26d607, type: 3}
@@ -1109,6 +1120,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2326906701069503557, guid: 1df3cc021996a924db641a446bec5a2f, type: 3}
   m_PrefabInstance: {fileID: 2077694860373800708}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &702704225 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7990404336122242369, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+  m_PrefabInstance: {fileID: 6835377534877077281}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: beca30b4cb22f5f40b989c9d67d962e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CookingSlot
 --- !u!4 &788306656 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2761886734534171372, guid: 13d6996f39d347b468f17b3aa71e4a5e, type: 3}
@@ -1205,6 +1227,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1581669670986828702, guid: 11c8bc1e7924bca40926599db5538e33, type: 3}
   m_PrefabInstance: {fileID: 6187970426116544122}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &881502439 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 603794137016719154, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+  m_PrefabInstance: {fileID: 6835377534877077281}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: beca30b4cb22f5f40b989c9d67d962e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CookingSlot
 --- !u!4 &885450217 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 994249701265874383, guid: 4e506c2abc23edd42acb8f786893d5a0, type: 3}
@@ -1515,6 +1548,17 @@ MonoBehaviour:
   spawnPoint: {fileID: 301486427}
   queueManager: {fileID: 1392063095}
   spawnDelay: 5
+--- !u!114 &1283247536 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8711424566374608289, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+  m_PrefabInstance: {fileID: 6835377534877077281}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: beca30b4cb22f5f40b989c9d67d962e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CookingSlot
 --- !u!4 &1289313948 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2434530026948219932, guid: c34147408e0dbaa4f83368da005f5127, type: 3}
@@ -1797,11 +1841,33 @@ Transform:
   - {fileID: 2094980604}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1497842937 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1919464116868646089, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+  m_PrefabInstance: {fileID: 6835377534877077281}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: beca30b4cb22f5f40b989c9d67d962e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CookingSlot
 --- !u!4 &1556279876 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3057259208476378608, guid: 3c672279b40f0ec4eba528e72ab44127, type: 3}
   m_PrefabInstance: {fileID: 1796036968313557635}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1556375766 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8316201993521700303, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+  m_PrefabInstance: {fileID: 6835377534877077281}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: beca30b4cb22f5f40b989c9d67d962e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CookingSlot
 --- !u!1 &1677995856
 GameObject:
   m_ObjectHideFlags: 0
@@ -1939,6 +2005,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 611653360}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1881364616 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8215702592900034142, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+  m_PrefabInstance: {fileID: 6835377534877077281}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b7ab50e1a4d9494f8e594a94abec278, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CookingStationUpgrade
 --- !u!1 &1884155512
 GameObject:
   m_ObjectHideFlags: 0
@@ -3023,9 +3100,89 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 330585545}
     - target: {fileID: 2428600319369575452, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: upgrade
+      value: 
+      objectReference: {fileID: 1881364616}
+    - target: {fileID: 2428600319369575452, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: timerFill
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2428600319369575452, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: timerTick
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2428600319369575452, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: timerObject
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2428600319369575452, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
       propertyPath: playerPickup
       value: 
       objectReference: {fileID: 1899444984}
+    - target: {fileID: 2428600319369575452, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: cookingAnimator
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2428600319369575452, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: pans.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2428600319369575452, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: slots.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2428600319369575452, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: cookedPattyPrefab
+      value: 
+      objectReference: {fileID: 6337022802076854787, guid: 6eb83535262103040b06e150fa85f286, type: 3}
+    - target: {fileID: 2428600319369575452, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: 'pans.Array.data[0]'
+      value: 
+      objectReference: {fileID: 124447395}
+    - target: {fileID: 2428600319369575452, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: 'pans.Array.data[1]'
+      value: 
+      objectReference: {fileID: 881502439}
+    - target: {fileID: 2428600319369575452, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: 'pans.Array.data[2]'
+      value: 
+      objectReference: {fileID: 702704225}
+    - target: {fileID: 2428600319369575452, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: 'pans.Array.data[3]'
+      value: 
+      objectReference: {fileID: 1283247536}
+    - target: {fileID: 2428600319369575452, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: 'pans.Array.data[4]'
+      value: 
+      objectReference: {fileID: 1556375766}
+    - target: {fileID: 2428600319369575452, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: 'pans.Array.data[5]'
+      value: 
+      objectReference: {fileID: 1497842937}
+    - target: {fileID: 2428600319369575452, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: 'slots.Array.data[0]'
+      value: 
+      objectReference: {fileID: 124447395}
+    - target: {fileID: 2428600319369575452, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: 'slots.Array.data[1]'
+      value: 
+      objectReference: {fileID: 881502439}
+    - target: {fileID: 2428600319369575452, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: 'slots.Array.data[2]'
+      value: 
+      objectReference: {fileID: 702704225}
+    - target: {fileID: 2428600319369575452, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: 'slots.Array.data[3]'
+      value: 
+      objectReference: {fileID: 124447395}
+    - target: {fileID: 2428600319369575452, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: 'slots.Array.data[4]'
+      value: 
+      objectReference: {fileID: 124447395}
+    - target: {fileID: 2428600319369575452, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: 'slots.Array.data[5]'
+      value: 
+      objectReference: {fileID: 124447395}
     - target: {fileID: 2882937124746315773, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
       propertyPath: m_LocalScale.x
       value: 100
@@ -3049,6 +3206,14 @@ PrefabInstance:
     - target: {fileID: 7267585024697441366, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
       propertyPath: m_Name
       value: Cooking Station
+      objectReference: {fileID: 0}
+    - target: {fileID: 8087574911256222483, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 2.87
+      objectReference: {fileID: 0}
+    - target: {fileID: 8215702592900034142, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
+      propertyPath: currentLevel
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8238602148327638379, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3091,7 +3256,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 6920877517835704230, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e09ce4c2366e49c42be730ffcb685499, type: 3}

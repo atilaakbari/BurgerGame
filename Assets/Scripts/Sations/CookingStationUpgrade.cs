@@ -34,7 +34,8 @@ public class CookingStationUpgrade : MonoBehaviour
 
     public void Upgrade()
     {
-        if (!CanUpgrade()) return;
+        if (!CanUpgrade())
+            return;
 
         currentLevel++;
         ApplyLevelVisuals(true);
@@ -43,7 +44,6 @@ public class CookingStationUpgrade : MonoBehaviour
 
     private void ApplyLevelVisuals(bool playEffect)
     {
-        // ??? ??? ????? ?? ??? ???? ?? ???? ??
         for (int i = 0; i < levelModels.Length; i++)
         {
             if (levelModels[i] != null)
@@ -54,8 +54,11 @@ public class CookingStationUpgrade : MonoBehaviour
 
         if (playEffect)
         {
-            if (upgradeEffect != null) upgradeEffect.Play();
-            if (upgradeSound != null) upgradeSound.Play();
+            if (upgradeEffect != null)
+                upgradeEffect.Play();
+
+            if (upgradeSound != null)
+                upgradeSound.Play();
         }
     }
 
