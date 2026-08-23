@@ -9375,6 +9375,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CustomerOrderUI
       objectReference: {fileID: 0}
+    - target: {fileID: 4783993734226296255, guid: c9daba64c588f58479d70eaab733ae6f, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8897496816216051826, guid: c9daba64c588f58479d70eaab733ae6f, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

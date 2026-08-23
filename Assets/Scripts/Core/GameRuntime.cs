@@ -21,10 +21,10 @@ public static class GameRuntime
         QualitySettings.asyncUploadTimeSlice = 2;
         QualitySettings.asyncUploadBufferSize = 16;
 
-        if (Object.FindFirstObjectByType<MoneyHUD>() == null)
+        /*if (Object.FindFirstObjectByType<MoneyHUD>() == null)
         {
             GameObject hud = new GameObject("MoneyHUD");
             hud.AddComponent<MoneyHUD>();
-        }
+        }*/
     }
 }
