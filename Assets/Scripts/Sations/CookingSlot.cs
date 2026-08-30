@@ -97,6 +97,11 @@ public class CookingSlot : MonoBehaviour
         isReady = true;
         cookRoutine = null;
 
+        // Stop the cooking animation when the patty becomes ready so the
+        // animation ends at cook completion instead of when the player picks it up.
+        if (panAnimator != null)
+            panAnimator.ResetTrigger(cookTrigger);
+
         if (tickDelay > 0f)
             yield return new WaitForSeconds(tickDelay);
 
