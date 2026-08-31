@@ -1,18 +1,13 @@
 using System.Collections;
 using UnityEngine;
 
-// روی یه آبجکت خالی بالای استیشن بذار - هیچ Sprite ای هم لازم نیست از قبل بدی،
-// اگه iconSprite رو خالی بذاری خودش یه فلش رو به بالا می‌سازه.
+// این اسکریپت رو یا مستقیم روی خودِ فلشی که ساختی بذار،
+// یا رو یه آبجکت دیگه بذار و فلش رو تو فیلد arrow وصل کن.
+// هیچ چیزی خودکار ساخته نمی‌شه - فقط همون آبجکتی که بدی رو کنترل می‌کنه.
 public class UpgradeAvailableFX : MonoBehaviour
 {
-    [Header("Icon (اختیاری - اگه خالی بذاری خودش فلش می‌سازه)")]
-    [SerializeField] private Sprite iconSprite;
-    [SerializeField] private Color iconColor = Color.white;
-    [SerializeField] private float iconSize = 0.6f;
-    [SerializeField] private bool pointDown = true; // فلش رو به پایین (اشاره به استیشن)
-
-    [Header("یا اگه خودت یه Arrow تو صحنه ساختی، مستقیم اینجا وصلش کن")]
-    [SerializeField] private Transform manualArrow; // اگه پر باشه، به‌جای ساختن خودکار از همین استفاده می‌شه
+    [Header("Arrow (فلشی که خودت ساختی)")]
+    [SerializeField] private Transform arrow; // خالی بذاری = خودِ همین آبجکت در نظر گرفته می‌شه
 
     [Header("Bounce Down (پایین می‌ره و ارتفاعش کم می‌شه، بعد کامل برمی‌گرده حالت عادی)")]
     [SerializeField] private float bounceHeight = 0.2f;
@@ -24,106 +19,48 @@ public class UpgradeAvailableFX : MonoBehaviour
     [SerializeField] private float attentionScaleBoost = 1.3f;
     [SerializeField] private float attentionDuration = 0.25f;
 
-    private SpriteRenderer iconRenderer;
-    private Transform iconTransform;
+    private SpriteRenderer arrowRenderer; // اختیاریه - اگه نبود فقط SetActive استفاده می‌شه، بدون فید
     private Vector3 basePosition;
-    private Camera cam;
+    private Vector3 baseScale;
     private Coroutine loopRoutine;
     private Coroutine attentionRoutine;
     private float currentAttentionScale = 1f;
+    private bool isShown = true; // true فرض می‌کنیم که اولین Hide() تو Awake واقعاً اجرا بشه
 
     private void Awake()
     {
-        cam = Camera.main;
-        EnsureIcon();
-        basePosition = iconTransform.localPosition;
+        if (arrow == null)
+            arrow = transform;
+
+        arrowRenderer = arrow.GetComponent<SpriteRenderer>();
+
+        basePosition = arrow.localPosition;
+        baseScale = arrow.localScale;
+
         Hide(instant: true);
     }
 
-    /*private void LateUpdate()
-    {
-        if (cam == null)
-            cam = Camera.main;
-
-        if (cam != null && iconTransform != null && iconTransform.gameObject.activeInHierarchy)
-            iconTransform.forward = cam.transform.forward;
-    }*/
-
     // ==========================================================
-    // SELF-BUILD
+    // PUBLIC API
     // ==========================================================
-
-    private void EnsureIcon()
-    {
-        // اگه خودت یه Arrow تو صحنه ساختی و وصلش کردی، از همون استفاده کن
-        if (manualArrow != null)
-        {
-            iconTransform = manualArrow;
-            iconRenderer = manualArrow.GetComponent<SpriteRenderer>();
-            return;
-        }
-
-        GameObject iconObj = new GameObject("UpgradeIcon_Auto");
-        iconObj.transform.SetParent(transform, false);
-
-        iconRenderer = iconObj.AddComponent<SpriteRenderer>();
-        iconRenderer.sprite = iconSprite != null ? iconSprite : GenerateArrowSprite();
-        iconRenderer.color = iconColor;
-        iconRenderer.sortingOrder = 500;
-        iconRenderer.flipY = pointDown; // فلش رو برعکس کن که به پایین اشاره کنه
-
-        iconTransform = iconObj.transform;
-        iconTransform.localScale = Vector3.one * iconSize;
-    }
-
-    // یه فلش ساده رو به بالا می‌سازه، بدون نیاز به هیچ فایل عکسی
-    private Sprite GenerateArrowSprite()
-    {
-        int size = 128;
-        Texture2D tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
-        Color clear = new Color(0f, 0f, 0f, 0f);
-
-        for (int y = 0; y < size; y++)
-            for (int x = 0; x < size; x++)
-                tex.SetPixel(x, y, clear);
-
-        Vector2 center = new Vector2(size / 2f, size / 2f);
-
-        for (int y = 0; y < size; y++)
-        {
-            for (int x = 0; x < size; x++)
-            {
-                float nx = (x - center.x) / (size * 0.5f);
-                float ny = (y - center.y) / (size * 0.5f);
-
-                bool inTriangle =
-                    ny > 0.1f && ny < 0.9f &&
-                    Mathf.Abs(nx) < (0.9f - ny) * 0.9f;
-
-                bool inStem =
-                    ny <= 0.1f && ny > -0.7f &&
-                    Mathf.Abs(nx) < 0.22f;
-
-                if (inTriangle || inStem)
-                    tex.SetPixel(x, y, Color.white);
-            }
-        }
-
-        tex.Apply();
-
-        return Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f);
-    }
-
-    // ==========================================================
-    // PUBLIC API (همون قبلی - نیازی نیست CookingStationUpgrade عوض بشه)
-    // ==========================================================
+    // این دوتا متد رو هر چندبار که بخوای می‌تونی صدا بزنی (حتی هر فریم) -
+    // خودشون تشخیص می‌دن که آیا الان لازمه کاری بشه یا نه.
 
     public void Show()
     {
-        gameObject.SetActive(true);
+        if (isShown)
+            return; // از قبل نشون داده شده، کاری لازم نیست
 
-        if (iconTransform != null)
-            iconTransform.gameObject.SetActive(true);
+        isShown = true;
+
+        // نکته‌ی حیاتی: اگه خودِ آبجکتی که این اسکریپت روشه غیرفعال باشه، نمیشه روش Coroutine ران کرد
+        if (!gameObject.activeSelf)
+            gameObject.SetActive(true);
+
+        if (arrow == null)
+            arrow = transform;
+
+        arrow.gameObject.SetActive(true);
 
         if (loopRoutine != null) StopCoroutine(loopRoutine);
         if (attentionRoutine != null) StopCoroutine(attentionRoutine);
@@ -134,12 +71,18 @@ public class UpgradeAvailableFX : MonoBehaviour
 
     public void Hide(bool instant = false)
     {
+        if (!isShown && !instant)
+            return; // از قبل مخفیه، کاری لازم نیست
+
+        isShown = false;
+
         if (loopRoutine != null) { StopCoroutine(loopRoutine); loopRoutine = null; }
         if (attentionRoutine != null) { StopCoroutine(attentionRoutine); attentionRoutine = null; }
 
-        if (instant)
+        // اگه رندرر نداره یا خواستی فوری خاموش شه، مستقیم SetActive کن
+        if (instant || arrowRenderer == null)
         {
-            gameObject.SetActive(false);
+            arrow.gameObject.SetActive(false);
             return;
         }
 
@@ -154,18 +97,16 @@ public class UpgradeAvailableFX : MonoBehaviour
     {
         while (true)
         {
-            // downAmount بین 0 (بالا/حالت عادی) و 1 (پایین‌ترین نقطه) - مثل یه دایره کامل رفت‌وبرگشت
+            // downAmount بین 0 (بالا/حالت عادی) و 1 (پایین‌ترین نقطه)
             float downAmount = (1f - Mathf.Cos(Time.time * bounceSpeed)) * 0.5f;
 
-            // موقعیت: از حالت عادی می‌ره پایین و برمی‌گرده به همون حالت عادی
             float verticalOffset = -downAmount * bounceHeight;
-            iconTransform.localPosition = basePosition + Vector3.up * verticalOffset;
+            arrow.localPosition = basePosition + Vector3.up * verticalOffset;
 
-            // ارتفاع (اسکیل Y): وقتی پایین‌تره کم می‌شه (فشرده)، وقتی بالاست کاملاً عادیه (1)
             float heightScale = 1f - downAmount * squashAmount;
 
-            Vector3 finalScale = new Vector3(iconSize, iconSize * heightScale, iconSize) * currentAttentionScale;
-            iconTransform.localScale = finalScale;
+            Vector3 finalScale = new Vector3(baseScale.x, baseScale.y * heightScale, baseScale.z) * currentAttentionScale;
+            arrow.localScale = finalScale;
 
             yield return null;
         }
@@ -193,13 +134,7 @@ public class UpgradeAvailableFX : MonoBehaviour
 
     private IEnumerator FadeOutAndDisable()
     {
-        if (iconRenderer == null)
-        {
-            gameObject.SetActive(false);
-            yield break;
-        }
-
-        Color startColor = iconRenderer.color;
+        Color startColor = arrowRenderer.color;
         float t = 0f;
         float fadeTime = 0.2f;
 
@@ -208,11 +143,11 @@ public class UpgradeAvailableFX : MonoBehaviour
             t += Time.deltaTime;
             Color c = startColor;
             c.a = Mathf.Lerp(startColor.a, 0f, t / fadeTime);
-            iconRenderer.color = c;
+            arrowRenderer.color = c;
             yield return null;
         }
 
-        iconRenderer.color = startColor;
-        gameObject.SetActive(false);
+        arrowRenderer.color = startColor;
+        arrow.gameObject.SetActive(false);
     }
 }

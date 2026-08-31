@@ -1996,7 +1996,9 @@ MonoBehaviour:
   upgradeEffect: {fileID: 0}
   upgradeSound: {fileID: 0}
   availableIndicator: {fileID: 3463005801347433746}
+  upgradeButton: {fileID: 0}
   currentLevel: 1
+  isUpgradeAvailable: 0
 --- !u!1 &4221758686793456179
 GameObject:
   m_ObjectHideFlags: 0
@@ -2794,11 +2796,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 169013a90b466344ca1056c2adaab410, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeAvailableFX
-  iconSprite: {fileID: 0}
-  iconColor: {r: 0.8584906, g: 0.76964456, b: 0, a: 1}
-  iconSize: 0.6
-  pointDown: 1
-  manualArrow: {fileID: 8693024109649394402}
+  arrow: {fileID: 8693024109649394402}
   bounceHeight: 0.2
   bounceSpeed: 2
   squashAmount: 0.3
