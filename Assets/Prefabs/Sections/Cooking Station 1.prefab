@@ -873,7 +873,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a41b8a429e09a984584b5953d11ea4b2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: fa836dd455a7d9e43acae3b2185bf8a6, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1969,6 +1969,7 @@ MonoBehaviour:
   - {fileID: 8316201993521700303}
   - {fileID: 1919464116868646089}
   cookedPattyPrefab: {fileID: 6337022802076854787, guid: 6eb83535262103040b06e150fa85f286, type: 3}
+  pickupButton: {fileID: 0}
 --- !u!114 &8215702592900034142
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1998,7 +1999,7 @@ MonoBehaviour:
   availableIndicator: {fileID: 3463005801347433746}
   upgradeButton: {fileID: 0}
   currentLevel: 1
-  isUpgradeAvailable: 0
+  cookingStation: {fileID: 2428600319369575452}
 --- !u!1 &4221758686793456179
 GameObject:
   m_ObjectHideFlags: 0
@@ -4083,15 +4084,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CookingSlot
   rawPatty: {fileID: 6100159578686699376}
   cookedPatty: {fileID: 2949585440418244029}
-  panAnimator: {fileID: 7188978894721613154}
-  cookTrigger: IsCooking
-  cookTime: 5
   timerObject: {fileID: 7248835352405699692}
   timerFill: {fileID: 2694218534689443173}
   timerTick: {fileID: 1875402084792028223}
   tickDelay: 0.2
   cookingColor: {r: 1, g: 0, b: 0, a: 1}
   readyColor: {r: 0, g: 1, b: 0, a: 1}
+  panAnimator: {fileID: 7188978894721613154}
+  cookingBool: IsCooking
+  cookingTime: 5
 --- !u!4 &8295224757918528681 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7881466077556996133, guid: 84142f67b0359b5448c5af192402b4da, type: 3}
@@ -4456,15 +4457,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CookingSlot
   rawPatty: {fileID: 8545829611503204058}
   cookedPatty: {fileID: 4980077303506787295}
-  panAnimator: {fileID: 1378815175687544652}
-  cookTrigger: IsCooking
-  cookTime: 5
   timerObject: {fileID: 8497304206917297465}
   timerFill: {fileID: 1137943147394411407}
   timerTick: {fileID: 2742400218493163071}
   tickDelay: 0.2
   cookingColor: {r: 1, g: 0, b: 0, a: 1}
   readyColor: {r: 0, g: 1, b: 0, a: 1}
+  panAnimator: {fileID: 1378815175687544652}
+  cookingBool: IsCooking
+  cookingTime: 5
 --- !u!4 &7537712909242844358 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -3772961514412039258, guid: 84142f67b0359b5448c5af192402b4da, type: 3}
@@ -4778,15 +4779,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CookingSlot
   rawPatty: {fileID: 5352692904131444363}
   cookedPatty: {fileID: 8480718090706096773}
-  panAnimator: {fileID: 2358357463234761835}
-  cookTrigger: IsCooking
-  cookTime: 5
   timerObject: {fileID: 2259984057396978631}
   timerFill: {fileID: 472045115902734151}
   timerTick: {fileID: 7944159850580719865}
   tickDelay: 0.2
   cookingColor: {r: 1, g: 0, b: 0, a: 1}
   readyColor: {r: 0, g: 1, b: 0, a: 1}
+  panAnimator: {fileID: 2358357463234761835}
+  cookingBool: IsCooking
+  cookingTime: 5
 --- !u!4 &6227401144882780859 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7881466077556996133, guid: 84142f67b0359b5448c5af192402b4da, type: 3}
@@ -4914,15 +4915,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CookingSlot
   rawPatty: {fileID: 2244901169226334006}
   cookedPatty: {fileID: 2447181366107545000}
-  panAnimator: {fileID: 8677969553081815755}
-  cookTrigger: IsCooking
-  cookTime: 5
   timerObject: {fileID: 5955248516070939758}
   timerFill: {fileID: 2235583514749628912}
   timerTick: {fileID: 7906808997995705924}
   tickDelay: 0.2
   cookingColor: {r: 1, g: 0, b: 0, a: 1}
   readyColor: {r: 0, g: 1, b: 0, a: 1}
+  panAnimator: {fileID: 8677969553081815755}
+  cookingBool: IsCooking
+  cookingTime: 5
 --- !u!1 &7091139558355473336 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -6186434824166685914, guid: 84142f67b0359b5448c5af192402b4da, type: 3}
@@ -5062,15 +5063,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CookingSlot
   rawPatty: {fileID: 1393711646120553329}
   cookedPatty: {fileID: 6465488671455565176}
-  panAnimator: {fileID: 6762024293308069673}
-  cookTrigger: IsCooking
-  cookTime: 5
   timerObject: {fileID: 8901501986235476602}
   timerFill: {fileID: 6503199530601139991}
   timerTick: {fileID: 8127643386671210900}
   tickDelay: 0.2
   cookingColor: {r: 1, g: 0, b: 0, a: 1}
   readyColor: {r: 0, g: 1, b: 0, a: 1}
+  panAnimator: {fileID: 6762024293308069673}
+  cookingBool: IsCooking
+  cookingTime: 5
 --- !u!4 &3900106812242726236 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7881466077556996133, guid: 84142f67b0359b5448c5af192402b4da, type: 3}
@@ -5554,15 +5555,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CookingSlot
   rawPatty: {fileID: 794402605885445617}
   cookedPatty: {fileID: 3176493426599333958}
-  panAnimator: {fileID: 1137495335901588213}
-  cookTrigger: IsCooking
-  cookTime: 5
   timerObject: {fileID: 875028461177942112}
   timerFill: {fileID: 443179120332764653}
   timerTick: {fileID: 113190507767542351}
   tickDelay: 0.2
   cookingColor: {r: 1, g: 0, b: 0, a: 1}
   readyColor: {r: 0, g: 1, b: 0, a: 1}
+  panAnimator: {fileID: 1137495335901588213}
+  cookingBool: IsCooking
+  cookingTime: 5
 --- !u!4 &1539345508404599873 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7881466077556996133, guid: 84142f67b0359b5448c5af192402b4da, type: 3}

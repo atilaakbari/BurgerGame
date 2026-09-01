@@ -1,5 +1,6 @@
-using UnityEngine;
 using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class CookingStationUpgrade : MonoBehaviour
 {
@@ -22,6 +23,9 @@ public class CookingStationUpgrade : MonoBehaviour
 
     [Header("Current Level")]
     [SerializeField] private int currentLevel = 1;
+
+    [Header("Cooking Station (برای انتقال پتی‌ها)")]
+    [SerializeField] private CookingStation cookingStation;
 
     public int CurrentLevel => currentLevel;
     public int MaxSlots => currentLevel;
@@ -112,11 +116,22 @@ public class CookingStationUpgrade : MonoBehaviour
 
     public void Upgrade()
     {
-        if (!CanUpgrade() || forceUpgradeOff) return;
+        if (!CanUpgrade() || forceUpgradeOff)
+            return;
 
+        // 1) وضعیت فعلی رو ذخیره کن
+        List<CookingSlot.SlotState> savedStates = null;
+        if (cookingStation != null)
+            savedStates = cookingStation.CaptureAllActiveStates();
+
+        // 2) سطح رو ببر بالا و مدل رو عوض کن
         currentLevel++;
         ApplyLevelVisuals(true);
         OnStationUpgraded?.Invoke(this);
+
+        // 3) وضعیت‌ها رو روی اسلات‌های جدید برگردون
+        if (cookingStation != null && savedStates != null)
+            cookingStation.RestoreStates(savedStates);
 
         RefreshUpgradeState();
     }
