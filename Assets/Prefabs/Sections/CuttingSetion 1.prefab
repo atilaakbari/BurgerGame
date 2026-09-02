@@ -2054,6 +2054,17 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  pickupButtonIcons:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  itemIcons:
+  - type: 8
+    sprite: {fileID: 21300000, guid: 921938248c501f646a879deb554e6c95, type: 3}
+  - type: 10
+    sprite: {fileID: 21300000, guid: 199625c0ea541f94caabd12d814297f1, type: 3}
+  - type: 6
+    sprite: {fileID: 21300000, guid: 2d48283536700c74f9c017b640a94877, type: 3}
 --- !u!114 &8606906908726169917
 MonoBehaviour:
   m_ObjectHideFlags: 0

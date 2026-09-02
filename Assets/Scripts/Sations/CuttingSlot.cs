@@ -39,6 +39,20 @@ public class CuttingSlot : MonoBehaviour
         ResetSlot();
     }
 
+    // اضافه شد: نوع آیتمِ خروجیِ آماده رو برمی‌گردونه (برای آیکون دکمه‌ی پیکاپ)
+    public ItemType GetReadyItemType()
+    {
+        if (readyOutputs.Count == 0)
+            return ItemType.None;
+
+        GameObject item = readyOutputs[0];
+        if (item == null)
+            return ItemType.None;
+
+        Item itemData = item.GetComponent<Item>();
+        return itemData != null ? itemData.Type : ItemType.None;
+    }
+
     public bool TryStartCutting(GameObject inputItem, CuttingStation.CuttingRecipe recipe)
     {
         if (!IsEmpty || inputItem == null || recipe == null) return false;
@@ -67,8 +81,6 @@ public class CuttingSlot : MonoBehaviour
         return true;
     }
 
-    // اضافه شد: خودِ آبجکت ورودی رو هم می‌گیره، نه فقط progress
-    // بدون این پارامتر، آیتم موقع ارتقا گم می‌شد (رو تخته‌ی قدیمیِ غیرفعال جا می‌موند)
     public bool ResumeCutting(CuttingStation.CuttingRecipe recipe, float progress, GameObject inputItem)
     {
         if (!IsEmpty || recipe == null) return false;
@@ -99,7 +111,6 @@ public class CuttingSlot : MonoBehaviour
         return true;
     }
 
-    // منطق جاگذاری آیتم رو تخته - از TryStartCutting جدا شد که تو ResumeCutting هم قابل استفاده باشه
     private void PlaceInputOnBoard(GameObject inputItem, CuttingStation.CuttingRecipe recipe)
     {
         inputItem.transform.SetParent(boardPoint, false);
@@ -283,7 +294,7 @@ public class CuttingSlot : MonoBehaviour
         public SlotStateType type;
         public float progress;
         public ItemType inputType;
-        public GameObject inputItem; // اضافه شد: خودِ آبجکت واقعیِ در حال برش (اگه isCutting بود)
+        public GameObject inputItem;
     }
 
     public SlotState CaptureState()
@@ -303,11 +314,9 @@ public class CuttingSlot : MonoBehaviour
                 type = SlotStateType.Cutting,
                 progress = currentProgress,
                 inputType = currentRecipe != null ? currentRecipe.inputType : ItemType.None,
-                inputItem = currentInputItem // خودِ آبجکت رو منتقل می‌کنیم
+                inputItem = currentInputItem
             };
 
-            // مالکیت این آیتم منتقل شد به state - این Slot دیگه نگه‌ش نداره
-            // (که یعنی وقتی این Slot غیرفعال بشه، آیتم destroy نمی‌شه چون دیگه رفرنسش اینجا نیست)
             currentInputItem = null;
 
             return state;

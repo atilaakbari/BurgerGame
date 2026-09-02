@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CuttingStation : MonoBehaviour
 {
@@ -25,6 +26,12 @@ public class CuttingStation : MonoBehaviour
 
     [Header("Pickup Buttons")]
     [SerializeField] private GameObject[] pickupButtons;
+
+    [Header("Pickup Button Icons (هم‌ایندکس با pickupButtons)")]
+    [SerializeField] private Image[] pickupButtonIcons;
+
+    [Header("Item Icons (همون چیزی که تو OrderUI هم استفاده کردی)")]
+    [SerializeField] private List<ItemIconData> itemIcons;
 
     private bool playerInside;
 
@@ -79,7 +86,30 @@ public class CuttingStation : MonoBehaviour
             CuttingSlot slot = GetActiveReadySlot(i);
             bool show = playerInside && slot != null;
             pickupButtons[i].SetActive(show);
+
+            // اضافه شد: آیکونِ همون چیزی که بریده شده رو رو دکمه بذار
+            if (show && pickupButtonIcons != null && i < pickupButtonIcons.Length && pickupButtonIcons[i] != null)
+            {
+                Sprite sprite = GetIconSprite(slot.GetReadyItemType());
+
+                if (sprite != null)
+                    pickupButtonIcons[i].sprite = sprite;
+            }
         }
+    }
+
+    private Sprite GetIconSprite(ItemType type)
+    {
+        if (itemIcons == null)
+            return null;
+
+        foreach (ItemIconData data in itemIcons)
+        {
+            if (data.type == type)
+                return data.sprite;
+        }
+
+        return null;
     }
 
     // ========== انتقال وضعیت ==========
