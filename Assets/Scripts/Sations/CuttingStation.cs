@@ -1,676 +1,200 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class CuttingStation : MonoBehaviour
 {
     [System.Serializable]
     public class CuttingRecipe
     {
-        [Header("Input")]
         public ItemType inputType;
-
-        [Header("Output")]
         public GameObject outputPrefab;
-
-        [Min(1)]
-        public int outputCount = 1;
-
-        [Header("Cutting Time")]
+        [Min(1)] public int outputCount = 1;
         public float cuttingTime = 3f;
-
-        [Header("Input On Board")]
         public Vector3 inputScaleOnBoard = Vector3.one;
-
-        [Header("Output On Board")]
         public Vector3 outputScaleOnBoard = Vector3.one;
     }
 
-
     [Header("Player")]
-    [SerializeField]
-    private PlayerPickup playerPickup;
+    [SerializeField] private PlayerPickup playerPickup;
 
-
-    [Header("Cutting Point")]
-    [SerializeField]
-    private Transform cuttingPoint;
-
+    [Header("Slots (دو تا تخته برش)")]
+    [SerializeField] private CuttingSlot[] slots;
 
     [Header("Recipes")]
-    [SerializeField]
-    private CuttingRecipe[] recipes;
+    [SerializeField] private CuttingRecipe[] recipes;
 
+    [Header("Pickup Buttons")]
+    [SerializeField] private GameObject[] pickupButtons;
 
-    [Header("Knife Animation")]
-    [SerializeField]
-    private Animator cuttingAnimator;
-
-
-    [Header("Timer")]
-    [SerializeField]
-    private GameObject timerObject;
-
-    [SerializeField]
-    private Image timerFill;
-
-
-    [Header("Ready Check")]
-    [SerializeField]
-    private GameObject checkMark;
-
-
-    // ???? ???? ?? ??? ???? ?? ??? ??? ??? ???
-    private GameObject currentCuttingItem;
-
-
-    // ?????????? ?? ??? ???? ????? ??????? ?????
-    private List<GameObject> readyOutputs =
-        new List<GameObject>();
-
-
-    private CuttingRecipe currentRecipe;
-
-
-    private bool isCutting = false;
-
-
-    // =========================================
-    // START
-    // =========================================
+    private bool playerInside;
 
     private void Start()
     {
-        if (timerObject != null)
-        {
-            timerObject.SetActive(false);
-        }
-
-        if (checkMark != null)
-        {
-            checkMark.SetActive(false);
-        }
+        if (pickupButtons != null)
+            for (int i = 0; i < pickupButtons.Length; i++)
+                if (pickupButtons[i] != null) pickupButtons[i].SetActive(false);
     }
 
-
-    // =========================================
-    // PLAYER ENTER
-    // =========================================
+    private void Update()
+    {
+        RefreshPickupButtons();
+    }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag("Player"))
-            return;
+        if (!other.CompareTag("Player")) return;
 
-
-        // ??? ?? ??? ??? ???
-        if (isCutting)
-        {
-            Debug.Log(
-                "Cutting is still in progress!"
-            );
-
-            return;
-        }
-
-
-        // ??? ????? ????? ??? ???? ?????
-        if (readyOutputs.Count > 0)
-        {
-            TakeCutOutput();
-
-            return;
-        }
-
-
-        // ????? ???????? ???? ??? Player
-        GameObject topItem =
-            playerPickup.GetTopItem();
-
-
-        if (topItem == null)
-        {
-            Debug.Log(
-                "Player has no item!"
-            );
-
-            return;
-        }
-
-
-        // ????? Item Component
-        Item itemData =
-            topItem.GetComponent<Item>();
-
-
-        if (itemData == null)
-        {
-            Debug.Log(
-                "Top item has no Item component!"
-            );
-
-            return;
-        }
-
-
-        // ???? ???? Recipe
-        CuttingRecipe recipe =
-            FindRecipe(itemData.Type);
-
-
-        if (recipe == null)
-        {
-            Debug.Log(
-                "This item cannot be cut!"
-            );
-
-            return;
-        }
-
-
-        // ??????? ??? ???? ??????
-        GameObject inputItem =
-            playerPickup.RemoveTopItem();
-
-
-        if (inputItem == null)
-        {
-            return;
-        }
-
-
-        // ????? Recipe
-        currentRecipe =
-            recipe;
-
-
-        // ????? ???? ???
-        currentCuttingItem =
-            inputItem;
-
-
-        // ???? ???? ???? ??? ????
-        currentCuttingItem.transform.SetParent(
-            cuttingPoint
-        );
-
-
-        currentCuttingItem.transform.localPosition =
-            Vector3.zero;
-
-
-        currentCuttingItem.transform.localRotation =
-            Quaternion.identity;
-
-
-        // ????? ???? ???? ???
-        currentCuttingItem.transform.localScale =
-            currentRecipe.inputScaleOnBoard;
-
-
-        // ????? ???? ?????
-        Rigidbody rb =
-            currentCuttingItem.GetComponent<Rigidbody>();
-
-
-        if (rb != null)
-        {
-            rb.isKinematic = true;
-        }
-
-
-        // ????? ???? Collider
-        Collider col =
-            currentCuttingItem.GetComponent<Collider>();
-
-
-        if (col != null)
-        {
-            col.enabled = false;
-        }
-
-
-        // ???? ???
-        StartCoroutine(
-            CutItem()
-        );
+        playerInside = true;
+        TryPlaceItem();
+        RefreshPickupButtons();
     }
 
-
-    // =========================================
-    // FIND RECIPE
-    // =========================================
-
-    private CuttingRecipe FindRecipe(
-        ItemType itemType
-    )
+    private void OnTriggerExit(Collider other)
     {
-        foreach (
-            CuttingRecipe recipe
-            in recipes
-        )
+        if (!other.CompareTag("Player")) return;
+
+        playerInside = false;
+        RefreshPickupButtons();
+    }
+
+    public void OnPickupButtonPressed(int slotIndex)
+    {
+        if (slotIndex < 0 || slotIndex >= slots.Length) return;
+
+        CuttingSlot readySlot = GetActiveReadySlot(slotIndex);
+        if (readySlot == null) return;
+
+        TakeOneOutput(readySlot);
+        RefreshPickupButtons();
+    }
+
+    private void RefreshPickupButtons()
+    {
+        if (pickupButtons == null || slots == null) return;
+
+        for (int i = 0; i < pickupButtons.Length; i++)
         {
-            if (
-                recipe.inputType
-                ==
-                itemType
-            )
+            if (pickupButtons[i] == null) continue;
+
+            CuttingSlot slot = GetActiveReadySlot(i);
+            bool show = playerInside && slot != null;
+            pickupButtons[i].SetActive(show);
+        }
+    }
+
+    // ========== انتقال وضعیت ==========
+    public List<CuttingSlot.SlotState> CaptureAllActiveStates()
+    {
+        List<CuttingSlot.SlotState> states = new List<CuttingSlot.SlotState>();
+        foreach (CuttingSlot slot in slots)
+        {
+            if (slot != null && slot.gameObject.activeInHierarchy)
+                states.Add(slot.CaptureState());
+        }
+        return states;
+    }
+
+    public void RestoreStates(List<CuttingSlot.SlotState> states)
+    {
+        if (states == null || states.Count == 0) return;
+
+        List<CuttingSlot> activeSlots = new List<CuttingSlot>();
+        foreach (CuttingSlot slot in slots)
+        {
+            if (slot != null && slot.gameObject.activeInHierarchy)
             {
-                return recipe;
+                slot.ResetSlot();
+                activeSlots.Add(slot);
             }
         }
 
+        int targetIndex = 0;
+        for (int i = 0; i < states.Count; i++)
+        {
+            if (states[i].type == CuttingSlot.SlotStateType.Empty) continue;
 
+            if (targetIndex >= activeSlots.Count) break;
+
+            CuttingRecipe recipe = FindRecipe(states[i].inputType);
+            activeSlots[targetIndex].ApplyState(states[i], recipe);
+            targetIndex++;
+        }
+
+        RefreshPickupButtons();
+    }
+
+    private CuttingSlot GetActiveReadySlot(int index)
+    {
+        if (index < 0 || index >= slots.Length) return null;
+        return slots[index].IsReady ? slots[index] : null;
+    }
+
+    private CuttingSlot GetActiveEmptySlot()
+    {
+        foreach (CuttingSlot slot in slots)
+        {
+            if (slot != null && slot.gameObject.activeInHierarchy && slot.IsEmpty)
+                return slot;
+        }
         return null;
     }
 
-
-    // =========================================
-    // CUT ITEM
-    // =========================================
-
-    private IEnumerator CutItem()
+    private CuttingRecipe FindRecipe(ItemType type)
     {
-        isCutting = true;
-
-
-        Debug.Log(
-            "Cutting Started!"
-        );
-
-
-        // ???? ??????? ????
-        if (cuttingAnimator != null)
-        {
-            cuttingAnimator.SetBool(
-                "IsCutting",
-                true
-            );
-        }
-
-
-        // ????? ?????
-        if (timerObject != null)
-        {
-            timerObject.SetActive(true);
-        }
-
-
-        // Reset ?????
-        if (timerFill != null)
-        {
-            timerFill.fillAmount =
-                0f;
-
-            timerFill.color =
-                Color.red;
-        }
-
-
-        float timer = 0f;
-
-
-        // ????? ?????
-        while (
-            timer
-            <
-            currentRecipe.cuttingTime
-        )
-        {
-            timer +=
-                Time.deltaTime;
-
-
-            float progress =
-                timer
-                /
-                currentRecipe.cuttingTime;
-
-
-            progress =
-                Mathf.Clamp01(
-                    progress
-                );
-
-
-            // ?? ??? ?????
-            if (timerFill != null)
-            {
-                timerFill.fillAmount =
-                    progress;
-
-
-                // ???? ?? ???
-                timerFill.color =
-                    Color.Lerp(
-                        Color.red,
-                        Color.green,
-                        progress
-                    );
-            }
-
-
-            yield return null;
-        }
-
-
-        // ???? ??? ?????
-        if (timerFill != null)
-        {
-            timerFill.fillAmount =
-                1f;
-
-            timerFill.color =
-                Color.green;
-        }
-
-
-        // ????? ???? ??????? ????
-        if (cuttingAnimator != null)
-        {
-            cuttingAnimator.SetBool(
-                "IsCutting",
-                false
-            );
-        }
-
-
-        // ??? ???? ???
-        if (currentCuttingItem != null)
-        {
-            Destroy(
-                currentCuttingItem
-            );
-
-            currentCuttingItem =
-                null;
-        }
-
-
-        // ???? ???????? ??? ????
-        SpawnOutputsOnBoard();
-
-
-        // ????? ???
-        if (checkMark != null)
-        {
-            checkMark.SetActive(true);
-        }
-
-
-        isCutting = false;
-
-
-        Debug.Log(
-            "Cutting Complete!"
-        );
+        if (recipes == null) return null;
+        foreach (CuttingRecipe r in recipes)
+            if (r != null && r.inputType == type)
+                return r;
+        return null;
     }
 
-
-    // =========================================
-    // SPAWN OUTPUTS ON BOARD
-    // =========================================
-
-    private void SpawnOutputsOnBoard()
+    private void TryPlaceItem()
     {
-        // ??????? ?? ???? ???? ????
-        readyOutputs.Clear();
+        if (playerPickup == null) return;
 
+        GameObject topItem = playerPickup.GetTopItem();
+        if (topItem == null) return;
 
-        for (
-            int i = 0;
-            i < currentRecipe.outputCount;
-            i++
-        )
+        Item itemData = topItem.GetComponent<Item>();
+        if (itemData == null) return;
+
+        CuttingRecipe recipe = FindRecipe(itemData.Type);
+        if (recipe == null)
         {
-            // ???? ?????
-            GameObject output =
-                Instantiate(
-                    currentRecipe.outputPrefab,
-                    cuttingPoint
-                );
-
-
-            // ???? ???? ??? ????
-            output.transform.localRotation =
-                Quaternion.identity;
-
-
-            // ????? Scale
-            output.transform.localScale =
-                currentRecipe.outputScaleOnBoard;
-
-
-            // ???? ???? ????????
-            // ??? ??? ?? ????? ???? ??? ????
-            if (
-                currentRecipe.outputCount
-                ==
-                1
-            )
-            {
-                output.transform.localPosition =
-                    Vector3.zero;
-            }
-            else
-            {
-                // ???? ???????? ???? ??
-                float spacing =
-                    0.15f;
-
-
-                float startX =
-                    -(
-                        (
-                            currentRecipe.outputCount
-                            - 1
-                        )
-                        *
-                        spacing
-                        /
-                        2f
-                    );
-
-
-                output.transform.localPosition =
-                    new Vector3(
-                        startX
-                        +
-                        (
-                            i
-                            *
-                            spacing
-                        ),
-                        0f,
-                        0f
-                    );
-            }
-
-
-            // ????? ???? ?????
-            Rigidbody rb =
-                output.GetComponent<Rigidbody>();
-
-
-            if (rb != null)
-            {
-                rb.isKinematic = true;
-            }
-
-
-            // ????? ???? Collider
-            Collider col =
-                output.GetComponent<Collider>();
-
-
-            if (col != null)
-            {
-                col.enabled = false;
-            }
-
-
-            // ????? ???? ?? ???? ????????? ?????
-            readyOutputs.Add(
-                output
-            );
-        }
-
-
-        Debug.Log(
-            "Outputs On Board: "
-            +
-            readyOutputs.Count
-        );
-    }
-
-
-    // =========================================
-    // TAKE OUTPUT
-    // =========================================
-
-    private void TakeCutOutput()
-    {
-        if (
-            readyOutputs.Count
-            <=
-            0
-        )
-        {
+            Debug.Log("این آیتم را نمی‌توان برش داد!");
             return;
         }
 
-
-        // ??? Inventory ?? ???
-        if (
-            !playerPickup.HasSpace
-        )
+        CuttingSlot emptySlot = GetActiveEmptySlot();
+        if (emptySlot == null)
         {
-            Debug.Log(
-                "Inventory is Full!"
-            );
-
+            Debug.Log("همه اسلات‌ها شلوغ هستند!");
             return;
         }
 
+        GameObject inputItem = playerPickup.RemoveTopItem();
+        if (inputItem == null) return;
 
-        // ????? ????? ????? ?? ????
-        GameObject outputItem =
-            readyOutputs[0];
+        emptySlot.TryStartCutting(inputItem, recipe);
+    }
 
-
-        // ??? ?? ????
-        readyOutputs.RemoveAt(0);
-
-
-        // ??? ???? ?? ????
-        outputItem.transform.SetParent(
-            null
-        );
-
-
-        // ???? ???? ?????
-        Rigidbody rb =
-            outputItem.GetComponent<Rigidbody>();
-
-
-        if (rb != null)
+    private void TakeOneOutput(CuttingSlot slot)
+    {
+        if (playerPickup == null || !playerPickup.HasSpace)
         {
-            rb.isKinematic = false;
+            Debug.Log("انبار پر است!");
+            return;
         }
 
+        if (!slot.TryTakeOneOutput(out GameObject outputItem))
+            return;
 
-        // ???? ???? Collider
-        Collider col =
-            outputItem.GetComponent<Collider>();
-
-
-        if (col != null)
-        {
-            col.enabled = true;
-        }
-
-
-        // ???? ?? ??? Player
-        bool success =
-            playerPickup.TryPickup(
-                outputItem
-            );
-
+        bool success = playerPickup.TryPickup(outputItem);
 
         if (!success)
         {
-            // ??? ??????? ???? Inventory ???
-            outputItem.transform.SetParent(
-                cuttingPoint
-            );
-
-
-            readyOutputs.Insert(
-                0,
-                outputItem
-            );
-
-
-            return;
+            Destroy(outputItem);
+            Debug.Log("نمی‌توان برش را برداشت!");
         }
-
-
-        Debug.Log(
-            "Output Picked Up!"
-        );
-
-
-        Debug.Log(
-            "Remaining Outputs: "
-            +
-            readyOutputs.Count
-        );
-
-
-        // ??? ???? ????? ?????
-        if (
-            readyOutputs.Count
-            >
-            0
-        )
-        {
-            return;
-        }
-
-
-        // ??? ???????? ??????? ????
-        currentRecipe =
-            null;
-
-
-        // ????? ???? ???
-        if (checkMark != null)
-        {
-            checkMark.SetActive(false);
-        }
-
-
-        // ????? ???? ?????
-        if (timerObject != null)
-        {
-            timerObject.SetActive(false);
-        }
-
-
-        // Reset ?????
-        if (timerFill != null)
-        {
-            timerFill.fillAmount =
-                0f;
-
-            timerFill.color =
-                Color.red;
-        }
-
-
-        Debug.Log(
-            "Cutting Station Ready!"
-        );
     }
 }
