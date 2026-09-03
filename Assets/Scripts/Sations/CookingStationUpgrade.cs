@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class CookingStationUpgrade : MonoBehaviour
 {
+    [Header("شناسه‌ی یکتا (حتماً برای هر استیشن فرق کنه - مثلاً \"CookingStation_1\")")]
+    [SerializeField] private string stationId;
+
     [Header("Models (1 Flame, 2 Flame, 3 Flame)")]
     [SerializeField] private GameObject[] levelModels;
 
@@ -31,9 +34,7 @@ public class CookingStationUpgrade : MonoBehaviour
     public int MaxSlots => currentLevel;
 
     private bool playerInside = false;
-
-    // --- اضافه شده ---
-    private bool forceUpgradeOff = false;   // با این می‌تونی اجباری false کنی
+    private bool forceUpgradeOff = false;
 
     public bool IsUpgradeAvailable => CanUpgrade() && !forceUpgradeOff;
 
@@ -41,6 +42,10 @@ public class CookingStationUpgrade : MonoBehaviour
 
     private void Start()
     {
+        // تو Start می‌خونیمش نه Awake - چون باید مطمئن باشیم SaveManager قبلش آماده شده
+        if (SaveManager.Instance != null)
+            currentLevel = SaveManager.Instance.GetStationLevel(stationId, currentLevel);
+
         ApplyLevelVisuals(false);
         RefreshUpgradeState();
     }
@@ -92,46 +97,37 @@ public class CookingStationUpgrade : MonoBehaviour
         return currentLevel < levelModels.Length;
     }
 
-    // ====================== متدهای جدید ======================
-
-    /// <summary>
-    /// آپگرید رو اجباری خاموش می‌کنه (IsUpgradeAvailable = false)
-    /// </summary>
     public void ForceDisableUpgrade()
     {
         forceUpgradeOff = true;
         RefreshUpgradeState();
     }
 
-    /// <summary>
-    /// دوباره اجازه آپگرید می‌ده (به شرطی که لول هنوز جا داشته باشه)
-    /// </summary>
     public void EnableUpgradeAgain()
     {
         forceUpgradeOff = false;
         RefreshUpgradeState();
     }
 
-    // ========================================================
-
     public void Upgrade()
     {
         if (!CanUpgrade() || forceUpgradeOff)
             return;
 
-        // 1) وضعیت فعلی رو ذخیره کن
         List<CookingSlot.SlotState> savedStates = null;
         if (cookingStation != null)
             savedStates = cookingStation.CaptureAllActiveStates();
 
-        // 2) سطح رو ببر بالا و مدل رو عوض کن
         currentLevel++;
         ApplyLevelVisuals(true);
         OnStationUpgraded?.Invoke(this);
 
-        // 3) وضعیت‌ها رو روی اسلات‌های جدید برگردون
         if (cookingStation != null && savedStates != null)
             cookingStation.RestoreStates(savedStates);
+
+        // سیو کردن لول جدید
+        if (SaveManager.Instance != null)
+            SaveManager.Instance.SetStationLevel(stationId, currentLevel);
 
         RefreshUpgradeState();
     }
@@ -171,11 +167,10 @@ public class CookingStationUpgrade : MonoBehaviour
     {
         currentLevel = Mathf.Clamp(level, 1, levelModels.Length);
         ApplyLevelVisuals(playEffect);
-        RefreshUpgradeState();
-    }
 
-    public void nooo() 
-    {
-        ForceDisableUpgrade();
+        if (SaveManager.Instance != null)
+            SaveManager.Instance.SetStationLevel(stationId, currentLevel);
+
+        RefreshUpgradeState();
     }
 }

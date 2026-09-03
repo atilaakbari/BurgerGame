@@ -9,8 +9,8 @@ public class GameSaveData
     // آپگرید همه‌ی استیشن‌ها (کوکینگ، کاتینگ، هر چی بعداً اضافه شد) با شناسه‌ی یکتا
     public List<StationSaveEntry> stationLevels = new List<StationSaveEntry>();
 
-    // شناسه‌ی همه‌ی UnlockZone هایی که قبلاً باز شدن
-    public List<string> unlockedZoneIds = new List<string>();
+    // وضعیت همه‌ی UnlockZone ها - هم باز شده یا نه، هم اگه نشده چقدر پول باقی مونده
+    public List<ZoneSaveEntry> zones = new List<ZoneSaveEntry>();
 }
 
 [Serializable]
@@ -18,4 +18,12 @@ public class StationSaveEntry
 {
     public string id;
     public int level;
+}
+
+[Serializable]
+public class ZoneSaveEntry
+{
+    public string id;
+    public bool unlocked;
+    public int remainingCost; // فقط وقتی unlocked=false معنی داره
 }

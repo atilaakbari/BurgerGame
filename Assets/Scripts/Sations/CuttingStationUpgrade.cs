@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class CuttingStationUpgrade : MonoBehaviour
 {
+    [Header("شناسه‌ی یکتا (حتماً برای هر استیشن فرق کنه - مثلاً \"CuttingStation_1\")")]
+    [SerializeField] private string stationId;
+
     [Header("Models (Level 1, Level 2)")]
     [SerializeField] private GameObject[] levelModels;
 
@@ -28,7 +31,6 @@ public class CuttingStationUpgrade : MonoBehaviour
     [SerializeField] private CuttingStation cuttingStation;
 
     public int CurrentLevel => currentLevel;
-    public int MaxSlots => currentLevel;
 
     private bool playerInside;
     private bool forceUpgradeOff;
@@ -39,6 +41,9 @@ public class CuttingStationUpgrade : MonoBehaviour
 
     private void Start()
     {
+        if (SaveManager.Instance != null)
+            currentLevel = SaveManager.Instance.GetStationLevel(stationId, currentLevel);
+
         ApplyLevelVisuals(false);
         RefreshUpgradeState();
     }
@@ -118,6 +123,9 @@ public class CuttingStationUpgrade : MonoBehaviour
         if (cuttingStation != null && savedStates != null)
             cuttingStation.RestoreStates(savedStates);
 
+        if (SaveManager.Instance != null)
+            SaveManager.Instance.SetStationLevel(stationId, currentLevel);
+
         RefreshUpgradeState();
     }
 
@@ -158,6 +166,10 @@ public class CuttingStationUpgrade : MonoBehaviour
     {
         currentLevel = Mathf.Clamp(level, 1, levelModels.Length);
         ApplyLevelVisuals(playEffect);
+
+        if (SaveManager.Instance != null)
+            SaveManager.Instance.SetStationLevel(stationId, currentLevel);
+
         RefreshUpgradeState();
     }
 }

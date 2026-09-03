@@ -1982,6 +1982,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b7ab50e1a4d9494f8e594a94abec278, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CookingStationUpgrade
+  stationId: CookingStation_1
   levelModels:
   - {fileID: 8136985749988497570}
   - {fileID: 2426637317602916302}

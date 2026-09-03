@@ -6,6 +6,9 @@ using UnityEngine.UI;
 // یه Collider با Is Trigger = true هم لازم داره که اندازه‌ی همون محدوده باشه.
 public class UnlockZone : MonoBehaviour
 {
+    [Header("شناسه‌ی یکتا (حتماً برای هر Zone فرق کنه - مثلاً \"Zone_TableArea2\")")]
+    [SerializeField] private string zoneId;
+
     [Header("Cost")]
     [SerializeField] private int totalCost = 500;
 
@@ -14,7 +17,7 @@ public class UnlockZone : MonoBehaviour
 
     [Header("UI (روی همون دکل زمینی)")]
     [SerializeField] private TextMeshProUGUI costText;
-    [SerializeField] private Image progressFill; // اختیاری - اگه یه دایره/نوار پیشرفت هم داری
+    [SerializeField] private Image progressFill; // اختیاری
 
     [Header("چیزی که باز می‌شه (دستگاه/مکان جدید - از اول باید غیرفعال باشه)")]
     [SerializeField] private GameObject[] objectsToReveal;
@@ -27,14 +30,26 @@ public class UnlockZone : MonoBehaviour
     [SerializeField] private AudioSource unlockSound;
 
     private int remainingCost;
-    private float unlockRate; // پول در ثانیه - از روی totalCost/unlockDuration محاسبه می‌شه
+    private float unlockRate;
     private float accumulator;
     private bool playerInside;
     private bool unlocked;
 
     private void Start()
     {
-        remainingCost = totalCost;
+        // اگه قبلاً باز شده بود (تو یه Session قبلی)، دیگه نیازی به هیچ منطقی نیست -
+        // مستقیم وضعیت بازشده رو بدون افکت/صدا اعمال کن
+        if (SaveManager.Instance != null && SaveManager.Instance.IsZoneUnlocked(zoneId))
+        {
+            ApplyUnlockedVisualsInstant();
+            return;
+        }
+
+        // وگرنه، اگه قبلاً یه مقدار پول خرجش شده بود، از همون‌جا ادامه بده نه از اول
+        remainingCost = SaveManager.Instance != null
+            ? SaveManager.Instance.GetZoneRemainingCost(zoneId, totalCost)
+            : totalCost;
+
         unlockRate = unlockDuration > 0f ? totalCost / unlockDuration : totalCost;
 
         UpdateUI();
@@ -62,8 +77,6 @@ public class UnlockZone : MonoBehaviour
             return;
 
         playerInside = false;
-
-        // وقتی پلیر می‌ره، مقدار جمع‌شده‌ی ناقصِ این فریم‌ها رو پاک کن که دفعه‌ی بعد از صفر شروع بشه
         accumulator = 0f;
     }
 
@@ -73,26 +86,32 @@ public class UnlockZone : MonoBehaviour
             return;
 
         accumulator += unlockRate * Time.deltaTime;
+        bool spentAnything = false;
 
-        // به‌جای کم کردن یه مقدار بزرگ یهویی، واحد به واحد کم می‌کنیم -
-        // این باعث می‌شه اگه پول پلیر وسط راه تموم بشه، دقیقاً همون‌جا که پولش ته کشیده متوقف بشه
         while (accumulator >= 1f && remainingCost > 0)
         {
             if (!MoneyManager.Instance.TrySpend(1))
             {
-                // پول پلیر تموم شده - همین‌جا صبر می‌کنیم تا دوباره پول بیاره
                 accumulator = 0f;
                 break;
             }
 
             remainingCost--;
             accumulator -= 1f;
+            spentAnything = true;
         }
 
         UpdateUI();
 
         if (remainingCost <= 0)
+        {
             Unlock();
+        }
+        else if (spentAnything && SaveManager.Instance != null)
+        {
+            // پیشرفت رو ذخیره کن که اگه پلیر همینجا بازی رو ببنده، دفعه‌ی بعد از همینجا ادامه بده
+            SaveManager.Instance.SetZoneProgress(zoneId, remainingCost);
+        }
     }
 
     private void UpdateUI()
@@ -108,6 +127,23 @@ public class UnlockZone : MonoBehaviour
     {
         unlocked = true;
 
+        ApplyUnlockedVisualsInstant();
+
+        if (unlockEffect != null)
+            unlockEffect.Play();
+
+        if (unlockSound != null)
+            unlockSound.Play();
+
+        if (SaveManager.Instance != null)
+            SaveManager.Instance.MarkZoneUnlocked(zoneId);
+    }
+
+    // این هم موقع باز شدن واقعی صدا زده می‌شه، هم موقع لود کردن یه Save که قبلاً باز شده بوده
+    private void ApplyUnlockedVisualsInstant()
+    {
+        unlocked = true;
+
         foreach (GameObject obj in objectsToHide)
         {
             if (obj != null)
@@ -119,11 +155,5 @@ public class UnlockZone : MonoBehaviour
             if (obj != null)
                 obj.SetActive(true);
         }
-
-        if (unlockEffect != null)
-            unlockEffect.Play();
-
-        if (unlockSound != null)
-            unlockSound.Play();
     }
 }

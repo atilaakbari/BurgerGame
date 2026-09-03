@@ -33,7 +33,6 @@ public class SaveManager : MonoBehaviour
 
     // رو موبایل، این دقیقاً همون لحظه‌ایه که پلیر داره از بازی خارج می‌شه -
     // چه با دکمه‌ی Home بره بیرون، چه سیستم عامل اپ رو Kill کنه.
-    // خیلی قابل‌اعتمادتر از OnApplicationQuit هست.
     private void OnApplicationPause(bool pauseStatus)
     {
         if (pauseStatus)
@@ -50,8 +49,6 @@ public class SaveManager : MonoBehaviour
     // API عمومی - بقیه‌ی اسکریپت‌ها فقط این‌ها رو صدا می‌زنن
     // ==========================================================
 
-    // این رو هر وقت یه چیزی تو بازی واقعاً عوض شد صدا بزن (نه هر فریم!)
-    // خودش یه تایمر کوتاه می‌ذاره تا اگه چند تغییر پشت‌سرهم اومد، یه‌جا سیو بشن
     public void RequestSave()
     {
         isDirty = true;
@@ -70,7 +67,6 @@ public class SaveManager : MonoBehaviour
         pendingSaveRoutine = null;
     }
 
-    // اگه یه‌جایی خواستی همین لحظه، بدون هیچ تاخیری سیو بشه (نه دیبانس)
     public void SaveImmediately()
     {
         isDirty = false;
@@ -96,7 +92,7 @@ public class SaveManager : MonoBehaviour
     }
 
     // ==========================================================
-    // کمک‌کننده‌های آماده برای Station Levels و Unlock Zones
+    // Station Levels
     // ==========================================================
 
     public int GetStationLevel(string stationId, int defaultLevel)
@@ -126,17 +122,68 @@ public class SaveManager : MonoBehaviour
         RequestSave();
     }
 
+    // ==========================================================
+    // Unlock Zones (هم وضعیت باز/بسته، هم پیشرفتِ پرداخت ناقص)
+    // ==========================================================
+
+    private ZoneSaveEntry FindZone(string zoneId)
+    {
+        foreach (ZoneSaveEntry entry in Data.zones)
+        {
+            if (entry.id == zoneId)
+                return entry;
+        }
+
+        return null;
+    }
+
     public bool IsZoneUnlocked(string zoneId)
     {
-        return Data.unlockedZoneIds.Contains(zoneId);
+        ZoneSaveEntry entry = FindZone(zoneId);
+        return entry != null && entry.unlocked;
+    }
+
+    // اگه هنوز باز نشده و قبلاً یه مقدار پول خرجش شده، همون مقدار باقی‌مونده رو برمی‌گردونه
+    public int GetZoneRemainingCost(string zoneId, int defaultCost)
+    {
+        ZoneSaveEntry entry = FindZone(zoneId);
+
+        if (entry != null && !entry.unlocked)
+            return entry.remainingCost;
+
+        return defaultCost;
+    }
+
+    // هر بار که پیشرفتِ پرداخت عوض شد (نه هر فریم لزوماً، ولی این تابع خودش دیبانس داره)
+    public void SetZoneProgress(string zoneId, int remainingCost)
+    {
+        ZoneSaveEntry entry = FindZone(zoneId);
+
+        if (entry == null)
+        {
+            entry = new ZoneSaveEntry { id = zoneId };
+            Data.zones.Add(entry);
+        }
+
+        entry.unlocked = false;
+        entry.remainingCost = remainingCost;
+
+        RequestSave();
     }
 
     public void MarkZoneUnlocked(string zoneId)
     {
-        if (!Data.unlockedZoneIds.Contains(zoneId))
+        ZoneSaveEntry entry = FindZone(zoneId);
+
+        if (entry == null)
         {
-            Data.unlockedZoneIds.Add(zoneId);
-            RequestSave();
+            entry = new ZoneSaveEntry { id = zoneId };
+            Data.zones.Add(entry);
         }
+
+        entry.unlocked = true;
+        entry.remainingCost = 0;
+
+        RequestSave();
     }
 }

@@ -2077,6 +2077,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57dbf9f2d4817d7418b095b5733af038, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CuttingStationUpgrade
+  stationId: CuttingStation_1
   levelModels:
   - {fileID: 1570272270577026746}
   - {fileID: 8965359726383128464}
