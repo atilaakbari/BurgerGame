@@ -31,22 +31,19 @@ public class SaveManager : MonoBehaviour
         Load();
     }
 
-    // رو موبایل، این دقیقاً همون لحظه‌ایه که پلیر داره از بازی خارج می‌شه -
-    // چه با دکمه‌ی Home بره بیرون، چه سیستم عامل اپ رو Kill کنه.
     private void OnApplicationPause(bool pauseStatus)
     {
         if (pauseStatus)
             SaveImmediately();
     }
 
-    // برای حالت PC / دسکتاپ
     private void OnApplicationQuit()
     {
         SaveImmediately();
     }
 
     // ==========================================================
-    // API عمومی - بقیه‌ی اسکریپت‌ها فقط این‌ها رو صدا می‌زنن
+    // API عمومی
     // ==========================================================
 
     public void RequestSave()
@@ -92,6 +89,36 @@ public class SaveManager : MonoBehaviour
     }
 
     // ==========================================================
+    // پاک کردن سیو (برای تست یا دکمه‌ی "شروع مجدد بازی")
+    // ==========================================================
+
+    // رو Inspector، رو کامپوننت SaveManager راست‌کلیک کن (یا رو سه‌نقطه‌ی بالای کامپوننت بزن)،
+    // گزینه‌ی "Delete Save (Reset Progress)" رو می‌بینی - هم تو Play Mode هم تو Editor کار می‌کنه.
+    [ContextMenu("Delete Save (Reset Progress)")]
+    public void DeleteSave()
+    {
+        if (File.Exists(SavePath))
+            File.Delete(SavePath);
+
+        Data = new GameSaveData();
+
+        Debug.Log("Save Deleted -> " + SavePath);
+
+        // نکته: آبجکت‌هایی که از قبل تو صحنه هستن مقدار قدیمی رو تو Start خودشون
+        // خونده بودن و خودکار عوض نمی‌شن؛ اگه می‌خوای همون لحظه همه‌چی صفر بشه،
+        // بعد از این متد صحنه رو Reload کن.
+    }
+
+    // اگه از کد (مثلاً دکمه‌ی "Reset" تو تنظیمات بازی) می‌خوای صدا بزنی و صحنه هم ریست بشه
+    public void DeleteSaveAndReloadScene()
+    {
+        DeleteSave();
+        UnityEngine.SceneManagement.SceneManager.LoadScene(
+            UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex
+        );
+    }
+
+    // ==========================================================
     // Station Levels
     // ==========================================================
 
@@ -123,7 +150,7 @@ public class SaveManager : MonoBehaviour
     }
 
     // ==========================================================
-    // Unlock Zones (هم وضعیت باز/بسته، هم پیشرفتِ پرداخت ناقص)
+    // Unlock Zones
     // ==========================================================
 
     private ZoneSaveEntry FindZone(string zoneId)
@@ -143,7 +170,6 @@ public class SaveManager : MonoBehaviour
         return entry != null && entry.unlocked;
     }
 
-    // اگه هنوز باز نشده و قبلاً یه مقدار پول خرجش شده، همون مقدار باقی‌مونده رو برمی‌گردونه
     public int GetZoneRemainingCost(string zoneId, int defaultCost)
     {
         ZoneSaveEntry entry = FindZone(zoneId);
@@ -154,7 +180,6 @@ public class SaveManager : MonoBehaviour
         return defaultCost;
     }
 
-    // هر بار که پیشرفتِ پرداخت عوض شد (نه هر فریم لزوماً، ولی این تابع خودش دیبانس داره)
     public void SetZoneProgress(string zoneId, int remainingCost)
     {
         ZoneSaveEntry entry = FindZone(zoneId);
@@ -184,6 +209,37 @@ public class SaveManager : MonoBehaviour
         entry.unlocked = true;
         entry.remainingCost = 0;
 
+        RequestSave();
+    }
+
+    // ==========================================================
+    // Money Piles (پول‌های نقدیِ رو زمین کنار ایستگاه‌ها)
+    // ==========================================================
+
+    public int GetStationMoneyPile(string stationId)
+    {
+        foreach (MoneyPileEntry entry in Data.moneyPiles)
+        {
+            if (entry.stationId == stationId)
+                return entry.amount;
+        }
+
+        return 0;
+    }
+
+    public void SetStationMoneyPile(string stationId, int amount)
+    {
+        foreach (MoneyPileEntry entry in Data.moneyPiles)
+        {
+            if (entry.stationId == stationId)
+            {
+                entry.amount = amount;
+                RequestSave();
+                return;
+            }
+        }
+
+        Data.moneyPiles.Add(new MoneyPileEntry { stationId = stationId, amount = amount });
         RequestSave();
     }
 }

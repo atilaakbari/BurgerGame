@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class DeliveryStation : MonoBehaviour
 {
+    [Header("شناسه‌ی یکتا (برای سیو پول‌های روی زمین - مثلاً \"DeliveryStation_1\")")]
+    [SerializeField] private string stationId;
+
     [Header("Player")]
     [SerializeField] private PlayerPickup playerPickup;
 
@@ -53,6 +56,19 @@ public class DeliveryStation : MonoBehaviour
             moneyPool = new GameObjectPool(moneyPrefab, transform, 24);
     }
 
+    private void Start()
+    {
+        // اگه پولی از Session قبلی رو زمین جا مونده بود (بازی بسته شده بدون این‌که بازیکن برداره)،
+        // همون‌جا دوباره بسازش که گم نشه
+        if (SaveManager.Instance != null)
+        {
+            int savedAmount = SaveManager.Instance.GetStationMoneyPile(stationId);
+
+            if (savedAmount > 0)
+                SpawnMoneyPile(savedAmount);
+        }
+    }
+
     public void RecycleMoney(GameObject moneyObject)
     {
         if (moneyObject == null)
@@ -86,7 +102,6 @@ public class DeliveryStation : MonoBehaviour
         if (playerPickup == null)
             return;
 
-        // ??? ???? ???? ???? ??? ??? ???
         if (deliveredBurger != null)
         {
             Debug.Log("Delivery table is busy!");
@@ -187,7 +202,6 @@ public class DeliveryStation : MonoBehaviour
         }
 
 
-        // ???? ?? ??? ???? ???? ??????
         GameObject burgerObject =
             playerPickup.RemoveTopItem();
 
@@ -195,7 +209,6 @@ public class DeliveryStation : MonoBehaviour
             return;
 
 
-        // ??????? ???? ?? ??? ????????
         deliveredBurger =
             burgerObject;
 
@@ -207,7 +220,6 @@ public class DeliveryStation : MonoBehaviour
         deliveredCustomer.SetQueueManager(queueManager);
 
 
-        // ???? ??? ??? ???? ???????
         burgerObject.transform.SetParent(
             deliveryBurgerPoint
         );
@@ -219,12 +231,10 @@ public class DeliveryStation : MonoBehaviour
             Quaternion.identity;
 
 
-        // Scale ????? ???? ??? ???
         burgerObject.transform.localScale =
             burgerTableScale;
 
 
-        // Rigidbody
         Rigidbody rb =
             burgerObject.GetComponent<Rigidbody>();
 
@@ -240,7 +250,6 @@ public class DeliveryStation : MonoBehaviour
         }
 
 
-        // Collider
         Collider col =
             burgerObject.GetComponent<Collider>();
 
@@ -250,7 +259,6 @@ public class DeliveryStation : MonoBehaviour
         }
 
 
-        // Order UI ???? ???
         customer.HideOrder();
 
         SpawnDeliveryMoney();
@@ -260,15 +268,6 @@ public class DeliveryStation : MonoBehaviour
         Debug.Log(
             "Burger delivered to table!"
         );
-
-
-        // =================================================
-        // ????? ???? ????? ????? ???:
-        //
-        // 1. ??? Spawn ???
-        // 2. ????? ??? ????
-        // 3. ????? ???? ?? ??????
-        // =================================================
     }
 
 
@@ -288,11 +287,6 @@ public class DeliveryStation : MonoBehaviour
     }
 
 
-    // =====================================================
-    // CLEAR DELIVERED BURGER
-    // ??? ??? ?? ????? ???? Customer ???? ?? ?????? ??? ???????
-    // =====================================================
-
     public void ClearDeliveredBurger()
     {
         deliveredBurger = null;
@@ -311,7 +305,7 @@ public class DeliveryStation : MonoBehaviour
     {
         if (burger.Count != order.Count)
             return false;
-            
+
 
 
         for (int i = 0; i < burger.Count; i++)
@@ -359,73 +353,53 @@ public class DeliveryStation : MonoBehaviour
             return;
         }
 
-
-        // =========================================
-        // MONEY VALUE
-        // =========================================
-
-        const int moneyValue = 5;
-
         int orderPrice = order.price;
 
+        SpawnMoneyPile(orderPrice);
+    }
+
+    // این متد جدیده: هم از SpawnDeliveryMoney استفاده می‌شه، هم موقع Load کردن سیو
+    // (که یه مقدار پول از قبل مونده رو باید دوباره بسازیم)
+    private void SpawnMoneyPile(int totalValue)
+    {
         int moneyCount =
-            orderPrice / moneyValue;
+            totalValue / MoneyBillValue;
 
 
         if (moneyCount <= 0)
         {
             Debug.LogWarning(
-                "Order price is too low to spawn money!"
+                "Amount is too low to spawn money!"
             );
 
             return;
         }
 
 
-        // =========================================
-        // CLEAR OLD MONEY
-        // =========================================
-
         RecycleMoneyList(spawnedMoney);
 
-
-        // =========================================
-        // MAX MONEY PER LAYER
-        // =========================================
 
         int moneyPerLayer =
             moneyColumns * moneyRows;
 
 
-        // =========================================
-        // SPAWN MONEY
-        // =========================================
-
         for (int i = 0; i < moneyCount; i++)
         {
-            // ????? ????
             int layer =
                 i / moneyPerLayer;
 
 
-            // ????? ???? ???? ????
             int indexInLayer =
                 i % moneyPerLayer;
 
 
-            // ????
             int column =
                 indexInLayer % moneyColumns;
 
 
-            // ????
             int row =
                 indexInLayer / moneyColumns;
 
-
-            // =====================================
-            // CENTER THE RECTANGLE
-            // =====================================
 
             float offsetX =
                 (column -
@@ -451,16 +425,11 @@ public class DeliveryStation : MonoBehaviour
                 );
 
 
-            // ????? ?????? ???? ?? ?????? ?????
             Vector3 spawnPosition =
                 moneyPoint.TransformPoint(
                     localOffset
                 );
 
-
-            // =====================================
-            // SPAWN
-            // =====================================
 
             GameObject moneyObject = SpawnMoneyBill(
                 spawnPosition,
@@ -485,12 +454,12 @@ public class DeliveryStation : MonoBehaviour
 
         waitingForMoney = true;
 
+        // مقدار واقعیِ روی زمین رو سیو کن (ممکنه به‌خاطر باقیمونده‌ی تقسیم، دقیقاً totalValue نباشه)
+        SyncMoneyPileToSave();
 
         Debug.Log(
-            "Spawned " +
-            moneyCount +
-            " money objects. Total value = " +
-            orderPrice
+            "Spawned money pile. Total value = " +
+            (spawnedMoney.Count * MoneyBillValue)
         );
     }
 
@@ -505,6 +474,16 @@ public class DeliveryStation : MonoBehaviour
 
         if (spawnedMoney.Count == 0)
             waitingForMoney = false;
+
+        SyncMoneyPileToSave();
+    }
+
+    private void SyncMoneyPileToSave()
+    {
+        if (SaveManager.Instance == null)
+            return;
+
+        SaveManager.Instance.SetStationMoneyPile(stationId, spawnedMoney.Count * MoneyBillValue);
     }
 
     public void SpawnEatingMoney(
@@ -561,11 +540,6 @@ public class DeliveryStation : MonoBehaviour
             return;
         }
 
-
-        // =========================================
-        // MONEY VALUE
-        // =========================================
-
         const int moneyValue = 5;
 
         int eatingMoney =
@@ -584,37 +558,19 @@ public class DeliveryStation : MonoBehaviour
             eatingCustomer = customer;
             waitingForEatingMoney = false;
 
-           // customer.OnEatingMoneyCollected();
-
             return;
         }
 
 
-        // =========================================
-        // CLEAR OLD EATING MONEY
-        // =========================================
-
         RecycleMoneyList(spawnedEatingMoney);
 
-
-        // =========================================
-        // SAVE CUSTOMER
-        // =========================================
 
         eatingCustomer = customer;
 
 
-        // =========================================
-        // MONEY PER LAYER
-        // =========================================
-
         int moneyPerLayer =
             moneyColumns * moneyRows;
 
-
-        // =========================================
-        // SPAWN
-        // =========================================
 
         for (int i = 0; i < moneyCount; i++)
         {
@@ -634,7 +590,6 @@ public class DeliveryStation : MonoBehaviour
                 indexInLayer / moneyColumns;
 
 
-            // Center rectangle
             float offsetX =
                 (column -
                 (moneyColumns - 1) * 0.5f)
@@ -695,6 +650,9 @@ public class DeliveryStation : MonoBehaviour
             " eating money. Total value = " +
             (moneyCount * moneyValue)
         );
+
+        // توجه: پول غذاخوریِ رو زمین کنار میزها فعلاً جزو این سیو نیست (چون به میز خاصی وابسته‌ست).
+        // اگه خواستی اونم اضافه کنیم، بگو تا با شناسه‌ی میز هم پیاده‌ش کنیم.
     }
 
     public void OnEatingMoneyCollected(DeliveryMoney collectedMoney)

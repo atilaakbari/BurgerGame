@@ -37,15 +37,12 @@ public class UnlockZone : MonoBehaviour
 
     private void Start()
     {
-        // اگه قبلاً باز شده بود (تو یه Session قبلی)، دیگه نیازی به هیچ منطقی نیست -
-        // مستقیم وضعیت بازشده رو بدون افکت/صدا اعمال کن
         if (SaveManager.Instance != null && SaveManager.Instance.IsZoneUnlocked(zoneId))
         {
             ApplyUnlockedVisualsInstant();
             return;
         }
 
-        // وگرنه، اگه قبلاً یه مقدار پول خرجش شده بود، از همون‌جا ادامه بده نه از اول
         remainingCost = SaveManager.Instance != null
             ? SaveManager.Instance.GetZoneRemainingCost(zoneId, totalCost)
             : totalCost;
@@ -109,7 +106,6 @@ public class UnlockZone : MonoBehaviour
         }
         else if (spentAnything && SaveManager.Instance != null)
         {
-            // پیشرفت رو ذخیره کن که اگه پلیر همینجا بازی رو ببنده، دفعه‌ی بعد از همینجا ادامه بده
             SaveManager.Instance.SetZoneProgress(zoneId, remainingCost);
         }
     }
@@ -139,7 +135,6 @@ public class UnlockZone : MonoBehaviour
             SaveManager.Instance.MarkZoneUnlocked(zoneId);
     }
 
-    // این هم موقع باز شدن واقعی صدا زده می‌شه، هم موقع لود کردن یه Save که قبلاً باز شده بوده
     private void ApplyUnlockedVisualsInstant()
     {
         unlocked = true;
