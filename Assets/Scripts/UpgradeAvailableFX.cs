@@ -9,10 +9,10 @@ public class UpgradeAvailableFX : MonoBehaviour
     [Header("Arrow (فلشی که خودت ساختی)")]
     [SerializeField] private Transform arrow; // خالی بذاری = خودِ همین آبجکت در نظر گرفته می‌شه
 
-    [Header("Bounce Down (پایین می‌ره و ارتفاعش کم می‌شه، بعد کامل برمی‌گرده حالت عادی)")]
+    [Header("Bounce Up (بالا می‌ره و ارتفاعش زیاد می‌شه، بعد کامل برمی‌گرده حالت عادی)")]
     [SerializeField] private float bounceHeight = 0.2f;
     [SerializeField] private float bounceSpeed = 2f;
-    [SerializeField] private float squashAmount = 0.3f; // وقتی پایین‌ترین نقطه‌ست، چقدر ارتفاعش کم بشه (0..1)
+    [SerializeField] private float stretchAmount = 0.3f; // وقتی بالاترین نقطه‌ست، چقدر ارتفاعش زیاد بشه (0..1)
 
     [Header("Attention Burst (هر چند ثانیه یه تاکید اضافه)")]
     [SerializeField] private float attentionInterval = 3f;
@@ -97,13 +97,13 @@ public class UpgradeAvailableFX : MonoBehaviour
     {
         while (true)
         {
-            // downAmount بین 0 (بالا/حالت عادی) و 1 (پایین‌ترین نقطه)
-            float downAmount = (1f - Mathf.Cos(Time.time * bounceSpeed)) * 0.5f;
+            // upAmount بین 0 (پایین/حالت عادی) و 1 (بالاترین نقطه)
+            float upAmount = (1f - Mathf.Cos(Time.time * bounceSpeed)) * 0.5f;
 
-            float verticalOffset = -downAmount * bounceHeight;
+            float verticalOffset = upAmount * bounceHeight;
             arrow.localPosition = basePosition + Vector3.up * verticalOffset;
 
-            float heightScale = 1f - downAmount * squashAmount;
+            float heightScale = 1f + upAmount * stretchAmount;
 
             Vector3 finalScale = new Vector3(baseScale.x, baseScale.y * heightScale, baseScale.z) * currentAttentionScale;
             arrow.localScale = finalScale;

@@ -33,6 +33,11 @@ public class CuttingStation : MonoBehaviour
     [Header("Item Icons (همون چیزی که تو OrderUI هم استفاده کردی)")]
     [SerializeField] private List<ItemIconData> itemIcons;
 
+    [Header("Button Layout (وسط‌چین کردن دکمه‌های فعال)")]
+    [SerializeField] private float buttonSpacing = 20f;   // فاصله بین دکمه‌ها
+    [SerializeField] private float buttonWidth = 100f;    // عرض واقعی دکمه‌هات رو اینجا بذار
+
+
     private bool playerInside;
 
     private void Start()
@@ -77,6 +82,7 @@ public class CuttingStation : MonoBehaviour
 
     private void RefreshPickupButtons()
     {
+        
         if (pickupButtons == null || slots == null) return;
 
         for (int i = 0; i < pickupButtons.Length; i++)
@@ -227,4 +233,5 @@ public class CuttingStation : MonoBehaviour
             Debug.Log("نمی‌توان برش را برداشت!");
         }
     }
+
 }

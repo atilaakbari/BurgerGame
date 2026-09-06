@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BurgerAssemblyStation : MonoBehaviour
 {
@@ -15,6 +16,16 @@ public class BurgerAssemblyStation : MonoBehaviour
     [Header("Stack")]
     [SerializeField] private float stackGap = 0.01f;
 
+    [Header("Place Button (دکمه‌ای که خودت می‌سازی)")]
+    [SerializeField] private GameObject placeButton;
+    [SerializeField] private Image placeButtonIcon;
+
+    [Header("Clear Button (وقتی رو میز حداقل یه آیتم باشه فعال می‌شه)")]
+    [SerializeField] private GameObject clearButton;
+
+    [Header("Item Icons (همون چیزی که تو OrderUI/CuttingStation هم استفاده کردی)")]
+    [SerializeField] private List<ItemIconData> itemIcons;
+
 
     private List<GameObject> burgerItems = new List<GameObject>();
 
@@ -22,6 +33,14 @@ public class BurgerAssemblyStation : MonoBehaviour
 
     private bool burgerClosed = false;
 
+    private bool playerInside = false;
+
+
+    private void Update()
+    {
+        RefreshPlaceButton();
+        RefreshClearButton();
+    }
 
 
     private void OnTriggerEnter(Collider other)
@@ -29,10 +48,77 @@ public class BurgerAssemblyStation : MonoBehaviour
         if (!other.CompareTag("Player"))
             return;
 
+        playerInside = true;
+    }
 
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (!other.CompareTag("Player"))
+            return;
+
+        playerInside = false;
+    }
+
+
+    // این متد رو به دکمه‌ی UI وصل کن (OnClick)
+    public void OnPlaceButtonPressed()
+    {
         PlaceItem();
     }
 
+
+    private void RefreshPlaceButton()
+    {
+        if (placeButton == null)
+            return;
+
+        GameObject topItem = playerPickup != null ? playerPickup.GetTopItem() : null;
+
+        bool show = playerInside && !burgerClosed && topItem != null;
+
+        placeButton.SetActive(show);
+
+        if (!show)
+            return;
+
+        if (placeButtonIcon == null)
+            return;
+
+        Item itemData = topItem.GetComponent<Item>();
+
+        if (itemData == null)
+            return;
+
+        Sprite sprite = GetIconSprite(itemData.Type);
+
+        if (sprite != null)
+            placeButtonIcon.sprite = sprite;
+    }
+
+
+    private Sprite GetIconSprite(ItemType type)
+    {
+        if (itemIcons == null)
+            return null;
+
+        foreach (ItemIconData data in itemIcons)
+        {
+            if (data.type == type)
+                return data.sprite;
+        }
+
+        return null;
+    }
+
+
+    private void RefreshClearButton()
+    {
+        if (clearButton == null)
+            return;
+
+        clearButton.SetActive(playerInside && burgerItems.Count > 0);
+    }
 
 
 
@@ -64,7 +150,7 @@ public class BurgerAssemblyStation : MonoBehaviour
         }
 
 
-        // ??? ???????? ???? ??? ????
+        // آیتم بالای دست پلیر
         GameObject item =
             playerPickup.GetTopItem();
 
@@ -79,7 +165,7 @@ public class BurgerAssemblyStation : MonoBehaviour
             return;
 
 
-        // ???? ???? ???? Assembly ????
+        // آیا این آیتم قابل Assembly هست
         if (!itemData.CanAssemble)
         {
             Debug.Log("Cannot assemble");
@@ -88,7 +174,7 @@ public class BurgerAssemblyStation : MonoBehaviour
 
 
         // ==========================================
-        // ????? ???? ???? Bottom Bun ????
+        // اولین آیتم باید حتما Bottom Bun باشه
         // ==========================================
 
         if (burgerItems.Count == 0)
@@ -110,8 +196,8 @@ public class BurgerAssemblyStation : MonoBehaviour
 
         if (itemData.Type == ItemType.BunTop)
         {
-            // ??? item ?? GetTopItem ?????
-            // ???? Top Bun ????? ???????? ???? ???.
+            // اگه item از GetTopItem گرفتیم
+            // یعنی Top Bun اولین آیتمی نیست که میذاره
 
             if (burgerItems.Count == 0)
             {
@@ -125,7 +211,7 @@ public class BurgerAssemblyStation : MonoBehaviour
 
 
         // ==========================================
-        // ??????? ???? ?? ???
+        // برداشتن آیتم از دست
         // ==========================================
 
         GameObject placedItem =
@@ -142,7 +228,7 @@ public class BurgerAssemblyStation : MonoBehaviour
 
 
         // ==========================================
-        // ???? ??? Burger
+        // بستن Burger
         // ==========================================
 
         if (itemData.Type == ItemType.BunTop)
@@ -250,7 +336,7 @@ public class BurgerAssemblyStation : MonoBehaviour
 
     public void ResetAssembly()
     {
-        // ??? ???? ???????? ???? ?? ??? ???
+        // پاک کردن همه‌ی آیتم‌های روی هم
         for (int i = burgerItems.Count - 1; i >= 0; i--)
         {
             GameObject item = burgerItems[i];
@@ -271,10 +357,20 @@ public class BurgerAssemblyStation : MonoBehaviour
         burgerClosed = false;
 
 
-        // ???? ??????? Burger
+        // ریست کردن Burger
         if (burger != null)
         {
             burger.ResetBurger();
+        }
+
+
+        // دیگه برگری آماده نیست - دکمه‌ی پیکاپ رو خاموش کن
+        BurgerPickupStation pickup =
+            GetComponent<BurgerPickupStation>();
+
+        if (pickup != null)
+        {
+            pickup.SetBurgerReady(false);
         }
 
 

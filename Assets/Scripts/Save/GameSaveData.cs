@@ -4,6 +4,9 @@ using System.Collections.Generic;
 [Serializable]
 public class GameSaveData
 {
+    public int playerLevel = 1;
+    public int currentXP = 0;
+
     public int money = 0;
 
     // آپگرید همه‌ی استیشن‌ها (کوکینگ، کاتینگ، هر چی بعداً اضافه شد) با شناسه‌ی یکتا
@@ -37,3 +40,4 @@ public class MoneyPileEntry
     public string stationId;
     public int amount; // مجموع ارزش پول‌های نقدیِ روی زمین این ایستگاه
 }
+

@@ -833,13 +833,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2169837738126764366}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 1, y: 0, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.54, y: 0.54, z: 0.54}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 627227075829901594}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 180, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -1987,6 +1987,12 @@ MonoBehaviour:
   - {fileID: 8136985749988497570}
   - {fileID: 2426637317602916302}
   - {fileID: 7282794901593629993}
+  upgradeCosts: 960000002c010000
+  costText: {fileID: 0}
+  upgradeButtonImage: {fileID: 0}
+  normalButtonColor: {r: 1, g: 1, b: 1, a: 1}
+  notEnoughMoneyColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.3
   filledStars:
   - {fileID: 2970787474611776206}
   - {fileID: 7463875290471488104}
@@ -2800,8 +2806,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeAvailableFX
   arrow: {fileID: 8693024109649394402}
   bounceHeight: 0.2
-  bounceSpeed: 2
-  squashAmount: 0.3
+  bounceSpeed: 3
+  stretchAmount: 0.3
   attentionInterval: 3
   attentionScaleBoost: 1.15
   attentionDuration: 0.25
@@ -3232,7 +3238,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 3.59}
+  m_AnchoredPosition: {x: 0, y: 3.35}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &8515826641288723000

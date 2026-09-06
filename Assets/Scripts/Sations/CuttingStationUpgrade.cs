@@ -1,6 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CuttingStationUpgrade : MonoBehaviour
 {
@@ -9,6 +12,18 @@ public class CuttingStationUpgrade : MonoBehaviour
 
     [Header("Models (Level 1, Level 2)")]
     [SerializeField] private GameObject[] levelModels;
+
+    [Header("Upgrade Cost (هزینه هر آپگرید - ایندکس 0 = هزینه رفتن از لول 1 به 2)")]
+    [SerializeField] private int[] upgradeCosts;
+
+    [Header("Cost Text (روی دکمه یا کنارش)")]
+    [SerializeField] private TextMeshProUGUI costText;
+
+    [Header("Button Visual (وقتی پول کافی نبود یه لحظه قرمز می‌شه)")]
+    [SerializeField] private Image upgradeButtonImage;
+    [SerializeField] private Color normalButtonColor = Color.white;
+    [SerializeField] private Color notEnoughMoneyColor = Color.red;
+    [SerializeField] private float flashDuration = 0.3f;
 
     [Header("Stars")]
     [SerializeField] private GameObject[] filledStars;
@@ -34,6 +49,7 @@ public class CuttingStationUpgrade : MonoBehaviour
 
     private bool playerInside;
     private bool forceUpgradeOff;
+    private Coroutine flashRoutine;
 
     public bool IsUpgradeAvailable => CanUpgrade() && !forceUpgradeOff;
 
@@ -82,6 +98,7 @@ public class CuttingStationUpgrade : MonoBehaviour
         }
 
         RefreshUpgradeButton();
+        RefreshCostText();
     }
 
     private void RefreshUpgradeButton()
@@ -90,9 +107,30 @@ public class CuttingStationUpgrade : MonoBehaviour
             upgradeButton.SetActive(playerInside && IsUpgradeAvailable);
     }
 
+    private void RefreshCostText()
+    {
+        if (costText == null)
+            return;
+
+        costText.text = CanUpgrade() ? GetCurrentUpgradeCost().ToString("N0") : "MAX";
+    }
+
     public bool CanUpgrade()
     {
         return levelModels != null && currentLevel < levelModels.Length;
+    }
+
+    public int GetCurrentUpgradeCost()
+    {
+        if (upgradeCosts == null)
+            return 0;
+
+        int index = currentLevel - 1;
+
+        if (index < 0 || index >= upgradeCosts.Length)
+            return 0;
+
+        return upgradeCosts[index];
     }
 
     public void ForceDisableUpgrade()
@@ -112,6 +150,14 @@ public class CuttingStationUpgrade : MonoBehaviour
         if (!CanUpgrade() || forceUpgradeOff)
             return;
 
+        int cost = GetCurrentUpgradeCost();
+
+        if (MoneyManager.Instance == null || !MoneyManager.Instance.TrySpend(cost))
+        {
+            FlashNotEnoughMoney();
+            return;
+        }
+
         List<CuttingSlot.SlotState> savedStates = null;
         if (cuttingStation != null)
             savedStates = cuttingStation.CaptureAllActiveStates();
@@ -127,6 +173,27 @@ public class CuttingStationUpgrade : MonoBehaviour
             SaveManager.Instance.SetStationLevel(stationId, currentLevel);
 
         RefreshUpgradeState();
+    }
+
+    private void FlashNotEnoughMoney()
+    {
+        if (upgradeButtonImage == null)
+            return;
+
+        if (flashRoutine != null)
+            StopCoroutine(flashRoutine);
+
+        flashRoutine = StartCoroutine(FlashRoutine());
+    }
+
+    private IEnumerator FlashRoutine()
+    {
+        upgradeButtonImage.color = notEnoughMoneyColor;
+
+        yield return new WaitForSeconds(flashDuration);
+
+        upgradeButtonImage.color = normalButtonColor;
+        flashRoutine = null;
     }
 
     private void ApplyLevelVisuals(bool playEffect)

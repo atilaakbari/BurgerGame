@@ -1,6 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CookingStationUpgrade : MonoBehaviour
 {
@@ -9,6 +12,18 @@ public class CookingStationUpgrade : MonoBehaviour
 
     [Header("Models (1 Flame, 2 Flame, 3 Flame)")]
     [SerializeField] private GameObject[] levelModels;
+
+    [Header("Upgrade Cost (هزینه هر آپگرید - ایندکس 0 = هزینه رفتن از لول 1 به 2)")]
+    [SerializeField] private int[] upgradeCosts;
+
+    [Header("Cost Text (روی دکمه یا کنارش)")]
+    [SerializeField] private TextMeshProUGUI costText;
+
+    [Header("Button Visual (وقتی پول کافی نبود یه لحظه قرمز می‌شه)")]
+    [SerializeField] private Image upgradeButtonImage;
+    [SerializeField] private Color normalButtonColor = Color.white;
+    [SerializeField] private Color notEnoughMoneyColor = Color.red;
+    [SerializeField] private float flashDuration = 0.3f;
 
     [Header("Stars")]
     [SerializeField] private GameObject[] filledStars;
@@ -35,6 +50,7 @@ public class CookingStationUpgrade : MonoBehaviour
 
     private bool playerInside = false;
     private bool forceUpgradeOff = false;
+    private Coroutine flashRoutine;
 
     public bool IsUpgradeAvailable => CanUpgrade() && !forceUpgradeOff;
 
@@ -42,7 +58,6 @@ public class CookingStationUpgrade : MonoBehaviour
 
     private void Start()
     {
-        // تو Start می‌خونیمش نه Awake - چون باید مطمئن باشیم SaveManager قبلش آماده شده
         if (SaveManager.Instance != null)
             currentLevel = SaveManager.Instance.GetStationLevel(stationId, currentLevel);
 
@@ -84,6 +99,7 @@ public class CookingStationUpgrade : MonoBehaviour
         }
 
         RefreshUpgradeButton();
+        RefreshCostText();
     }
 
     private void RefreshUpgradeButton()
@@ -92,9 +108,31 @@ public class CookingStationUpgrade : MonoBehaviour
             upgradeButton.SetActive(playerInside && IsUpgradeAvailable);
     }
 
+    private void RefreshCostText()
+    {
+        if (costText == null)
+            return;
+
+        costText.text = CanUpgrade() ? GetCurrentUpgradeCost().ToString("N0") : "MAX";
+    }
+
     public bool CanUpgrade()
     {
         return currentLevel < levelModels.Length;
+    }
+
+    // هزینه‌ی آپگرید از لول فعلی به لول بعدی
+    public int GetCurrentUpgradeCost()
+    {
+        if (upgradeCosts == null)
+            return 0;
+
+        int index = currentLevel - 1;
+
+        if (index < 0 || index >= upgradeCosts.Length)
+            return 0;
+
+        return upgradeCosts[index];
     }
 
     public void ForceDisableUpgrade()
@@ -114,6 +152,15 @@ public class CookingStationUpgrade : MonoBehaviour
         if (!CanUpgrade() || forceUpgradeOff)
             return;
 
+        int cost = GetCurrentUpgradeCost();
+
+        // پول کافی نیست - دکمه رو قرمز کن و بی‌خیال شو
+        if (MoneyManager.Instance == null || !MoneyManager.Instance.TrySpend(cost))
+        {
+            FlashNotEnoughMoney();
+            return;
+        }
+
         List<CookingSlot.SlotState> savedStates = null;
         if (cookingStation != null)
             savedStates = cookingStation.CaptureAllActiveStates();
@@ -125,11 +172,31 @@ public class CookingStationUpgrade : MonoBehaviour
         if (cookingStation != null && savedStates != null)
             cookingStation.RestoreStates(savedStates);
 
-        // سیو کردن لول جدید
         if (SaveManager.Instance != null)
             SaveManager.Instance.SetStationLevel(stationId, currentLevel);
 
         RefreshUpgradeState();
+    }
+
+    private void FlashNotEnoughMoney()
+    {
+        if (upgradeButtonImage == null)
+            return;
+
+        if (flashRoutine != null)
+            StopCoroutine(flashRoutine);
+
+        flashRoutine = StartCoroutine(FlashRoutine());
+    }
+
+    private IEnumerator FlashRoutine()
+    {
+        upgradeButtonImage.color = notEnoughMoneyColor;
+
+        yield return new WaitForSeconds(flashDuration);
+
+        upgradeButtonImage.color = normalButtonColor;
+        flashRoutine = null;
     }
 
     private void ApplyLevelVisuals(bool playEffect)

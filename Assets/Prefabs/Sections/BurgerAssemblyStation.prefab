@@ -132,6 +132,21 @@ MonoBehaviour:
   assemblyPoint: {fileID: 1581669670986828702}
   burger: {fileID: 7234324741025174136}
   stackGap: 0
+  placeButton: {fileID: 0}
+  placeButtonIcon: {fileID: 0}
+  itemIcons:
+  - type: 1
+    sprite: {fileID: 21300000, guid: 308763cf887bdc04e80cb6c3851a348c, type: 3}
+  - type: 2
+    sprite: {fileID: 21300000, guid: bcce3e9289161474e982a9538c5ba267, type: 3}
+  - type: 4
+    sprite: {fileID: 21300000, guid: 404db76725c592d4c99b27c4ff421b76, type: 3}
+  - type: 6
+    sprite: {fileID: 21300000, guid: 060c2c278d4dc30469ee3c2ce8f126ce, type: 3}
+  - type: 8
+    sprite: {fileID: 21300000, guid: 3ffcfc9cfe3239a4c977d73d7c995505, type: 3}
+  - type: 10
+    sprite: {fileID: 21300000, guid: ebdc1978e0989cf458a4f70a4e21252b, type: 3}
 --- !u!114 &1317567782151888849
 MonoBehaviour:
   m_ObjectHideFlags: 0

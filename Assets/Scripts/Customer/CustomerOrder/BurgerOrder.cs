@@ -15,4 +15,7 @@ public class BurgerOrder : ScriptableObject
 
     [Header("Eating")]
     public float eatingTime = 10f;
+
+    [Header("XP")]
+    public int xpReward = 15;   // هر برگر می‌تونه مقدار خودش رو داشته باشه
 }

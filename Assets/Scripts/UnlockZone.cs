@@ -29,6 +29,10 @@ public class UnlockZone : MonoBehaviour
     [SerializeField] private ParticleSystem unlockEffect;
     [SerializeField] private AudioSource unlockSound;
 
+
+    [Space]
+    [SerializeField] private int xp;
+
     private int remainingCost;
     private float unlockRate;
     private float accumulator;
@@ -133,6 +137,10 @@ public class UnlockZone : MonoBehaviour
 
         if (SaveManager.Instance != null)
             SaveManager.Instance.MarkZoneUnlocked(zoneId);
+
+        // XP برای تحویل موفق برگر
+    if (XPManager.Instance != null)
+        XPManager.Instance.AddXP(xp);   // مقدار رو خودت عوض کن
     }
 
     private void ApplyUnlockedVisualsInstant()

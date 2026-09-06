@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 
 public class DeliveryStation : MonoBehaviour
@@ -34,7 +35,6 @@ public class DeliveryStation : MonoBehaviour
     [SerializeField] private float moneySpacingX = 0.08f;
     [SerializeField] private float moneySpacingZ = 0.08f;
     [SerializeField] private float moneyLayerHeight = 0.025f;
-
     private List<GameObject> spawnedMoney = new List<GameObject>();
     private bool waitingForMoney;
 
@@ -262,6 +262,15 @@ public class DeliveryStation : MonoBehaviour
         customer.HideOrder();
 
         SpawnDeliveryMoney();
+
+        // XP برای تحویل موفق برگر
+// XP مخصوص همون برگر
+    if (XPManager.Instance != null && deliveredCustomer != null && deliveredCustomer.CurrentOrder != null)
+    {
+        int xp = deliveredCustomer.CurrentOrder.xpReward;
+        if (xp > 0)
+            XPManager.Instance.AddXP(xp);
+    }
 
         customer.TakeBurgerFromDelivery();
 

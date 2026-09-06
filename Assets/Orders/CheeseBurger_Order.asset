@@ -16,3 +16,4 @@ MonoBehaviour:
   price: 20
   eatingMoney: 5
   eatingTime: 7
+  xpReward: 5
