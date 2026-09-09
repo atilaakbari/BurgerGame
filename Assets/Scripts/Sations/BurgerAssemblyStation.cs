@@ -77,6 +77,15 @@ public class BurgerAssemblyStation : MonoBehaviour
 
         bool show = playerInside && !burgerClosed && topItem != null;
 
+        // اگه آیتمی که دستشه اصلاً قابل Assembly نیست، دکمه نیاد
+        if (show)
+        {
+            Item itemData = topItem.GetComponent<Item>();
+
+            if (itemData == null || !itemData.CanAssemble)
+                show = false;
+        }
+
         placeButton.SetActive(show);
 
         if (!show)
@@ -85,12 +94,12 @@ public class BurgerAssemblyStation : MonoBehaviour
         if (placeButtonIcon == null)
             return;
 
-        Item itemData = topItem.GetComponent<Item>();
+        Item iconItemData = topItem.GetComponent<Item>();
 
-        if (itemData == null)
+        if (iconItemData == null)
             return;
 
-        Sprite sprite = GetIconSprite(itemData.Type);
+        Sprite sprite = GetIconSprite(iconItemData.Type);
 
         if (sprite != null)
             placeButtonIcon.sprite = sprite;

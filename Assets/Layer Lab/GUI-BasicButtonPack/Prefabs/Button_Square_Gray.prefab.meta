@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 2b89b1a0bdd094a5fab45b23f2b305dd
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 365714
+  packageName: GUI - Basic Button Pack
+  packageVersion: 1.0
+  assetPath: Assets/Layer Lab/GUI-BasicButtonPack/Prefabs/Button_Square_Gray.prefab
+  uploadId: 874866

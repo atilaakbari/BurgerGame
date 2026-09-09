@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 7242d94eb13f6406cb30f3eb81b3cad0
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 365714
+  packageName: GUI - Basic Button Pack
+  packageVersion: 1.0
+  assetPath: Assets/Layer Lab/GUI-BasicButtonPack/Prefabs/Button_Round_OffWhite.prefab
+  uploadId: 874866

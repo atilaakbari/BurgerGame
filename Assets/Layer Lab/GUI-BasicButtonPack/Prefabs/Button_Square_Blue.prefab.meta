@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: d69e29f71f9c44196a1f13c3ad41894f
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 365714
+  packageName: GUI - Basic Button Pack
+  packageVersion: 1.0
+  assetPath: Assets/Layer Lab/GUI-BasicButtonPack/Prefabs/Button_Square_Blue.prefab
+  uploadId: 874866

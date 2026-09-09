@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 1a24565b0a3e346cda58457bfa9b5948
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 365714
+  packageName: GUI - Basic Button Pack
+  packageVersion: 1.0
+  assetPath: Assets/Layer Lab/GUI-BasicButtonPack/Prefabs/Button_Round_Rose.prefab
+  uploadId: 874866

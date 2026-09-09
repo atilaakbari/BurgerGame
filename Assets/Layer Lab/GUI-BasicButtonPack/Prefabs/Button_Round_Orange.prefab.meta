@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: d9d39dc4b033e4183a9c2e4021612980
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 365714
+  packageName: GUI - Basic Button Pack
+  packageVersion: 1.0
+  assetPath: Assets/Layer Lab/GUI-BasicButtonPack/Prefabs/Button_Round_Orange.prefab
+  uploadId: 874866

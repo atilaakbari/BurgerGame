@@ -57,6 +57,20 @@ public class PlayerPickup : MonoBehaviour
     public int AvailableSpace =>
     maxCarryCount - carriedItems.Count;
 
+    // ==============================
+    // اضافه شد: برای PlayerUpgradeStation - فقط همین دو تا جدیدن
+    // ==============================
+
+    public int MaxCarryCount => maxCarryCount;
+
+    public void IncreaseMaxCarryCount(int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        maxCarryCount += amount;
+    }
+
 
     // ==============================
     // PICKUP

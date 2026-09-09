@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: c5a4948755b6c4fd8b765e33722cb24f
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 365714
+  packageName: GUI - Basic Button Pack
+  packageVersion: 1.0
+  assetPath: Assets/Layer Lab/GUI-BasicButtonPack/Prefabs/Button_Round_Pink.prefab
+  uploadId: 874866

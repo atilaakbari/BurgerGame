@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: a08e8cf56e45e4f73990da4d28d6e197
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 365714
+  packageName: GUI - Basic Button Pack
+  packageVersion: 1.0
+  assetPath: Assets/Layer Lab/GUI-BasicButtonPack/Prefabs/Button_Round_LightGray.prefab
+  uploadId: 874866

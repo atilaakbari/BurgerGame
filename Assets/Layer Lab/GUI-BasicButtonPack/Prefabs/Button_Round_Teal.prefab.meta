@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: cdbf2dbd8c79e4f968883432cb7638b4
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 365714
+  packageName: GUI - Basic Button Pack
+  packageVersion: 1.0
+  assetPath: Assets/Layer Lab/GUI-BasicButtonPack/Prefabs/Button_Round_Teal.prefab
+  uploadId: 874866

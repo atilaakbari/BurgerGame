@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 57b78e868adf34e8c986ac71f79e663e
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 365714
+  packageName: GUI - Basic Button Pack
+  packageVersion: 1.0
+  assetPath: Assets/Layer Lab/GUI-BasicButtonPack/Prefabs/Button_Round_Sky.prefab
+  uploadId: 874866

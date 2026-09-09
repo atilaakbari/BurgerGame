@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 3eadc6b86586d45df970e029a9aa85c3
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 365714
+  packageName: GUI - Basic Button Pack
+  packageVersion: 1.0
+  assetPath: Assets/Layer Lab/GUI-BasicButtonPack/Prefabs/Button_Square_Red.prefab
+  uploadId: 874866

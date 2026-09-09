@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 4cb228b5eae8b434780acbcf532eae8f
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 365714
+  packageName: GUI - Basic Button Pack
+  packageVersion: 1.0
+  assetPath: Assets/Layer Lab/GUI-BasicButtonPack/Prefabs/Button_Round_Blue.prefab
+  uploadId: 874866

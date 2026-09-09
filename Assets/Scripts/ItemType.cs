@@ -15,6 +15,7 @@ using UnityEngine;
         Tomato_Cut,
         Onion,
         Onion_Cut,
+        Soda,
         Burger
 
 

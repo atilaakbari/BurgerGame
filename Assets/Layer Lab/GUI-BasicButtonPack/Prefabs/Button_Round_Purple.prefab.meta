@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 0fa53758ff2f84c8d902f4ec9ba28566
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 365714
+  packageName: GUI - Basic Button Pack
+  packageVersion: 1.0
+  assetPath: Assets/Layer Lab/GUI-BasicButtonPack/Prefabs/Button_Round_Purple.prefab
+  uploadId: 874866

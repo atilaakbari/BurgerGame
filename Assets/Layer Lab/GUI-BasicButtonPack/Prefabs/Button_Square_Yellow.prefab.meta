@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: a10b730e40b1841a3ad8507f28d7205e
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 365714
+  packageName: GUI - Basic Button Pack
+  packageVersion: 1.0
+  assetPath: Assets/Layer Lab/GUI-BasicButtonPack/Prefabs/Button_Square_Yellow.prefab
+  uploadId: 874866

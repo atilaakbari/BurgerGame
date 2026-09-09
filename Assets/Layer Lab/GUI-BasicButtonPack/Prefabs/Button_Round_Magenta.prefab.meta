@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 794e215d20d5744e49cdf086bfeb171b
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 365714
+  packageName: GUI - Basic Button Pack
+  packageVersion: 1.0
+  assetPath: Assets/Layer Lab/GUI-BasicButtonPack/Prefabs/Button_Round_Magenta.prefab
+  uploadId: 874866

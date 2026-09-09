@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: f2c1d0dffafeb4381b2266e07fd4f937
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 365714
+  packageName: GUI - Basic Button Pack
+  packageVersion: 1.0
+  assetPath: Assets/Layer Lab/GUI-BasicButtonPack/Prefabs/Button_Square_Rose.prefab
+  uploadId: 874866

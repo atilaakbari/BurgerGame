@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: c7d2bd0912f8f4693ac1f6945df96580
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 365714
+  packageName: GUI - Basic Button Pack
+  packageVersion: 1.0
+  assetPath: Assets/Layer Lab/GUI-BasicButtonPack/Prefabs/Button_Square_Green.prefab
+  uploadId: 874866

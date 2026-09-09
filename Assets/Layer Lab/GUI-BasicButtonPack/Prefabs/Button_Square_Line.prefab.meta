@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: abc90b73a9c834d81bc5c9d1a3895b42
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 365714
+  packageName: GUI - Basic Button Pack
+  packageVersion: 1.0
+  assetPath: Assets/Layer Lab/GUI-BasicButtonPack/Prefabs/Button_Square_Line.prefab
+  uploadId: 874866

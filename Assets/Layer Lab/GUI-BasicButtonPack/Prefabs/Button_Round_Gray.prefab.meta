@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 3a7dd4151b48c41acb3ae0a7b2a17609
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 365714
+  packageName: GUI - Basic Button Pack
+  packageVersion: 1.0
+  assetPath: Assets/Layer Lab/GUI-BasicButtonPack/Prefabs/Button_Round_Gray.prefab
+  uploadId: 874866

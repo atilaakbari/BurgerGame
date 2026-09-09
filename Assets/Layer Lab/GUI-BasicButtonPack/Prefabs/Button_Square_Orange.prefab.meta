@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 9a2a9da995c1b4154b13a4221ab44169
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 365714
+  packageName: GUI - Basic Button Pack
+  packageVersion: 1.0
+  assetPath: Assets/Layer Lab/GUI-BasicButtonPack/Prefabs/Button_Square_Orange.prefab
+  uploadId: 874866

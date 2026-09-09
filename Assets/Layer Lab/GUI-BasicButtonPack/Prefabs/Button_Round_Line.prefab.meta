@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: ba980d94fb75f4a248ff382ff62cdb52
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 365714
+  packageName: GUI - Basic Button Pack
+  packageVersion: 1.0
+  assetPath: Assets/Layer Lab/GUI-BasicButtonPack/Prefabs/Button_Round_Line.prefab
+  uploadId: 874866
