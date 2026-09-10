@@ -189,8 +189,8 @@ Transform:
   - {fileID: 5887470604618069931}
   - {fileID: 3360948197992004674}
   - {fileID: 7887037695846329471}
+  - {fileID: 3832172507853573526}
   - {fileID: 3663336691353674174}
-  - {fileID: 8385490266558221014}
   - {fileID: 8486275850022749819}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -208,41 +208,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RestaurantTable
   tablePoint: {fileID: 7887037695846329471}
   seatPoint: {fileID: 3360948197992004674}
-  burgerPoint: {fileID: 3663336691353674174}
-  sodaPoint: {fileID: 8385490266558221014}
-  stayDuration: 10
+  waitPosition: {fileID: 3832172507853573526}
+  trayPoint: {fileID: 3663336691353674174}
   moneyPoint: {fileID: 8486275850022749819}
---- !u!1 &2187961098618430407
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8385490266558221014}
-  m_Layer: 0
-  m_Name: SodaPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8385490266558221014
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2187961098618430407}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.715, y: 1, z: -0.432}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 1
-  m_Children: []
-  m_Father: {fileID: 1309564160926017003}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2560454131705413309
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,6 +332,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1309564160926017003}
   m_LocalEulerAnglesHint: {x: -12, y: 90, z: 0}
+--- !u!1 &4917621178231300049
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3832172507853573526}
+  m_Layer: 0
+  m_Name: WaitPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3832172507853573526
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4917621178231300049}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0.102, y: 0, z: -1.923}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1309564160926017003}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &6050721994225958821
 GameObject:
   m_ObjectHideFlags: 0
@@ -374,7 +373,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3663336691353674174}
   m_Layer: 0
-  m_Name: BurgerPoint
+  m_Name: TrayPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

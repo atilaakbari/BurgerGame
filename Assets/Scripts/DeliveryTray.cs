@@ -14,172 +14,78 @@ public class DeliveryTray : MonoBehaviour
     private GameObject burger;
     private GameObject soda;
 
-    // =========================================================
-    // PROPERTIES
-    // =========================================================
-
-    public bool HasBurger =>
-        burger != null;
-
-    public bool HasSoda =>
-        soda != null;
+    public bool HasBurger => burger != null;
+    public bool HasSoda => soda != null;
 
     public int ItemCount
     {
         get
         {
             int count = 0;
-
-            if (burger != null)
-                count++;
-
-            if (soda != null)
-                count++;
-
+            if (burger != null) count++;
+            if (soda != null) count++;
             return count;
         }
     }
 
-    public bool IsFull =>
-        HasBurger && HasSoda;
+    public bool IsFull => HasBurger && HasSoda;
 
-    // =========================================================
-    // ADD BURGER
-    // =========================================================
+    public bool ContainsBurger() => burger != null;
+    public bool ContainsSoda() => soda != null;
+
+    public GameObject GetBurger() => burger;
+    public GameObject GetSoda() => soda;
 
     public bool AddBurger(GameObject item)
     {
-        if (item == null)
+        if (item == null || burger != null)
             return false;
 
-        if (burger != null)
+        if (burgerPoint == null || itemParent == null)
         {
-            Debug.LogWarning(
-                "DeliveryTray already has a Burger!"
-            );
-
-            return false;
-        }
-
-        if (burgerPoint == null)
-        {
-            Debug.LogError(
-                "DeliveryTray: Burger Point is not assigned!"
-            );
-
-            return false;
-        }
-
-        if (itemParent == null)
-        {
-            Debug.LogError(
-                "DeliveryTray: Item Parent is not assigned!"
-            );
-
+            Debug.LogError("DeliveryTray: BurgerPoint or ItemParent missing!");
             return false;
         }
 
         burger = item;
-
-        // Burger زیر ItemParent قرار می‌گیرد
-        item.transform.SetParent(
-            itemParent
-        );
-
-        // ولی موقعیتش از BurgerPoint گرفته می‌شود
-        item.transform.position =
-            burgerPoint.position;
-
-        item.transform.rotation =
-            burgerPoint.rotation;
-
+        PlaceOnPoint(item, burgerPoint);
         return true;
     }
 
-    // =========================================================
-    // ADD SODA
-    // =========================================================
-
     public bool AddSoda(GameObject item)
     {
-        if (item == null)
+        if (item == null || soda != null)
             return false;
 
-        if (soda != null)
+        if (sodaPoint == null || itemParent == null)
         {
-            Debug.LogWarning(
-                "DeliveryTray already has a Soda!"
-            );
-
-            return false;
-        }
-
-        if (sodaPoint == null)
-        {
-            Debug.LogError(
-                "DeliveryTray: Soda Point is not assigned!"
-            );
-
-            return false;
-        }
-
-        if (itemParent == null)
-        {
-            Debug.LogError(
-                "DeliveryTray: Item Parent is not assigned!"
-            );
-
+            Debug.LogError("DeliveryTray: SodaPoint or ItemParent missing!");
             return false;
         }
 
         soda = item;
-
-        // Soda هم زیر همان ItemParent قرار می‌گیرد
-        item.transform.SetParent(
-            itemParent
-        );
-
-        // ولی جای مخصوص خودش را دارد
-        item.transform.position =
-            sodaPoint.position;
-
-        item.transform.rotation =
-            sodaPoint.rotation;
-
+        PlaceOnPoint(item, sodaPoint);
         return true;
     }
 
-    // =========================================================
-    // CHECK
-    // =========================================================
-
-    public bool ContainsBurger()
+    private void PlaceOnPoint(GameObject item, Transform point)
     {
-        return burger != null;
+        // اول زیر itemParent، بعد موقعیت local از روی point
+        item.transform.SetParent(itemParent, false);
+
+        // اگر point زیر tray/itemParent باشد، local آن را کپی می‌کنیم
+        if (point.parent == itemParent || point.IsChildOf(itemParent))
+        {
+            item.transform.localPosition = point.localPosition;
+            item.transform.localRotation = point.localRotation;
+        }
+        else
+        {
+            // نقطه خارج از parent است → تبدیل به فضای itemParent
+            item.transform.position = point.position;
+            item.transform.rotation = point.rotation;
+        }
     }
-
-    public bool ContainsSoda()
-    {
-        return soda != null;
-    }
-
-    // =========================================================
-    // GET
-    // =========================================================
-
-    public GameObject GetBurger()
-    {
-        return burger;
-    }
-
-    public GameObject GetSoda()
-    {
-        return soda;
-    }
-
-    // =========================================================
-    // CLEAR
-    // =========================================================
 
     public void ClearTray()
     {

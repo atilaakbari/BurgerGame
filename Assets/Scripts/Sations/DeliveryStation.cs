@@ -493,92 +493,47 @@ public class DeliveryStation : MonoBehaviour
     // CHECK TRAY
     // =========================================================
 
-        private void TryFinishTrayDelivery(
-        CustomerAI customer
-    )
+    private void TryFinishTrayDelivery(CustomerAI customer)
     {
-        if (customer == null)
+        if (customer == null || currentTray == null)
             return;
 
-        BurgerOrder order =
-            customer.CurrentOrder;
-
+        BurgerOrder order = customer.CurrentOrder;
         if (order == null)
             return;
 
-        if (currentTray == null)
-            return;
-
-        // =========================================================
-        // BURGER MUST EXIST
-        // =========================================================
-
+        // همیشه برگر لازم است
         if (!currentTray.ContainsBurger())
+            return;
+
+        // اگر سودا می‌خواهد، باید روی سینی باشد
+        if (order.wantsSoda && !currentTray.ContainsSoda())
         {
+            Debug.Log("Waiting for Soda on tray...");
             return;
         }
 
-        // =========================================================
-        // SODA CHECK
-        // =========================================================
-
-        if (order.wantsSoda)
+        // اگر سودا نمی‌خواهد ولی روی سینی هست → هنوز تحویل نده (اختیاری سخت‌گیرانه)
+        // می‌توانی این چک را حذف کنی اگر می‌خواهی سودای اضافه را نادیده بگیری
+        if (!order.wantsSoda && currentTray.ContainsSoda())
         {
-            // سفارش Soda دارد ولی هنوز Soda داخل Tray نیست
-            if (!currentTray.ContainsSoda())
-            {
-                Debug.Log(
-                    "Order is NOT complete. Waiting for Soda."
-                );
-
-                return;
-            }
-        }
-        else
-        {
-            // اگر سفارش Soda نمی‌خواهد،
-            // نباید Soda اضافی داخل Tray باشد.
-            if (currentTray.ContainsSoda())
-            {
-                Debug.LogWarning(
-                    "Tray contains Soda but customer does not want Soda."
-                );
-
-                return;
-            }
+            Debug.LogWarning("Tray has extra Soda but order does not want it.");
+            return;
         }
 
-        // =========================================================
-        // COMPLETE TRAY
-        // =========================================================
-
-        DeliveryTray completedTray =
-            TakeTray();
-
+        DeliveryTray completedTray = TakeTray();
         if (completedTray == null)
             return;
 
-        bool received =
-            customer.ReceiveTray(
-                completedTray
-            );
-
+        bool received = customer.ReceiveTray(completedTray);
         if (!received)
         {
-            Debug.LogError(
-                "Customer failed to receive Tray!"
-            );
-
+            Debug.LogError("Customer failed to receive Tray!");
             return;
         }
 
-        FinalizeCompletedOrder(
-            customer
-        );
-
-        Debug.Log(
-            "Complete Tray delivered successfully."
-        );
+        FinalizeCompletedOrder(customer);
+        Debug.Log("Complete Tray delivered.");
     }
 
     // =========================================================

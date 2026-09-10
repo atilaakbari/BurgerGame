@@ -2,19 +2,22 @@ using UnityEngine;
 
 public class RestaurantTable : MonoBehaviour
 {
-    [Header("Table Points")]
+    [Header("Table")]
     [SerializeField] private Transform tablePoint;
     [SerializeField] private Transform seatPoint;
-    [SerializeField] private Transform burgerPoint;
-    [SerializeField] private Transform sodaPoint;
+    [SerializeField] private Transform waitPosition;
 
-    [Header("Settings")]
-    [SerializeField] private float stayDuration = 10f;
+    [Header("Tray")]
+    [SerializeField] private Transform trayPoint;
 
     [Header("Money")]
     [SerializeField] private Transform moneyPoint;
 
-    private CustomerAI currentCustomer;
+    private CustomerAI assignedCustomer;
+
+    // =========================================================
+    // PUBLIC PROPERTIES
+    // =========================================================
 
     public Transform TablePoint =>
         tablePoint;
@@ -22,40 +25,24 @@ public class RestaurantTable : MonoBehaviour
     public Transform SeatPoint =>
         seatPoint;
 
-    public Transform BurgerPoint =>
-        burgerPoint;
+    public Transform WaitPosition =>
+        waitPosition;
 
-    public Transform SodaPoint =>
-        sodaPoint;
+    public Transform TrayPoint =>
+        trayPoint;
 
     public Transform MoneyPoint =>
         moneyPoint;
 
-    public float StayDuration =>
-        stayDuration;
+    public CustomerAI AssignedCustomer =>
+        assignedCustomer;
 
     public bool IsOccupied =>
-        currentCustomer != null;
+        assignedCustomer != null;
 
-    public CustomerAI CurrentCustomer =>
-        currentCustomer;
-
-    public Vector3 GetWaitPosition()
-    {
-        Transform point =
-            tablePoint != null
-                ? tablePoint
-                : seatPoint;
-
-        if (point == null)
-        {
-            return transform.position +
-                   transform.right * 0.9f;
-        }
-
-        return point.position +
-               point.right * 0.9f;
-    }
+    // =========================================================
+    // ASSIGN CUSTOMER
+    // =========================================================
 
     public bool AssignCustomer(
         CustomerAI customer
@@ -67,13 +54,100 @@ public class RestaurantTable : MonoBehaviour
         if (IsOccupied)
             return false;
 
-        currentCustomer = customer;
+        assignedCustomer =
+            customer;
 
         return true;
     }
 
+    // =========================================================
+    // RELEASE TABLE
+    // =========================================================
+
     public void ReleaseTable()
     {
-        currentCustomer = null;
+        assignedCustomer = null;
+    }
+
+    // =========================================================
+    // WAIT POSITION
+    // =========================================================
+
+    public Vector3 GetWaitPosition()
+    {
+        if (waitPosition != null)
+            return waitPosition.position;
+
+        if (tablePoint != null)
+            return tablePoint.position;
+
+        return transform.position;
+    }
+
+    // =========================================================
+    // PLACE TRAY
+    // =========================================================
+
+    public bool PlaceTray(
+        DeliveryTray tray
+    )
+    {
+        if (tray == null)
+            return false;
+
+        if (trayPoint == null)
+        {
+            Debug.LogError(
+                "RestaurantTable: Tray Point is not assigned on " +
+                gameObject.name
+            );
+
+            return false;
+        }
+
+        tray.transform.SetParent(
+            trayPoint
+        );
+
+        tray.transform.localPosition =
+            Vector3.zero;
+
+        tray.transform.localRotation =
+            Quaternion.identity;
+
+        return true;
+    }
+
+    // =========================================================
+    // CLEAR TRAY
+    // =========================================================
+
+    public void ClearTray()
+    {
+        if (trayPoint == null)
+            return;
+
+        for (
+            int i = trayPoint.childCount - 1;
+            i >= 0;
+            i--
+        )
+        {
+            Transform child =
+                trayPoint.GetChild(i);
+
+            if (child == null)
+                continue;
+
+            DeliveryTray tray =
+                child.GetComponent<DeliveryTray>();
+
+            if (tray != null)
+            {
+                Destroy(
+                    tray.gameObject
+                );
+            }
+        }
     }
 }

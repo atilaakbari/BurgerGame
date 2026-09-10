@@ -653,87 +653,35 @@ public class CustomerAI : MonoBehaviour
     // RECEIVE TRAY
     // =========================================================
 
-    public bool ReceiveTray(
-        DeliveryTray tray
-    )
+        public bool ReceiveTray(DeliveryTray tray)
     {
-        if (tray == null)
-            return false;
-
-        if (currentOrder == null)
+        if (tray == null || currentOrder == null)
             return false;
 
         if (carryPoint == null)
         {
-            Debug.LogError(
-                "CustomerAI: CarryPoint is missing on " +
-                gameObject.name
-            );
-
+            Debug.LogError("CustomerAI: CarryPoint missing!");
             return false;
         }
 
-        // =========================================
-        // بررسی Burger
-        // =========================================
-
+        // بدون برگر تحویل نگیر
         if (!tray.ContainsBurger())
-        {
-            Debug.LogError(
-                "Customer received a Tray without Burger!"
-            );
-
             return false;
-        }
 
-        // =========================================
-        // بررسی Soda
-        // =========================================
-
-        if (
-            currentOrder.wantsSoda &&
-            !tray.ContainsSoda()
-        )
-        {
-            Debug.LogError(
-                "Customer needs Soda but Tray has no Soda!"
-            );
-
+        // اگر سودا لازم است، باید روی سینی باشد
+        if (currentOrder.wantsSoda && !tray.ContainsSoda())
             return false;
-        }
 
-        // =========================================
-        // Tray → CarryPoint
-        // =========================================
-
-        servedTray =
-            tray;
-
-        tray.transform.SetParent(
-            carryPoint
-        );
-
-        tray.transform.localPosition =
-            Vector3.up *
-            trayCarryHeight;
-
-        tray.transform.localRotation =
-            Quaternion.identity;
-
-        // =========================================
-        // سفارش دریافت شد
-        // =========================================
+        servedTray = tray;
+        tray.transform.SetParent(carryPoint, false);
+        tray.transform.localPosition = Vector3.up * trayCarryHeight;
+        tray.transform.localRotation = Quaternion.identity;
 
         burgerReceived = true;
-
-        sodaReceived =
-            !currentOrder.wantsSoda ||
-            tray.ContainsSoda();
+        sodaReceived = !currentOrder.wantsSoda || tray.ContainsSoda();
 
         SetCarry(true);
-
         TryStartAfterOrderComplete();
-
         return true;
     }
 
@@ -894,21 +842,10 @@ public class CustomerAI : MonoBehaviour
         if (currentTable == null)
             return;
 
-        Transform tablePoint =
-            currentTable.transform;
-
-        servedTray.transform.SetParent(
-            tablePoint
+        currentTable.PlaceTray(
+            servedTray
         );
-
-        servedTray.transform.localPosition =
-            Vector3.up *
-            seatHeightOffset;
-
-        servedTray.transform.localRotation =
-            Quaternion.identity;
     }
-
     private void UpdateEating()
     {
         if (!IsSitting())
