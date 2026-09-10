@@ -20,35 +20,22 @@ public class CustomerAI : MonoBehaviour
     [SerializeField] private float reachDistance = 0.4f;
     [SerializeField] private float seatHeightOffset = 1f;
 
-    [Header("Burger")]
-    [SerializeField] private Transform burgerHoldPoint;
-
-    //[Space]
-
-    // [SerializeField] private QueueManager queueManager;
+    [Header("Tray")]
+    [SerializeField] private Transform carryPoint;
+    [SerializeField] private float trayCarryHeight = 0f;
 
     private Transform exitPoint;
 
-    public void SetExitPoint(Transform point)
-    {
-        exitPoint = point;
-    }
-
     private QueueManager queueManager;
-
-    public void SetQueueManager(QueueManager manager)
-    {
-        queueManager = manager;
-    }
+    private DeliveryStation deliveryStation;
 
     private RestaurantTable currentTable;
+
     private bool goingToSeat;
     private bool waitingForTable;
     private bool usingWorldTarget;
+
     private Vector3 worldTarget;
-
-    private DeliveryStation deliveryStation;
-
     private Transform currentTarget;
 
     private BurgerOrder currentOrder;
@@ -56,10 +43,21 @@ public class CustomerAI : MonoBehaviour
     private float eatingTimer;
 
     private bool eatingFinished;
-    private GameObject servedBurger;
+
+    private DeliveryTray servedTray;
+
+    private bool burgerReceived;
+    private bool sodaReceived;
+
+    private bool orderCompleted;
+
     private bool walkState;
     private bool carryState;
     private bool sitState;
+
+    // =========================================================
+    // PUBLIC PROPERTIES
+    // =========================================================
 
     public BurgerOrder CurrentOrder =>
         currentOrder;
@@ -70,23 +68,89 @@ public class CustomerAI : MonoBehaviour
 
     public bool IsLeaving { get; private set; }
 
+    public bool NeedsBurger
+    {
+        get
+        {
+            return currentOrder != null &&
+                   !burgerReceived;
+        }
+    }
+
+    public bool NeedsSoda
+    {
+        get
+        {
+            return currentOrder != null &&
+                   currentOrder.wantsSoda &&
+                   !sodaReceived;
+        }
+    }
+
+    public bool IsOrderComplete
+    {
+        get
+        {
+            if (currentOrder == null)
+                return false;
+
+            if (!burgerReceived)
+                return false;
+
+            if (
+                currentOrder.wantsSoda &&
+                !sodaReceived
+            )
+            {
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    public bool HasBurgerReceived =>
+        burgerReceived;
+
+    public bool HasSodaReceived =>
+        sodaReceived;
+
+    // =========================================================
+    // SETTERS
+    // =========================================================
+
+    public void SetExitPoint(
+        Transform point
+    )
+    {
+        exitPoint = point;
+    }
+
+    public void SetQueueManager(
+        QueueManager manager
+    )
+    {
+        queueManager = manager;
+    }
+
     public void SetDeliveryStation(
-    DeliveryStation station
-)
+        DeliveryStation station
+    )
     {
         deliveryStation = station;
     }
 
+    // =========================================================
+    // AWAKE
+    // =========================================================
 
     private void Awake()
     {
-
         agent =
             GetComponent<NavMeshAgent>();
 
         animator =
             GetComponent<Animator>();
-
 
         if (agent == null)
         {
@@ -96,10 +160,12 @@ public class CustomerAI : MonoBehaviour
             );
         }
 
-
         if (agent != null)
         {
-            agent.obstacleAvoidanceType = ObstacleAvoidanceType.LowQualityObstacleAvoidance;
+            agent.obstacleAvoidanceType =
+                ObstacleAvoidanceType
+                    .LowQualityObstacleAvoidance;
+
             agent.autoBraking = true;
             agent.acceleration = 12f;
         }
@@ -112,7 +178,6 @@ public class CustomerAI : MonoBehaviour
             );
         }
 
-
         HideOrder();
 
         SetWalk(false);
@@ -120,6 +185,9 @@ public class CustomerAI : MonoBehaviour
         SetSit(false);
     }
 
+    // =========================================================
+    // UPDATE
+    // =========================================================
 
     private void Update()
     {
@@ -129,12 +197,13 @@ public class CustomerAI : MonoBehaviour
         UpdateLocomotionAnimation();
     }
 
-
     // =========================================================
     // MOVE
     // =========================================================
 
-    public void MoveTo(Transform target)
+    public void MoveTo(
+        Transform target
+    )
     {
         if (target == null)
             return;
@@ -146,7 +215,9 @@ public class CustomerAI : MonoBehaviour
             agent.enabled = true;
 
         usingWorldTarget = false;
+
         currentTarget = target;
+
         ReachedTarget = false;
 
         SetSit(false);
@@ -154,19 +225,30 @@ public class CustomerAI : MonoBehaviour
         agent.isStopped = false;
         agent.stoppingDistance = 0f;
 
-        Vector3 direction = target.position - transform.position;
+        Vector3 direction =
+            target.position -
+            transform.position;
+
         direction.y = 0f;
 
         if (direction.sqrMagnitude > 0.01f)
         {
-            transform.rotation = Quaternion.LookRotation(direction);
+            transform.rotation =
+                Quaternion.LookRotation(
+                    direction
+                );
         }
 
-        agent.SetDestination(target.position);
+        agent.SetDestination(
+            target.position
+        );
+
         SetWalk(true);
     }
 
-    public void MoveToPosition(Vector3 position)
+    public void MoveToPosition(
+        Vector3 position
+    )
     {
         if (agent == null)
             return;
@@ -175,8 +257,11 @@ public class CustomerAI : MonoBehaviour
             agent.enabled = true;
 
         usingWorldTarget = true;
+
         worldTarget = position;
+
         currentTarget = null;
+
         ReachedTarget = false;
 
         SetSit(false);
@@ -184,16 +269,26 @@ public class CustomerAI : MonoBehaviour
         agent.isStopped = false;
         agent.stoppingDistance = 0f;
 
-        Vector3 direction = position - transform.position;
+        Vector3 direction =
+            position -
+            transform.position;
+
         direction.y = 0f;
 
         if (direction.sqrMagnitude > 0.01f)
-            transform.rotation = Quaternion.LookRotation(direction);
+        {
+            transform.rotation =
+                Quaternion.LookRotation(
+                    direction
+                );
+        }
 
-        agent.SetDestination(position);
+        agent.SetDestination(
+            position
+        );
+
         SetWalk(true);
     }
-
 
     // =========================================================
     // ARRIVAL
@@ -201,37 +296,65 @@ public class CustomerAI : MonoBehaviour
 
     private void CheckArrival()
     {
-        if (agent == null || ReachedTarget)
+        if (agent == null)
+            return;
+
+        if (ReachedTarget)
             return;
 
         if (!agent.enabled)
             return;
 
-        if (currentTarget == null && !usingWorldTarget)
+        if (
+            currentTarget == null &&
+            !usingWorldTarget
+        )
+        {
             return;
+        }
 
-        Vector3 from = transform.position;
-        Vector3 to = usingWorldTarget ? worldTarget : currentTarget.position;
+        Vector3 from =
+            transform.position;
+
+        Vector3 to =
+            usingWorldTarget
+                ? worldTarget
+                : currentTarget.position;
+
         from.y = 0f;
         to.y = 0f;
 
         bool closeToTarget =
-            Vector3.Distance(from, to) <= reachDistance;
+            Vector3.Distance(
+                from,
+                to
+            ) <= reachDistance;
 
         bool agentReached = false;
 
         if (!agent.pathPending)
         {
             if (agent.hasPath)
-                agentReached = agent.remainingDistance <= reachDistance;
+            {
+                agentReached =
+                    agent.remainingDistance
+                    <= reachDistance;
+            }
             else
-                agentReached = closeToTarget;
+            {
+                agentReached =
+                    closeToTarget;
+            }
         }
 
-        if (agentReached || closeToTarget)
+        if (
+            agentReached ||
+            closeToTarget
+        )
+        {
             Arrived();
+        }
     }
-
 
     private void Arrived()
     {
@@ -240,28 +363,55 @@ public class CustomerAI : MonoBehaviour
 
         ReachedTarget = true;
 
-        agent.isStopped = true;
-        agent.ResetPath();
-
-        SetWalk(false);
-
-        if (currentTable != null && !goingToSeat)
-        {
-            goingToSeat = true;
-            MoveTo(currentTable.SeatPoint);
-            return;
-        }
-
-        if (currentTable != null && goingToSeat)
+        if (agent != null && agent.enabled)
         {
             agent.isStopped = true;
             agent.ResetPath();
-            agent.enabled = false;
+        }
 
-            transform.position = currentTable.SeatPoint.position;
-            transform.rotation = currentTable.SeatPoint.rotation;
+        SetWalk(false);
+
+        if (
+            currentTable != null &&
+            !goingToSeat
+        )
+        {
+            goingToSeat = true;
+
+            MoveTo(
+                currentTable.SeatPoint
+            );
+
+            return;
+        }
+
+        if (
+            currentTable != null &&
+            goingToSeat
+        )
+        {
+            if (agent != null)
+            {
+                agent.isStopped = true;
+                agent.ResetPath();
+                agent.enabled = false;
+            }
+
+            if (currentTable.SeatPoint != null)
+            {
+                transform.position =
+                    currentTable
+                        .SeatPoint
+                        .position;
+
+                transform.rotation =
+                    currentTable
+                        .SeatPoint
+                        .rotation;
+            }
 
             BeginEating();
+
             return;
         }
 
@@ -272,45 +422,32 @@ public class CustomerAI : MonoBehaviour
         }
 
         PlayStandingIdle();
+
         currentTarget = null;
         usingWorldTarget = false;
     }
 
+    // =========================================================
+    // ANIMATION
+    // =========================================================
+
     private void PlayStandingIdle()
     {
         SetSit(false);
+
         SetWalk(false);
-        SetCarry(IsHoldingBurger());
+
+        SetCarry(
+            HasAnyReceivedFood()
+        );
     }
 
-    private bool IsHoldingBurger()
+    private bool HasAnyReceivedFood()
     {
-        if (servedBurger != null)
-            return true;
-
-        return burgerHoldPoint != null && burgerHoldPoint.childCount > 0;
-    }
-
-
-
-    // =========================================================
-    // STOP
-    // =========================================================
-
-    public void StopMoving()
-    {
-        if (agent != null)
-        {
-            agent.isStopped = true;
-
-            agent.ResetPath();
-        }
-
-
-        currentTarget = null;
-
-        ReachedTarget = true;
-        PlayStandingIdle();
+        return
+            servedTray != null ||
+            burgerReceived ||
+            sodaReceived;
     }
 
     private void UpdateLocomotionAnimation()
@@ -318,7 +455,10 @@ public class CustomerAI : MonoBehaviour
         if (sitState)
             return;
 
-        if (agent == null || !agent.enabled)
+        if (
+            agent == null ||
+            !agent.enabled
+        )
         {
             PlayStandingIdle();
             return;
@@ -326,41 +466,71 @@ public class CustomerAI : MonoBehaviour
 
         bool moving =
             !agent.isStopped &&
-            (agent.velocity.sqrMagnitude > 0.05f ||
-             (agent.hasPath && agent.remainingDistance > reachDistance));
+            (
+                agent.velocity.sqrMagnitude >
+                0.05f ||
+
+                (
+                    agent.hasPath &&
+                    agent.remainingDistance >
+                    reachDistance
+                )
+            );
 
         if (moving)
         {
             SetSit(false);
+
             SetWalk(true);
-            SetCarry(IsHoldingBurger());
+
+            SetCarry(
+                HasAnyReceivedFood()
+            );
+
             return;
         }
 
         PlayStandingIdle();
     }
 
-
-    // =========================================================
-    // WALK
-    // =========================================================
-
-    private void SetWalk(bool value)
+    private void SetWalk(
+        bool value
+    )
     {
-        if (animator == null || walkState == value)
+        if (
+            animator == null ||
+            walkState == value
+        )
+        {
             return;
+        }
 
         walkState = value;
-        animator.SetBool(isWalkParameter, value);
+
+        animator.SetBool(
+            isWalkParameter,
+            value
+        );
     }
 
-    public void SetCarry(bool value)
+    public void SetCarry(
+        bool value
+    )
     {
-        if (animator == null || carryState == value)
+        if (
+            animator == null ||
+            carryState == value
+        )
+        {
             return;
+        }
 
         carryState = value;
-        animator.SetBool(isCarryParameter, value);
+
+        animator.SetBool(
+            isCarryParameter,
+            value
+        );
     }
 
     public bool IsCarrying()
@@ -368,7 +538,9 @@ public class CustomerAI : MonoBehaviour
         return carryState;
     }
 
-    public void SetSit(bool value)
+    public void SetSit(
+        bool value
+    )
     {
         if (animator == null)
             return;
@@ -376,7 +548,11 @@ public class CustomerAI : MonoBehaviour
         if (sitState != value)
         {
             sitState = value;
-            animator.SetBool(isSitParameter, value);
+
+            animator.SetBool(
+                isSitParameter,
+                value
+            );
         }
 
         if (value)
@@ -396,28 +572,45 @@ public class CustomerAI : MonoBehaviour
         return sitState;
     }
 
-
     // =========================================================
     // ORDER
     // =========================================================
 
-    public void SetOrder(BurgerOrder order)
+    public void SetOrder(
+        BurgerOrder order
+    )
     {
         currentOrder = order;
 
-        HasOrder = order != null;
+        HasOrder =
+            order != null;
+
+        burgerReceived = false;
+        sodaReceived = false;
+
+        orderCompleted = false;
+
+        servedTray = null;
+
+        eatingFinished = false;
 
         if (order != null)
         {
             Debug.Log(
                 gameObject.name +
                 " Order: " +
-                order.name
+                order.name +
+                " | Soda: " +
+                order.wantsSoda
             );
 
-            if (orderUIController != null)
+            if (
+                orderUIController != null
+            )
             {
-                orderUIController.ShowOrder(order);
+                orderUIController.ShowOrder(
+                    order
+                );
             }
 
             ShowOrder();
@@ -428,12 +621,10 @@ public class CustomerAI : MonoBehaviour
         }
     }
 
-
     public void ReceiveOrder()
     {
         HasOrder = true;
     }
-
 
     // =========================================================
     // ORDER UI
@@ -442,285 +633,280 @@ public class CustomerAI : MonoBehaviour
     public void ShowOrder()
     {
         if (orderUI != null)
-        {
             orderUI.SetActive(true);
-        }
     }
-
 
     public void HideOrder()
     {
-        if (orderUIController != null)
+        if (
+            orderUIController != null
+        )
         {
             orderUIController.ClearUI();
         }
 
         if (orderUI != null)
-        {
             orderUI.SetActive(false);
-        }
     }
-
 
     // =========================================================
-    // LEAVE
+    // RECEIVE TRAY
     // =========================================================
 
-    public void Leave()
+    public bool ReceiveTray(
+        DeliveryTray tray
+    )
     {
-        StartLeaving();
+        if (tray == null)
+            return false;
+
+        if (currentOrder == null)
+            return false;
+
+        if (carryPoint == null)
+        {
+            Debug.LogError(
+                "CustomerAI: CarryPoint is missing on " +
+                gameObject.name
+            );
+
+            return false;
+        }
+
+        // =========================================
+        // بررسی Burger
+        // =========================================
+
+        if (!tray.ContainsBurger())
+        {
+            Debug.LogError(
+                "Customer received a Tray without Burger!"
+            );
+
+            return false;
+        }
+
+        // =========================================
+        // بررسی Soda
+        // =========================================
+
+        if (
+            currentOrder.wantsSoda &&
+            !tray.ContainsSoda()
+        )
+        {
+            Debug.LogError(
+                "Customer needs Soda but Tray has no Soda!"
+            );
+
+            return false;
+        }
+
+        // =========================================
+        // Tray → CarryPoint
+        // =========================================
+
+        servedTray =
+            tray;
+
+        tray.transform.SetParent(
+            carryPoint
+        );
+
+        tray.transform.localPosition =
+            Vector3.up *
+            trayCarryHeight;
+
+        tray.transform.localRotation =
+            Quaternion.identity;
+
+        // =========================================
+        // سفارش دریافت شد
+        // =========================================
+
+        burgerReceived = true;
+
+        sodaReceived =
+            !currentOrder.wantsSoda ||
+            tray.ContainsSoda();
+
+        SetCarry(true);
+
+        TryStartAfterOrderComplete();
+
+        return true;
     }
 
-    public void Leave(Transform point)
+    // =========================================================
+    // ORDER COMPLETE
+    // =========================================================
+
+    private void TryStartAfterOrderComplete()
     {
-        if (point != null)
-            exitPoint = point;
-
-        StartLeaving();
-    }
-
-    private void StartLeaving()
-    {
-        if (IsLeaving && currentTarget == exitPoint && exitPoint != null)
+        if (!IsOrderComplete)
             return;
 
-        IsLeaving = true;
-        goingToSeat = false;
-        waitingForTable = false;
-
-        SetSit(false);
-        SetCarry(false);
-        SetWalk(true);
-
-        PlaceAgentOnNavMesh();
-
-        if (exitPoint == null && queueManager != null)
-            exitPoint = queueManager.ExitPoint;
-
-        if (exitPoint == null)
-        {
-            Debug.LogError("Exit Point is not assigned on " + gameObject.name);
-            Destroy(gameObject);
-            return;
-        }
-
-        MoveTo(exitPoint);
-    }
-
-    private void PlaceAgentOnNavMesh()
-    {
-        if (agent == null)
+        if (orderCompleted)
             return;
 
-        if (!agent.enabled)
-            agent.enabled = true;
+        orderCompleted = true;
 
-        Vector3 sampleOrigin = transform.position;
-
-        if (NavMesh.SamplePosition(sampleOrigin, out NavMeshHit hit, 2f, NavMesh.AllAreas))
-        {
-            agent.Warp(hit.position);
-        }
-    }
-
-    public void TakeBurgerFromDelivery()
-    {
-        if (burgerHoldPoint == null)
-        {
-            Debug.LogError("Burger Hold Point is not assigned!");
-            return;
-        }
-
-        if (deliveryStation == null)
-        {
-            Debug.LogError("Delivery Station is not assigned!");
-            return;
-        }
-
-        GameObject burger =
-            deliveryStation.GetDeliveredBurger();
-
-        if (burger == null)
-        {
-            Debug.Log("No burger on delivery table!");
-            return;
-        }
-
-
-
-        // Burger goes into customer's hand
-        servedBurger = burger;
-
-        burger.transform.SetParent(burgerHoldPoint);
-
-        burger.transform.localPosition = Vector3.zero;
-
-        burger.transform.localRotation = Quaternion.identity;
-
-        Rigidbody rb =
-            burger.GetComponent<Rigidbody>();
-
-        if (rb != null)
-        {
-            rb.isKinematic = true;
-
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-        }
-
-        Collider col =
-            burger.GetComponent<Collider>();
-
-        if (col != null)
-            col.enabled = false;
-
-        deliveryStation.ClearDeliveredBurger();
+        HideOrder();
 
         if (queueManager != null)
         {
             if (exitPoint == null)
-                SetExitPoint(queueManager.ExitPoint);
+            {
+                exitPoint =
+                    queueManager.ExitPoint;
+            }
 
-            queueManager.RemoveCustomer(this);
+            queueManager.RemoveCustomer(
+                this
+            );
         }
 
-        SetCarry(true);
-
         if (!TryGoToTable())
+        {
             WaitNearSeatedCustomer();
+        }
     }
+
+    // =========================================================
+    // TABLE
+    // =========================================================
 
     private bool TryGoToTable()
     {
         if (TableManager.Instance == null)
             return false;
 
-        RestaurantTable freeTable = TableManager.Instance.GetFreeTable();
+        RestaurantTable freeTable =
+            TableManager.Instance.GetFreeTable();
 
         if (freeTable == null)
             return false;
 
-        if (!freeTable.AssignCustomer(this))
+        if (
+            !freeTable.AssignCustomer(
+                this
+            )
+        )
+        {
             return false;
+        }
 
         waitingForTable = false;
-        currentTable = freeTable;
+
+        currentTable =
+            freeTable;
+
         goingToSeat = false;
-        MoveTo(currentTable.TablePoint);
+
+        MoveTo(
+            currentTable.TablePoint
+        );
+
         return true;
     }
 
     private void WaitNearSeatedCustomer()
     {
         waitingForTable = true;
+
         currentTable = null;
+
         goingToSeat = false;
 
         RestaurantTable busyTable = null;
 
-        if (TableManager.Instance != null)
-            busyTable = TableManager.Instance.GetNearestOccupiedTable(transform.position);
+        if (
+            TableManager.Instance != null
+        )
+        {
+            busyTable =
+                TableManager.Instance
+                    .GetNearestOccupiedTable(
+                        transform.position
+                    );
+        }
 
         if (busyTable != null)
-            MoveToPosition(busyTable.GetWaitPosition());
+        {
+            MoveToPosition(
+                busyTable.GetWaitPosition()
+            );
+        }
         else
+        {
             StopMoving();
+        }
     }
 
     private void TryTakeFreeTable()
     {
-        if (!waitingForTable || IsLeaving || IsSitting())
+        if (!waitingForTable)
+            return;
+
+        if (IsLeaving)
+            return;
+
+        if (IsSitting())
+            return;
+
+        if (!IsOrderComplete)
             return;
 
         TryGoToTable();
     }
 
+    // =========================================================
+    // EATING
+    // =========================================================
+
     private void BeginEating()
     {
+        if (!IsOrderComplete)
+            return;
+
         waitingForTable = false;
-        PlaceBurgerOnTable();
+
+        PlaceTrayOnTable();
+
         SetCarry(false);
+
         SetSit(true);
 
         if (currentOrder != null)
-            eatingTimer = currentOrder.eatingTime;
+        {
+            eatingTimer =
+                currentOrder.eatingTime;
+        }
+
+        eatingFinished = false;
     }
 
-    private void PlaceBurgerOnTable()
+    private void PlaceTrayOnTable()
     {
-        if (servedBurger == null && burgerHoldPoint != null && burgerHoldPoint.childCount > 0)
-            servedBurger = burgerHoldPoint.GetChild(0).gameObject;
-
-        if (servedBurger == null)
+        if (servedTray == null)
             return;
 
-        Transform burger = servedBurger.transform;
-        Transform burgerPoint = currentTable != null ? currentTable.BurgerPoint : null;
-
-        Vector3 placePos;
-        Quaternion placeRot = Quaternion.identity;
-
-        if (burgerPoint != null)
-        {
-            burger.SetParent(burgerPoint, true);
-            placePos = burgerPoint.position;
-            placeRot = burgerPoint.rotation;
-        }
-        else
-        {
-            Transform seat = currentTable != null ? currentTable.SeatPoint : null;
-
-            if (seat != null)
-            {
-                placePos = seat.position + seat.forward * 0.45f + Vector3.up * 0.2f;
-                placeRot = Quaternion.LookRotation(seat.forward);
-            }
-            else
-            {
-                placePos = transform.position + transform.forward * 0.45f + Vector3.up * 0.85f;
-            }
-
-            if (currentTable != null)
-                burger.SetParent(currentTable.transform, true);
-            else
-                burger.SetParent(null, true);
-        }
-
-        burger.SetPositionAndRotation(placePos, placeRot);
-        SnapBurgerOntoPoint(burger, placePos);
-
-        Rigidbody rb = burger.GetComponent<Rigidbody>();
-
-        if (rb != null)
-        {
-            rb.isKinematic = true;
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-        }
-
-        foreach (Collider col in burger.GetComponentsInChildren<Collider>())
-            col.enabled = false;
-    }
-
-    private void SnapBurgerOntoPoint(Transform burger, Vector3 point)
-    {
-        Renderer[] renderers = burger.GetComponentsInChildren<Renderer>();
-
-        if (renderers == null || renderers.Length == 0)
+        if (currentTable == null)
             return;
 
-        Bounds bounds = renderers[0].bounds;
+        Transform tablePoint =
+            currentTable.transform;
 
-        for (int i = 1; i < renderers.Length; i++)
-            bounds.Encapsulate(renderers[i].bounds);
-
-        Vector3 bottomCenter = new Vector3(
-            bounds.center.x,
-            bounds.min.y,
-            bounds.center.z
+        servedTray.transform.SetParent(
+            tablePoint
         );
 
-        burger.position += point - bottomCenter;
+        servedTray.transform.localPosition =
+            Vector3.up *
+            seatHeightOffset;
+
+        servedTray.transform.localRotation =
+            Quaternion.identity;
     }
 
     private void UpdateEating()
@@ -737,9 +923,8 @@ public class CustomerAI : MonoBehaviour
         if (eatingFinished)
             return;
 
-
-        eatingTimer -= Time.deltaTime;
-
+        eatingTimer -=
+            Time.deltaTime;
 
         if (eatingTimer <= 0f)
         {
@@ -759,12 +944,7 @@ public class CustomerAI : MonoBehaviour
             " finished eating!"
         );
 
-
-        if (servedBurger != null)
-        {
-            Destroy(servedBurger);
-            servedBurger = null;
-        }
+        ClearFoodFromTable();
 
         if (deliveryStation != null)
         {
@@ -774,16 +954,46 @@ public class CustomerAI : MonoBehaviour
             );
         }
 
-        RestaurantTable tableToLeave = currentTable;
+        RestaurantTable tableToLeave =
+            currentTable;
+
         tableToLeave.ReleaseTable();
+
         currentTable = null;
+
         waitingForTable = false;
 
         if (queueManager != null)
-            queueManager.RemoveCustomer(this);
+        {
+            queueManager.RemoveCustomer(
+                this
+            );
+        }
 
-        StartCoroutine(StandUpAndLeave());
+        StartCoroutine(
+            StandUpAndLeave()
+        );
     }
+
+    // =========================================================
+    // CLEAR TRAY
+    // =========================================================
+
+    private void ClearFoodFromTable()
+    {
+        if (servedTray == null)
+            return;
+
+        Destroy(
+            servedTray.gameObject
+        );
+
+        servedTray = null;
+    }
+
+    // =========================================================
+    // LEAVE
+    // =========================================================
 
     private IEnumerator StandUpAndLeave()
     {
@@ -794,29 +1004,121 @@ public class CustomerAI : MonoBehaviour
 
         SetWalk(true);
 
-        yield return new WaitForSeconds(0.15f);
+        yield return new WaitForSeconds(
+            0.15f
+        );
 
         StartLeaving();
     }
 
-    private void RemoveBurgerFromTable()
+    public void Leave()
     {
-        if (currentTable == null)
-            return;
-
-        Transform burgerPoint =
-            currentTable.BurgerPoint;
-
-        if (burgerPoint == null)
-            return;
-
-        if (burgerPoint.childCount == 0)
-            return;
-
-        GameObject burger =
-            burgerPoint.GetChild(0).gameObject;
-
-        Destroy(burger);
+        StartLeaving();
     }
 
+    public void Leave(
+        Transform point
+    )
+    {
+        if (point != null)
+            exitPoint = point;
+
+        StartLeaving();
+    }
+
+    private void StartLeaving()
+    {
+        if (
+            IsLeaving &&
+            currentTarget == exitPoint &&
+            exitPoint != null
+        )
+        {
+            return;
+        }
+
+        IsLeaving = true;
+
+        goingToSeat = false;
+
+        waitingForTable = false;
+
+        SetSit(false);
+
+        SetCarry(false);
+
+        SetWalk(true);
+
+        PlaceAgentOnNavMesh();
+
+        if (
+            exitPoint == null &&
+            queueManager != null
+        )
+        {
+            exitPoint =
+                queueManager.ExitPoint;
+        }
+
+        if (exitPoint == null)
+        {
+            Debug.LogError(
+                "Exit Point is not assigned on " +
+                gameObject.name
+            );
+
+            Destroy(gameObject);
+
+            return;
+        }
+
+        MoveTo(
+            exitPoint
+        );
+    }
+
+    private void PlaceAgentOnNavMesh()
+    {
+        if (agent == null)
+            return;
+
+        if (!agent.enabled)
+            agent.enabled = true;
+
+        Vector3 sampleOrigin =
+            transform.position;
+
+        if (
+            NavMesh.SamplePosition(
+                sampleOrigin,
+                out NavMeshHit hit,
+                2f,
+                NavMesh.AllAreas
+            )
+        )
+        {
+            agent.Warp(
+                hit.position
+            );
+        }
+    }
+
+    // =========================================================
+    // STOP
+    // =========================================================
+
+    public void StopMoving()
+    {
+        if (agent != null)
+        {
+            agent.isStopped = true;
+            agent.ResetPath();
+        }
+
+        currentTarget = null;
+
+        ReachedTarget = true;
+
+        PlayStandingIdle();
+    }
 }

@@ -27,56 +27,43 @@ public class OrderUI : MonoBehaviour
                 background.sizeDelta.x;
         }
     }
-    public void ShowOrder(BurgerOrder order)
+
+    public void ShowOrder(
+        BurgerOrder order
+    )
     {
         if (order == null)
             return;
 
-        // ????? ?? ????? ?????? UI ???? ???
         gameObject.SetActive(true);
 
         ClearUI();
 
-
-        // =====================================================
-        // ORDER
-        // =====================================================
-
         List<ItemType> displayOrder =
             new List<ItemType>(order.items);
 
+        // -----------------------------------------
+        // ADD SODA TO ORDER UI
+        // -----------------------------------------
 
-        // =====================================================
-        // UI ?? ????? ?? ???? ????? ??????
-        //
-        // ????? ???? ????? = ?????
-        // ????? ???? ????? = ????
-        //
-        // ????????:
-        //
-        // BunBottem
-        // Patty
-        // Cheese
-        // BunTop
-        //
-        // ??? UI:
-        //
-        // BunTop      ? ????
-        // Cheese
-        // Patty
-        // BunBottem   ? ?????
-        // =====================================================
+        if (order.wantsSoda)
+        {
+            displayOrder.Add(
+                ItemType.Soda
+            );
+        }
 
-
-        for (int i = 0; i < displayOrder.Count; i++)
+        for (
+            int i = 0;
+            i < displayOrder.Count;
+            i++
+        )
         {
             ItemType itemType =
                 displayOrder[i];
 
-
             Sprite sprite =
                 GetSprite(itemType);
-
 
             if (sprite == null)
             {
@@ -88,30 +75,33 @@ public class OrderUI : MonoBehaviour
                 continue;
             }
 
-
             Image icon =
                 Instantiate(
                     itemIconPrefab,
                     itemsParent
                 );
 
-            RectTransform iconRect = icon.GetComponent<RectTransform>();
+            RectTransform iconRect =
+                icon.GetComponent<RectTransform>();
 
-            // ?????? ???
-            iconRect.sizeDelta = new Vector2(
-                0.5f,
-                0.5f
-            );
+            if (iconRect == null)
+                continue;
 
-            iconRect.localScale = Vector3.one;
+            iconRect.sizeDelta =
+                new Vector2(
+                    0.5f,
+                    0.5f
+                );
 
-            // ????? ??? ??????
-            iconRect.localPosition = new Vector3(
-                0f,
-                i * 0.2f,
-                0f
-            );
+            iconRect.localScale =
+                Vector3.one;
 
+            iconRect.localPosition =
+                new Vector3(
+                    0f,
+                    i * 0.2f,
+                    0f
+                );
 
             icon.sprite = sprite;
 
@@ -119,39 +109,35 @@ public class OrderUI : MonoBehaviour
         }
 
         UpdateBackgroundSize();
-
     }
-
-
-    // =====================================================
-    // CLEAR UI
-    // =====================================================
 
     public void ClearUI()
     {
         if (itemsParent == null)
             return;
 
-
         for (
-            int i = itemsParent.childCount - 1;
+            int i =
+                itemsParent.childCount - 1;
             i >= 0;
             i--
         )
         {
             Destroy(
-                itemsParent.GetChild(i).gameObject
+                itemsParent
+                    .GetChild(i)
+                    .gameObject
             );
         }
     }
 
-
-    // =====================================================
-    // GET SPRITE
-    // =====================================================
-
-    private Sprite GetSprite(ItemType type)
+    private Sprite GetSprite(
+        ItemType type
+    )
     {
+        if (itemIcons == null)
+            return null;
+
         foreach (
             ItemIconData data
             in itemIcons
@@ -160,7 +146,6 @@ public class OrderUI : MonoBehaviour
             if (data.type == type)
                 return data.sprite;
         }
-
 
         return null;
     }
@@ -176,60 +161,50 @@ public class OrderUI : MonoBehaviour
         if (itemsParent.childCount == 0)
             return;
 
-
         RectTransform firstIcon =
-            itemsParent.GetChild(0)
-            .GetComponent<RectTransform>();
-
+            itemsParent
+                .GetChild(0)
+                .GetComponent<RectTransform>();
 
         RectTransform lastIcon =
-            itemsParent.GetChild(
-                itemsParent.childCount - 1
-            )
-            .GetComponent<RectTransform>();
+            itemsParent
+                .GetChild(
+                    itemsParent.childCount - 1
+                )
+                .GetComponent<RectTransform>();
 
-
-        if (firstIcon == null ||
-            lastIcon == null)
+        if (
+            firstIcon == null ||
+            lastIcon == null
+        )
+        {
             return;
-
+        }
 
         float top =
             firstIcon.localPosition.y +
             firstIcon.rect.height / 2f;
 
-
         float bottom =
             lastIcon.localPosition.y -
             lastIcon.rect.height / 2f;
 
-
         float newSize =
             Mathf.Abs(top - bottom) +
-            (backgroundPadding * 2f);
+            backgroundPadding * 2f;
 
-
-        // ?????? ????
         float oldSize =
             background.sizeDelta.x;
 
-
-        // ?????? ??????
         float difference =
             newSize - oldSize;
 
-
-        // ??? Rotation Z = 90 ????
-        // ???? X ?? ??? ????? ?????? Background ???
         background.sizeDelta =
             new Vector2(
                 newSize,
                 background.sizeDelta.y
             );
 
-
-        // ??? ?? ?????? ??? ?????? ??????? ??????
-        // ?? ????? ???? ????? ? ??? ?? ??? ???? ????
         background.anchoredPosition +=
             new Vector2(
                 0f,
@@ -237,8 +212,6 @@ public class OrderUI : MonoBehaviour
             );
     }
 }
-
-
 
 [System.Serializable]
 public class ItemIconData

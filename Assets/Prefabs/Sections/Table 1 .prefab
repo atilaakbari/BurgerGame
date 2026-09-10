@@ -36,6 +36,7 @@ Transform:
   - {fileID: 2247829630178007842}
   - {fileID: 5990943729226352729}
   - {fileID: 1166695811026225975}
+  - {fileID: 4982343944644333865}
   - {fileID: 6518571878948653276}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -54,6 +55,7 @@ MonoBehaviour:
   tablePoint: {fileID: 5990943729226352729}
   seatPoint: {fileID: 2247829630178007842}
   burgerPoint: {fileID: 1166695811026225975}
+  sodaPoint: {fileID: 4982343944644333865}
   stayDuration: 10
   moneyPoint: {fileID: 6518571878948653276}
 --- !u!1 &538806075075130943
@@ -118,6 +120,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4349257644820175450}
   m_LocalEulerAnglesHint: {x: -12, y: 90, z: 0}
+--- !u!1 &4524549491551340620
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4982343944644333865}
+  m_Layer: 0
+  m_Name: SodaPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4982343944644333865
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4524549491551340620}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.715, y: 1, z: -0.413}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 4349257644820175450}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5116857949586436320
 GameObject:
   m_ObjectHideFlags: 0

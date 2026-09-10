@@ -2280,6 +2280,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 37bb580fc2f73914dbf5d9341031c2a7, type: 2}
   - {fileID: 11400000, guid: f9f831b7374ba76499709b71e6671473, type: 2}
   queueManager: {fileID: 1392063095}
+  sodaZoneId: Zone_SodaStation
+  sodaOrderChance: 1
 --- !u!1 &377284782
 GameObject:
   m_ObjectHideFlags: 0
@@ -5407,22 +5409,21 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8750120389352366986, guid: 92c3d92046164f844819ded898a4cf71, type: 3}
   m_PrefabInstance: {fileID: 7879147544387739793}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &898903529
+--- !u!114 &898903530
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 898903526}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a67aab905339c4d4c872f06433564343, type: 3}
+  m_Script: {fileID: 11500000, guid: 9575a9005db622f479a3e94d482f3537, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LevelUnlocker
-  requiredLevel: 2
-  objectsToEnable:
-  - {fileID: 898903526}
-  objectsToDisable: []
+  m_EditorClassIdentifier: Assembly-CSharp::LevelUnlockActivator
+  requiredLevel: 1
+  unlockZone: {fileID: 898903526}
+  zoneId: Zone_SodaStation
 --- !u!114 &902949345 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5308996541546275213, guid: 1becc425b7b8ec04780fab9e1d2e3633, type: 3}
@@ -11658,6 +11659,10 @@ PrefabInstance:
       value: DeliveryStation
       objectReference: {fileID: 0}
     - target: {fileID: 6695439146818727398, guid: c34147408e0dbaa4f83368da005f5127, type: 3}
+      propertyPath: trayPrefab
+      value: 
+      objectReference: {fileID: 5161551922045980706, guid: 8c33793f0944ee14abc893b969fca58c, type: 3}
+    - target: {fileID: 6695439146818727398, guid: c34147408e0dbaa4f83368da005f5127, type: 3}
       propertyPath: playerPickup
       value: 
       objectReference: {fileID: 1899444984}
@@ -11666,9 +11671,33 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1392063095}
     - target: {fileID: 6695439146818727398, guid: c34147408e0dbaa4f83368da005f5127, type: 3}
+      propertyPath: sodaTableScale.x
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6695439146818727398, guid: c34147408e0dbaa4f83368da005f5127, type: 3}
+      propertyPath: sodaTableScale.y
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6695439146818727398, guid: c34147408e0dbaa4f83368da005f5127, type: 3}
+      propertyPath: sodaTableScale.z
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6695439146818727398, guid: c34147408e0dbaa4f83368da005f5127, type: 3}
+      propertyPath: deliverySodaPoint
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6695439146818727398, guid: c34147408e0dbaa4f83368da005f5127, type: 3}
+      propertyPath: deliveryBurgerPoint
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6695439146818727398, guid: c34147408e0dbaa4f83368da005f5127, type: 3}
       propertyPath: burgerAssemblyStation
       value: 
       objectReference: {fileID: 637612159}
+    - target: {fileID: 8620370711143219939, guid: c34147408e0dbaa4f83368da005f5127, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.863
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -12472,7 +12501,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 891351918992092037, guid: 92c3d92046164f844819ded898a4cf71, type: 3}
       propertyPath: zoneId
-      value: Zone_SodaStation1
+      value: Zone_SodaStation
       objectReference: {fileID: 0}
     - target: {fileID: 891351918992092037, guid: 92c3d92046164f844819ded898a4cf71, type: 3}
       propertyPath: totalCost
@@ -12540,7 +12569,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 8750120389352366986, guid: 92c3d92046164f844819ded898a4cf71, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 898903529}
+      addedObject: {fileID: 898903530}
   m_SourcePrefab: {fileID: 100100000, guid: 92c3d92046164f844819ded898a4cf71, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

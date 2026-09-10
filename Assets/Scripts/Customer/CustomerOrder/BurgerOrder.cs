@@ -10,6 +10,10 @@ public class BurgerOrder : ScriptableObject
     [Header("Order Price")]
     public int price = 10;
 
+    [Header("Soda")]
+    public bool wantsSoda = false;
+    public int sodaPrice = 5;
+
     [Header("Customer Payment")]
     public int eatingMoney = 5;
 
@@ -17,5 +21,5 @@ public class BurgerOrder : ScriptableObject
     public float eatingTime = 10f;
 
     [Header("XP")]
-    public int xpReward = 15;   // هر برگر می‌تونه مقدار خودش رو داشته باشه
+    public int xpReward = 15;
 }

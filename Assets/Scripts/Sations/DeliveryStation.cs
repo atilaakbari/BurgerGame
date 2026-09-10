@@ -1,10 +1,9 @@
 using System.Collections.Generic;
-using Unity.Collections;
 using UnityEngine;
 
 public class DeliveryStation : MonoBehaviour
 {
-    [Header("شناسه‌ی یکتا (برای سیو پول‌های روی زمین - مثلاً \"DeliveryStation_1\")")]
+    [Header("شناسه‌ی یکتا")]
     [SerializeField] private string stationId;
 
     [Header("Player")]
@@ -16,73 +15,91 @@ public class DeliveryStation : MonoBehaviour
     [Header("Burger Assembly")]
     [SerializeField] private BurgerAssemblyStation burgerAssemblyStation;
 
-    [Header("Delivery Point")]
+    [Header("Old Delivery Points - No Longer Used")]
     [SerializeField] private Transform deliveryBurgerPoint;
+    [SerializeField] private Transform deliverySodaPoint;
 
-    [Header("Burger Scale On Table")]
+    [Header("Old Scale Settings")]
     [SerializeField] private Vector3 burgerTableScale = Vector3.one;
+    [SerializeField] private Vector3 sodaTableScale = Vector3.one;
 
     [Header("Money")]
     [SerializeField] private GameObject moneyPrefab;
     [SerializeField] private Transform moneyPoint;
 
+    [Header("Tray")]
+    [SerializeField] private DeliveryTray trayPrefab;
+    [SerializeField] private Transform trayPoint;
+
     [Header("Money Layout")]
     [SerializeField] private int moneyColumns = 5;
     [SerializeField] private int moneyRows = 2;
 
-    [Space]
-
     [SerializeField] private float moneySpacingX = 0.08f;
     [SerializeField] private float moneySpacingZ = 0.08f;
     [SerializeField] private float moneyLayerHeight = 0.025f;
-    private List<GameObject> spawnedMoney = new List<GameObject>();
+
+    private readonly List<GameObject> spawnedMoney =
+        new List<GameObject>();
+
+    private readonly List<GameObject> spawnedEatingMoney =
+        new List<GameObject>();
+
     private bool waitingForMoney;
-
-    private List<GameObject> spawnedEatingMoney =
-    new List<GameObject>();
-
     private bool waitingForEatingMoney;
 
+    private DeliveryTray currentTray;
+
     private CustomerAI eatingCustomer;
-    private GameObject deliveredBurger;
-    private CustomerAI deliveredCustomer;
+
     private GameObjectPool moneyPool;
 
     private const int MoneyBillValue = 5;
 
+    // =========================================================
+    // AWAKE
+    // =========================================================
+
     private void Awake()
     {
         if (moneyPrefab != null)
-            moneyPool = new GameObjectPool(moneyPrefab, transform, 24);
-    }
-
-    private void Start()
-    {
-        // اگه پولی از Session قبلی رو زمین جا مونده بود (بازی بسته شده بدون این‌که بازیکن برداره)،
-        // همون‌جا دوباره بسازش که گم نشه
-        if (SaveManager.Instance != null)
         {
-            int savedAmount = SaveManager.Instance.GetStationMoneyPile(stationId);
-
-            if (savedAmount > 0)
-                SpawnMoneyPile(savedAmount);
+            moneyPool =
+                new GameObjectPool(
+                    moneyPrefab,
+                    transform,
+                    24
+                );
         }
     }
 
-    public void RecycleMoney(GameObject moneyObject)
+    // =========================================================
+    // START
+    // =========================================================
+
+    private void Start()
     {
-        if (moneyObject == null)
-            return;
+        CreateTray();
 
-        spawnedMoney.Remove(moneyObject);
-        spawnedEatingMoney.Remove(moneyObject);
+        if (SaveManager.Instance != null)
+        {
+            int savedAmount =
+                SaveManager.Instance.GetStationMoneyPile(
+                    stationId
+                );
 
-        if (moneyPool != null)
-            moneyPool.Release(moneyObject);
-        else
-            Destroy(moneyObject);
+            if (savedAmount > 0)
+            {
+                SpawnMoneyPile(
+                    savedAmount
+                );
+            }
+        }
     }
 
+    // =========================================================
+    // TRIGGER
+    // =========================================================
 
     private void OnTriggerEnter(Collider other)
     {
@@ -92,46 +109,26 @@ public class DeliveryStation : MonoBehaviour
         TryDeliver();
     }
 
-
-    // =====================================================
-    // TRY DELIVER
-    // =====================================================
+    // =========================================================
+    // TRY DELIVERY
+    // =========================================================
 
     private void TryDeliver()
     {
         if (playerPickup == null)
             return;
 
-        if (deliveredBurger != null)
-        {
-            Debug.Log("Delivery table is busy!");
+        if (queueManager == null)
             return;
-        }
 
-
-        if (playerPickup.CurrentCarryCount == 0)
-        {
-            Debug.Log("No Burger!");
+        if (playerPickup.CurrentCarryCount <= 0)
             return;
-        }
-
 
         GameObject item =
             playerPickup.GetTopItem();
 
         if (item == null)
             return;
-
-
-        Burger burger =
-            item.GetComponent<Burger>();
-
-        if (burger == null)
-        {
-            Debug.Log("This is not Burger!");
-            return;
-        }
-
 
         CustomerAI customer =
             queueManager.GetFirstCustomer();
@@ -142,65 +139,119 @@ public class DeliveryStation : MonoBehaviour
             return;
         }
 
+        if (customer.CurrentOrder == null)
+            return;
 
-        CheckOrder(
-            burger,
-            customer
+        if (currentTray == null)
+        {
+            CreateTray();
+
+            if (currentTray == null)
+                return;
+        }
+
+        // =========================================
+        // BURGER
+        // =========================================
+
+        Burger burger =
+            item.GetComponent<Burger>();
+
+        if (burger != null)
+        {
+            TryDeliverBurger(
+                burger,
+                customer
+            );
+
+            return;
+        }
+
+        // =========================================
+        // SODA
+        // =========================================
+
+        Item itemComponent =
+            item.GetComponent<Item>();
+
+        if (
+            itemComponent != null &&
+            itemComponent.Type == ItemType.Soda
+        )
+        {
+            TryDeliverSoda(
+                item,
+                customer
+            );
+
+            return;
+        }
+
+        Debug.Log(
+            "This item cannot be delivered here."
         );
     }
 
+    // =========================================================
+    // BURGER
+    // =========================================================
 
-    // =====================================================
-    // CHECK ORDER
-    // =====================================================
-
-    private void CheckOrder(
+    private void TryDeliverBurger(
         Burger burger,
         CustomerAI customer
     )
     {
+        if (burger == null)
+            return;
+
+        if (customer == null)
+            return;
+
+        if (customer.CurrentOrder == null)
+            return;
+
+        if (!customer.NeedsBurger)
+        {
+            Debug.Log(
+                "Customer does not need Burger."
+            );
+
+            return;
+        }
+
+        if (currentTray == null)
+        {
+            CreateTray();
+
+            if (currentTray == null)
+                return;
+        }
+
+        if (currentTray.ContainsBurger())
+        {
+            Debug.Log(
+                "Tray already contains a Burger."
+            );
+
+            return;
+        }
+
         BurgerOrder order =
             customer.CurrentOrder;
 
-        if (order == null)
+        if (
+            !AreOrdersSame(
+                burger.items,
+                order.items
+            )
+        )
         {
-            Debug.Log("Customer has no order");
-            return;
-        }
-
-
-        if (AreOrdersSame(burger.items, order.items))
-        {
-            Debug.Log("Order Correct!");
-
-            DeliverBurgerToTable(
-                customer
-            );
-        }
-        else
-        {
-            Debug.Log("Wrong Burger!");
-        }
-    }
-
-
-    // =====================================================
-    // PUT BURGER ON TABLE
-    // =====================================================
-
-    private void DeliverBurgerToTable(
-        CustomerAI customer
-    )
-    {
-        if (deliveryBurgerPoint == null)
-        {
-            Debug.LogError(
-                "DeliveryBurgerPoint is not assigned!"
+            Debug.Log(
+                "Wrong Burger!"
             );
 
             return;
         }
-
 
         GameObject burgerObject =
             playerPickup.RemoveTopItem();
@@ -208,35 +259,211 @@ public class DeliveryStation : MonoBehaviour
         if (burgerObject == null)
             return;
 
+        if (
+            !AddBurgerToTray(
+                burgerObject
+            )
+        )
+        {
+            Debug.LogError(
+                "Failed to add Burger to Tray."
+            );
 
-        deliveredBurger =
-            burgerObject;
+            return;
+        }
 
-        deliveredCustomer =
-            customer;
-
-        deliveredCustomer.SetDeliveryStation(this);
-
-        deliveredCustomer.SetQueueManager(queueManager);
-
-
-        burgerObject.transform.SetParent(
-            deliveryBurgerPoint
+        customer.SetDeliveryStation(
+            this
         );
 
-        burgerObject.transform.localPosition =
-            Vector3.zero;
+        customer.SetQueueManager(
+            queueManager
+        );
 
-        burgerObject.transform.localRotation =
-            Quaternion.identity;
+        Debug.Log(
+            "Burger added to Delivery Tray."
+        );
 
+        TryFinishTrayDelivery(
+            customer
+        );
+    }
 
-        burgerObject.transform.localScale =
+    // =========================================================
+    // SODA
+    // =========================================================
+
+    private void TryDeliverSoda(
+        GameObject soda,
+        CustomerAI customer
+    )
+    {
+        if (soda == null)
+            return;
+
+        if (customer == null)
+            return;
+
+        if (customer.CurrentOrder == null)
+            return;
+
+        if (!customer.NeedsSoda)
+        {
+            Debug.Log(
+                "Customer does not need Soda."
+            );
+
+            return;
+        }
+
+        if (currentTray == null)
+        {
+            CreateTray();
+
+            if (currentTray == null)
+                return;
+        }
+
+        if (currentTray.ContainsSoda())
+        {
+            Debug.Log(
+                "Tray already contains a Soda."
+            );
+
+            return;
+        }
+
+        GameObject sodaObject =
+            playerPickup.RemoveTopItem();
+
+        if (sodaObject == null)
+            return;
+
+        if (
+            !AddSodaToTray(
+                sodaObject
+            )
+        )
+        {
+            Debug.LogError(
+                "Failed to add Soda to Tray."
+            );
+
+            return;
+        }
+
+        customer.SetDeliveryStation(
+            this
+        );
+
+        customer.SetQueueManager(
+            queueManager
+        );
+
+        Debug.Log(
+            "Soda added to Delivery Tray."
+        );
+
+        TryFinishTrayDelivery(
+            customer
+        );
+    }
+
+    // =========================================================
+    // ADD BURGER TO TRAY
+    // =========================================================
+
+        private bool AddBurgerToTray(
+        GameObject burger
+    )
+    {
+        if (burger == null)
+            return false;
+
+        if (currentTray == null)
+            return false;
+
+        if (currentTray.ContainsBurger())
+        {
+            Debug.Log(
+                "Tray already has Burger."
+            );
+
+            return false;
+        }
+
+        bool added =
+            currentTray.AddBurger(
+                burger
+            );
+
+        if (!added)
+            return false;
+
+        burger.transform.localScale =
             burgerTableScale;
 
+        PrepareDeliveredObject(
+            burger
+        );
+
+        return true;
+    }
+
+    // =========================================================
+    // ADD SODA TO TRAY
+    // =========================================================
+
+        private bool AddSodaToTray(
+        GameObject soda
+    )
+    {
+        if (soda == null)
+            return false;
+
+        if (currentTray == null)
+            return false;
+
+        if (currentTray.ContainsSoda())
+        {
+            Debug.Log(
+                "Tray already has Soda."
+            );
+
+            return false;
+        }
+
+        bool added =
+            currentTray.AddSoda(
+                soda
+            );
+
+        if (!added)
+            return false;
+
+        soda.transform.localScale =
+            sodaTableScale;
+
+        PrepareDeliveredObject(
+            soda
+        );
+
+        return true;
+    }
+
+    // =========================================================
+    // PREPARE DELIVERED OBJECT
+    // =========================================================
+
+    private void PrepareDeliveredObject(
+        GameObject obj
+    )
+    {
+        if (obj == null)
+            return;
 
         Rigidbody rb =
-            burgerObject.GetComponent<Rigidbody>();
+            obj.GetComponent<Rigidbody>();
 
         if (rb != null)
         {
@@ -249,131 +476,332 @@ public class DeliveryStation : MonoBehaviour
                 Vector3.zero;
         }
 
+        Collider[] colliders =
+            obj.GetComponentsInChildren<Collider>();
 
-        Collider col =
-            burgerObject.GetComponent<Collider>();
-
-        if (col != null)
+        for (
+            int i = 0;
+            i < colliders.Length;
+            i++
+        )
         {
-            col.enabled = false;
+            colliders[i].enabled = false;
         }
-
-
-        customer.HideOrder();
-
-        SpawnDeliveryMoney();
-
-        // XP برای تحویل موفق برگر
-// XP مخصوص همون برگر
-    if (XPManager.Instance != null && deliveredCustomer != null && deliveredCustomer.CurrentOrder != null)
-    {
-        int xp = deliveredCustomer.CurrentOrder.xpReward;
-        if (xp > 0)
-            XPManager.Instance.AddXP(xp);
     }
 
-        customer.TakeBurgerFromDelivery();
+    // =========================================================
+    // CHECK TRAY
+    // =========================================================
+
+        private void TryFinishTrayDelivery(
+        CustomerAI customer
+    )
+    {
+        if (customer == null)
+            return;
+
+        BurgerOrder order =
+            customer.CurrentOrder;
+
+        if (order == null)
+            return;
+
+        if (currentTray == null)
+            return;
+
+        // =========================================================
+        // BURGER MUST EXIST
+        // =========================================================
+
+        if (!currentTray.ContainsBurger())
+        {
+            return;
+        }
+
+        // =========================================================
+        // SODA CHECK
+        // =========================================================
+
+        if (order.wantsSoda)
+        {
+            // سفارش Soda دارد ولی هنوز Soda داخل Tray نیست
+            if (!currentTray.ContainsSoda())
+            {
+                Debug.Log(
+                    "Order is NOT complete. Waiting for Soda."
+                );
+
+                return;
+            }
+        }
+        else
+        {
+            // اگر سفارش Soda نمی‌خواهد،
+            // نباید Soda اضافی داخل Tray باشد.
+            if (currentTray.ContainsSoda())
+            {
+                Debug.LogWarning(
+                    "Tray contains Soda but customer does not want Soda."
+                );
+
+                return;
+            }
+        }
+
+        // =========================================================
+        // COMPLETE TRAY
+        // =========================================================
+
+        DeliveryTray completedTray =
+            TakeTray();
+
+        if (completedTray == null)
+            return;
+
+        bool received =
+            customer.ReceiveTray(
+                completedTray
+            );
+
+        if (!received)
+        {
+            Debug.LogError(
+                "Customer failed to receive Tray!"
+            );
+
+            return;
+        }
+
+        FinalizeCompletedOrder(
+            customer
+        );
 
         Debug.Log(
-            "Burger delivered to table!"
+            "Complete Tray delivered successfully."
         );
     }
 
+    // =========================================================
+    // FINALIZE ORDER
+    // =========================================================
 
-    // =====================================================
-    // GET DELIVERED BURGER
-    // =====================================================
-
-    public GameObject GetDeliveredBurger()
+    private void FinalizeCompletedOrder(
+        CustomerAI customer
+    )
     {
-        return deliveredBurger;
+        if (customer == null)
+            return;
+
+        BurgerOrder order =
+            customer.CurrentOrder;
+
+        if (order == null)
+            return;
+
+        // -----------------------------------------
+        // DELIVERY MONEY
+        // -----------------------------------------
+
+        int totalPrice =
+            order.price;
+
+        if (order.wantsSoda)
+        {
+            totalPrice +=
+                order.sodaPrice;
+        }
+
+        SpawnMoneyPile(
+            totalPrice
+        );
+
+        // -----------------------------------------
+        // XP
+        // -----------------------------------------
+
+        if (
+            XPManager.Instance != null &&
+            order.xpReward > 0
+        )
+        {
+            XPManager.Instance.AddXP(
+                order.xpReward
+            );
+        }
     }
 
+    // =========================================================
+    // TRAY
+    // =========================================================
 
-    public CustomerAI GetDeliveredCustomer()
+    private void CreateTray()
     {
-        return deliveredCustomer;
+        if (
+            trayPrefab == null ||
+            trayPoint == null
+        )
+        {
+            Debug.LogError(
+                "DeliveryStation: Tray Prefab or Tray Point is missing!"
+            );
+
+            return;
+        }
+
+        currentTray =
+            Instantiate(
+                trayPrefab,
+                trayPoint.position,
+                trayPoint.rotation,
+                trayPoint
+            );
     }
 
-
-    public void ClearDeliveredBurger()
+        public bool AddItemToTray(GameObject item)
     {
-        deliveredBurger = null;
-        deliveredCustomer = null;
+        if (item == null)
+            return false;
+
+        if (currentTray == null)
+            CreateTray();
+
+        if (currentTray == null)
+            return false;
+
+        Burger burger =
+            item.GetComponent<Burger>();
+
+        if (burger != null)
+        {
+            return AddBurgerToTray(item);
+        }
+
+        Item itemComponent =
+            item.GetComponent<Item>();
+
+        if (
+            itemComponent != null &&
+            itemComponent.Type == ItemType.Soda
+        )
+        {
+            return AddSodaToTray(item);
+        }
+
+        Debug.LogWarning(
+            "This item cannot be added to the Delivery Tray."
+        );
+
+        return false;
     }
 
+    public DeliveryTray TakeTray()
+    {
+        if (currentTray == null)
+            return null;
 
-    // =====================================================
-    // CHECK ORDERS
-    // =====================================================
+        DeliveryTray trayToGive =
+            currentTray;
+
+        currentTray = null;
+
+        // سینی جدید برای سفارش بعدی
+        CreateTray();
+
+        return trayToGive;
+    }
+
+    public DeliveryTray GetCurrentTray()
+    {
+        return currentTray;
+    }
+
+    public void GiveTrayToCustomer(
+        CustomerAI customer
+    )
+    {
+        if (customer == null)
+            return;
+
+        DeliveryTray tray =
+            TakeTray();
+
+        if (tray == null)
+            return;
+
+        customer.ReceiveTray(
+            tray
+        );
+    }
+
+    // =========================================================
+    // CHECK BURGER ORDER
+    // =========================================================
 
     private bool AreOrdersSame(
         List<ItemType> burger,
         List<ItemType> order
     )
     {
-        if (burger.Count != order.Count)
-            return false;
-
-
-
-        for (int i = 0; i < burger.Count; i++)
+        if (
+            burger == null ||
+            order == null
+        )
         {
-            if (burger[i] != order[i])
-                return false;
+            return false;
         }
 
+        if (
+            burger.Count !=
+            order.Count
+        )
+        {
+            return false;
+        }
+
+        for (
+            int i = 0;
+            i < burger.Count;
+            i++
+        )
+        {
+            if (
+                burger[i] !=
+                order[i]
+            )
+            {
+                return false;
+            }
+        }
 
         return true;
     }
 
-    // =====================================================
-    // SPAWN DELIVERY MONEY
-    // =====================================================
+    // =========================================================
+    // DELIVERY MONEY
+    // =========================================================
 
-    private void SpawnDeliveryMoney()
+    private void SpawnMoneyPile(
+        int totalValue
+    )
     {
+        if (totalValue <= 0)
+            return;
 
-        if (moneyPrefab == null)
+        if (
+            moneyPrefab == null ||
+            moneyPoint == null
+        )
         {
-            Debug.LogError("Money Prefab is not assigned!");
+            Debug.LogError(
+                "Money Prefab or Money Point is not assigned!"
+            );
+
             return;
         }
 
-        if (moneyPoint == null)
-        {
-            Debug.LogError("Money Point is not assigned!");
-            return;
-        }
-
-        if (deliveredCustomer == null)
-        {
-            Debug.LogError("No delivered customer!");
-            return;
-        }
-
-
-        BurgerOrder order =
-            deliveredCustomer.CurrentOrder;
-
-        if (order == null)
-        {
-            Debug.LogError("Customer has no order!");
-            return;
-        }
-
-        int orderPrice = order.price;
-
-        SpawnMoneyPile(orderPrice);
-    }
-
-    // این متد جدیده: هم از SpawnDeliveryMoney استفاده می‌شه، هم موقع Load کردن سیو
-    // (که یه مقدار پول از قبل مونده رو باید دوباره بسازیم)
-    private void SpawnMoneyPile(int totalValue)
-    {
         int moneyCount =
-            totalValue / MoneyBillValue;
-
+            totalValue /
+            MoneyBillValue;
 
         if (moneyCount <= 0)
         {
@@ -384,47 +812,60 @@ public class DeliveryStation : MonoBehaviour
             return;
         }
 
-
-        RecycleMoneyList(spawnedMoney);
-
+        RecycleMoneyList(
+            spawnedMoney
+        );
 
         int moneyPerLayer =
-            moneyColumns * moneyRows;
+            moneyColumns *
+            moneyRows;
 
+        if (moneyPerLayer <= 0)
+            moneyPerLayer = 1;
 
-        for (int i = 0; i < moneyCount; i++)
+        for (
+            int i = 0;
+            i < moneyCount;
+            i++
+        )
         {
             int layer =
-                i / moneyPerLayer;
-
+                i /
+                moneyPerLayer;
 
             int indexInLayer =
-                i % moneyPerLayer;
-
+                i %
+                moneyPerLayer;
 
             int column =
-                indexInLayer % moneyColumns;
-
+                indexInLayer %
+                moneyColumns;
 
             int row =
-                indexInLayer / moneyColumns;
-
+                indexInLayer /
+                moneyColumns;
 
             float offsetX =
-                (column -
-                (moneyColumns - 1) * 0.5f)
-                * moneySpacingX;
-
+                (
+                    column -
+                    (
+                        moneyColumns - 1
+                    ) * 0.5f
+                ) *
+                moneySpacingX;
 
             float offsetZ =
-                (row -
-                (moneyRows - 1) * 0.5f)
-                * moneySpacingZ;
-
+                (
+                    row -
+                    (
+                        moneyRows - 1
+                    ) * 0.5f
+                ) *
+                moneySpacingZ;
 
             float offsetY =
-                layer * moneyLayerHeight;
-
+                layer *
+                moneyLayerHeight;
 
             Vector3 localOffset =
                 new Vector3(
@@ -433,56 +874,78 @@ public class DeliveryStation : MonoBehaviour
                     offsetZ
                 );
 
-
             Vector3 spawnPosition =
                 moneyPoint.TransformPoint(
                     localOffset
                 );
 
-
-            GameObject moneyObject = SpawnMoneyBill(
-                spawnPosition,
-                Quaternion.Euler(90f, 0f, 0f)
-            );
+            GameObject moneyObject =
+                SpawnMoneyBill(
+                    spawnPosition,
+                    Quaternion.Euler(
+                        90f,
+                        0f,
+                        0f
+                    )
+                );
 
             if (moneyObject == null)
                 continue;
 
-            DeliveryMoney money = moneyObject.GetComponent<DeliveryMoney>();
+            DeliveryMoney money =
+                moneyObject.GetComponent<DeliveryMoney>();
 
             if (money == null)
             {
-                RecycleMoney(moneyObject);
+                RecycleMoney(
+                    moneyObject
+                );
+
                 continue;
             }
 
-            money.Setup(MoneyBillValue, this);
-            spawnedMoney.Add(moneyObject);
-        }
+            money.Setup(
+                MoneyBillValue,
+                this
+            );
 
+            spawnedMoney.Add(
+                moneyObject
+            );
+        }
 
         waitingForMoney = true;
 
-        // مقدار واقعیِ روی زمین رو سیو کن (ممکنه به‌خاطر باقیمونده‌ی تقسیم، دقیقاً totalValue نباشه)
         SyncMoneyPileToSave();
 
         Debug.Log(
             "Spawned money pile. Total value = " +
-            (spawnedMoney.Count * MoneyBillValue)
+            (
+                spawnedMoney.Count *
+                MoneyBillValue
+            )
         );
     }
 
-    // =====================================================
+    // =========================================================
     // MONEY COLLECTED
-    // =====================================================
+    // =========================================================
 
-    public void OnMoneyCollected(DeliveryMoney collectedMoney)
+    public void OnMoneyCollected(
+        DeliveryMoney collectedMoney
+    )
     {
         if (collectedMoney != null)
-            spawnedMoney.Remove(collectedMoney.gameObject);
+        {
+            spawnedMoney.Remove(
+                collectedMoney.gameObject
+            );
+        }
 
         if (spawnedMoney.Count == 0)
+        {
             waitingForMoney = false;
+        }
 
         SyncMoneyPileToSave();
     }
@@ -492,13 +955,21 @@ public class DeliveryStation : MonoBehaviour
         if (SaveManager.Instance == null)
             return;
 
-        SaveManager.Instance.SetStationMoneyPile(stationId, spawnedMoney.Count * MoneyBillValue);
+        SaveManager.Instance.SetStationMoneyPile(
+            stationId,
+            spawnedMoney.Count *
+            MoneyBillValue
+        );
     }
 
+    // =========================================================
+    // EATING MONEY
+    // =========================================================
+
     public void SpawnEatingMoney(
-    CustomerAI customer,
-    RestaurantTable table
-)
+        CustomerAI customer,
+        RestaurantTable table
+    )
     {
         if (customer == null)
         {
@@ -536,7 +1007,6 @@ public class DeliveryStation : MonoBehaviour
             return;
         }
 
-
         BurgerOrder order =
             customer.CurrentOrder;
 
@@ -549,14 +1019,12 @@ public class DeliveryStation : MonoBehaviour
             return;
         }
 
-        const int moneyValue = 5;
-
         int eatingMoney =
             order.eatingMoney;
 
         int moneyCount =
-            eatingMoney / moneyValue;
-
+            eatingMoney /
+            MoneyBillValue;
 
         if (moneyCount <= 0)
         {
@@ -564,56 +1032,71 @@ public class DeliveryStation : MonoBehaviour
                 "Eating money is too low to spawn money!"
             );
 
-            eatingCustomer = customer;
+            eatingCustomer =
+                customer;
+
             waitingForEatingMoney = false;
 
             return;
         }
 
+        RecycleMoneyList(
+            spawnedEatingMoney
+        );
 
-        RecycleMoneyList(spawnedEatingMoney);
-
-
-        eatingCustomer = customer;
-
+        eatingCustomer =
+            customer;
 
         int moneyPerLayer =
-            moneyColumns * moneyRows;
+            moneyColumns *
+            moneyRows;
 
+        if (moneyPerLayer <= 0)
+            moneyPerLayer = 1;
 
-        for (int i = 0; i < moneyCount; i++)
+        for (
+            int i = 0;
+            i < moneyCount;
+            i++
+        )
         {
             int layer =
-                i / moneyPerLayer;
-
+                i /
+                moneyPerLayer;
 
             int indexInLayer =
-                i % moneyPerLayer;
-
+                i %
+                moneyPerLayer;
 
             int column =
-                indexInLayer % moneyColumns;
-
+                indexInLayer %
+                moneyColumns;
 
             int row =
-                indexInLayer / moneyColumns;
-
+                indexInLayer /
+                moneyColumns;
 
             float offsetX =
-                (column -
-                (moneyColumns - 1) * 0.5f)
-                * moneySpacingX;
-
+                (
+                    column -
+                    (
+                        moneyColumns - 1
+                    ) * 0.5f
+                ) *
+                moneySpacingX;
 
             float offsetZ =
-                (row -
-                (moneyRows - 1) * 0.5f)
-                * moneySpacingZ;
-
+                (
+                    row -
+                    (
+                        moneyRows - 1
+                    ) * 0.5f
+                ) *
+                moneySpacingZ;
 
             float offsetY =
-                layer * moneyLayerHeight;
-
+                layer *
+                moneyLayerHeight;
 
             Vector3 localOffset =
                 new Vector3(
@@ -622,92 +1105,192 @@ public class DeliveryStation : MonoBehaviour
                     offsetZ
                 );
 
-
             Vector3 spawnPosition =
                 table.MoneyPoint.TransformPoint(
                     localOffset
                 );
 
-
-            GameObject moneyObject = SpawnMoneyBill(
-                spawnPosition,
-                table.MoneyPoint.rotation * Quaternion.Euler(90f, 0f, 0f)
-            );
+            GameObject moneyObject =
+                SpawnMoneyBill(
+                    spawnPosition,
+                    table.MoneyPoint.rotation *
+                    Quaternion.Euler(
+                        90f,
+                        0f,
+                        0f
+                    )
+                );
 
             if (moneyObject == null)
                 continue;
 
-            DeliveryMoney money = moneyObject.GetComponent<DeliveryMoney>();
+            DeliveryMoney money =
+                moneyObject.GetComponent<DeliveryMoney>();
 
             if (money == null)
             {
-                RecycleMoney(moneyObject);
+                RecycleMoney(
+                    moneyObject
+                );
+
                 continue;
             }
 
-            money.SetupEatingMoney(MoneyBillValue, this);
-            spawnedEatingMoney.Add(moneyObject);
+            money.SetupEatingMoney(
+                MoneyBillValue,
+                this
+            );
+
+            spawnedEatingMoney.Add(
+                moneyObject
+            );
         }
 
-
         waitingForEatingMoney = true;
-
 
         Debug.Log(
             "Spawned " +
             moneyCount +
             " eating money. Total value = " +
-            (moneyCount * moneyValue)
+            (
+                moneyCount *
+                MoneyBillValue
+            )
         );
-
-        // توجه: پول غذاخوریِ رو زمین کنار میزها فعلاً جزو این سیو نیست (چون به میز خاصی وابسته‌ست).
-        // اگه خواستی اونم اضافه کنیم، بگو تا با شناسه‌ی میز هم پیاده‌ش کنیم.
     }
 
-    public void OnEatingMoneyCollected(DeliveryMoney collectedMoney)
+    public void OnEatingMoneyCollected(
+        DeliveryMoney collectedMoney
+    )
     {
         if (collectedMoney != null)
-            spawnedEatingMoney.Remove(collectedMoney.gameObject);
+        {
+            spawnedEatingMoney.Remove(
+                collectedMoney.gameObject
+            );
+        }
 
-        if (spawnedEatingMoney.Count == 0)
+        if (
+            spawnedEatingMoney.Count == 0
+        )
         {
             waitingForEatingMoney = false;
             eatingCustomer = null;
         }
     }
 
-    private GameObject SpawnMoneyBill(Vector3 position, Quaternion rotation)
+    // =========================================================
+    // MONEY SPAWN
+    // =========================================================
+
+    private GameObject SpawnMoneyBill(
+        Vector3 position,
+        Quaternion rotation
+    )
     {
         GameObject moneyObject;
 
         if (moneyPool != null)
-            moneyObject = moneyPool.Get(position, rotation);
+        {
+            moneyObject =
+                moneyPool.Get(
+                    position,
+                    rotation
+                );
+        }
         else if (moneyPrefab != null)
-            moneyObject = Instantiate(moneyPrefab, position, rotation);
+        {
+            moneyObject =
+                Instantiate(
+                    moneyPrefab,
+                    position,
+                    rotation
+                );
+        }
         else
+        {
             return null;
+        }
 
-        Renderer[] renderers = moneyObject.GetComponentsInChildren<Renderer>();
-        for (int i = 0; i < renderers.Length; i++)
-            renderers[i].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        Renderer[] renderers =
+            moneyObject.GetComponentsInChildren<Renderer>();
+
+        for (
+            int i = 0;
+            i < renderers.Length;
+            i++
+        )
+        {
+            renderers[i].shadowCastingMode =
+                UnityEngine.Rendering
+                    .ShadowCastingMode.Off;
+        }
 
         return moneyObject;
     }
 
-    private void RecycleMoneyList(List<GameObject> moneyList)
+    private void RecycleMoneyList(
+        List<GameObject> moneyList
+    )
     {
-        for (int i = 0; i < moneyList.Count; i++)
+        if (moneyList == null)
+            return;
+
+        for (
+            int i = 0;
+            i < moneyList.Count;
+            i++
+        )
         {
-            GameObject moneyObject = moneyList[i];
+            GameObject moneyObject =
+                moneyList[i];
+
             if (moneyObject == null)
                 continue;
 
             if (moneyPool != null)
-                moneyPool.Release(moneyObject);
+            {
+                moneyPool.Release(
+                    moneyObject
+                );
+            }
             else
-                Destroy(moneyObject);
+            {
+                Destroy(
+                    moneyObject
+                );
+            }
         }
 
         moneyList.Clear();
+    }
+
+    public void RecycleMoney(
+        GameObject moneyObject
+    )
+    {
+        if (moneyObject == null)
+            return;
+
+        spawnedMoney.Remove(
+            moneyObject
+        );
+
+        spawnedEatingMoney.Remove(
+            moneyObject
+        );
+
+        if (moneyPool != null)
+        {
+            moneyPool.Release(
+                moneyObject
+            );
+        }
+        else
+        {
+            Destroy(
+                moneyObject
+            );
+        }
     }
 }
