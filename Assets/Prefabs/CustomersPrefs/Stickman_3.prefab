@@ -780,8 +780,6 @@ MonoBehaviour:
   orderUIController: {fileID: 2561823066617468605}
   reachDistance: 0.15
   seatHeightOffset: 0
-  burgerHoldPoint: {fileID: 0}
-  sodaHoldPoint: {fileID: 0}
   carryPoint: {fileID: 5605456997331173012}
   trayCarryHeight: 0
 --- !u!136 &-2692607612337094543
@@ -9477,7 +9475,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1399247075053006476, guid: c9daba64c588f58479d70eaab733ae6f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6414454223359051475}
   m_SourcePrefab: {fileID: 100100000, guid: c9daba64c588f58479d70eaab733ae6f, type: 3}
 --- !u!224 &851845597764246073 stripped
 RectTransform:
@@ -9500,3 +9501,15 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1399247075053006476, guid: c9daba64c588f58479d70eaab733ae6f, type: 3}
   m_PrefabInstance: {fileID: 8117772655635843659}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6414454223359051475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7188590484342973639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 727b9e79b3204204db74841ba2bac8d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FaceCamera

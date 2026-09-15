@@ -2281,7 +2281,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f9f831b7374ba76499709b71e6671473, type: 2}
   queueManager: {fileID: 1392063095}
   sodaZoneId: Zone_SodaStation
-  sodaOrderChance: 1
+  sodaOrderChance: 0.4
 --- !u!1 &377284782
 GameObject:
   m_ObjectHideFlags: 0
@@ -11659,6 +11659,10 @@ PrefabInstance:
       value: DeliveryStation
       objectReference: {fileID: 0}
     - target: {fileID: 6695439146818727398, guid: c34147408e0dbaa4f83368da005f5127, type: 3}
+      propertyPath: stationId
+      value: Zone_Delivery1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6695439146818727398, guid: c34147408e0dbaa4f83368da005f5127, type: 3}
       propertyPath: trayPrefab
       value: 
       objectReference: {fileID: 5161551922045980706, guid: 8c33793f0944ee14abc893b969fca58c, type: 3}
@@ -11672,15 +11676,15 @@ PrefabInstance:
       objectReference: {fileID: 1392063095}
     - target: {fileID: 6695439146818727398, guid: c34147408e0dbaa4f83368da005f5127, type: 3}
       propertyPath: sodaTableScale.x
-      value: 0.15
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 6695439146818727398, guid: c34147408e0dbaa4f83368da005f5127, type: 3}
       propertyPath: sodaTableScale.y
-      value: 0.15
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 6695439146818727398, guid: c34147408e0dbaa4f83368da005f5127, type: 3}
       propertyPath: sodaTableScale.z
-      value: 0.15
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 6695439146818727398, guid: c34147408e0dbaa4f83368da005f5127, type: 3}
       propertyPath: deliverySodaPoint
