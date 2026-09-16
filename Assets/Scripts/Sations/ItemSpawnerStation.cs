@@ -191,4 +191,20 @@ public class ItemSpawnerStation : MonoBehaviour
 
         giveCoroutine = null;
     }
+
+    // =========================================================
+    // Worker API
+    // =========================================================
+
+    public GameObject CreateItemForWorker()
+    {
+        if (itemPrefab == null)
+        {
+            Debug.LogError("Item Prefab is not assigned!", this);
+            return null;
+        }
+
+        GameObject item = Instantiate(itemPrefab);
+        return item;
+    }
 }

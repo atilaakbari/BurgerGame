@@ -220,4 +220,32 @@ public class CookingStation : MonoBehaviour
             Debug.Log("Could not pickup Cooked Patty!");
         }
     }
+
+    // =========================================================
+    // Worker API
+    // =========================================================
+
+    public bool TryPlaceRawPattyFromWorker(GameObject rawPatty)
+    {
+        if (rawPatty == null)
+            return false;
+
+        Item itemData = rawPatty.GetComponent<Item>();
+
+        if (itemData == null || itemData.Type != ItemType.RawPatty)
+            return false;
+
+        CookingSlot emptySlot = GetActiveEmptySlot();
+
+        if (emptySlot == null)
+            return false;
+
+        Destroy(rawPatty);
+
+        emptySlot.TryStartCooking();
+
+        RefreshPickupButton();
+
+        return true;
+    }
 }
