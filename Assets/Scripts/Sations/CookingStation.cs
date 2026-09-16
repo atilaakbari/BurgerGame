@@ -222,30 +222,45 @@ public class CookingStation : MonoBehaviour
     }
 
     // =========================================================
-    // Worker API
+    // Worker API (کامل)
     // =========================================================
+
+    public bool HasEmptySlot()
+    {
+        return GetEmptySlotCount() > 0;
+    }
+
+    public int GetEmptySlotCount()
+    {
+        int count = 0;
+        if (pans == null) return 0;
+        foreach (var slot in pans)
+        {
+            if (slot != null && slot.gameObject.activeInHierarchy && slot.IsEmpty)
+                count++;
+        }
+        return count;
+    }
 
     public bool TryPlaceRawPattyFromWorker(GameObject rawPatty)
     {
-        if (rawPatty == null)
-            return false;
-
+        if (rawPatty == null) return false;
         Item itemData = rawPatty.GetComponent<Item>();
+        if (itemData == null || itemData.Type != ItemType.RawPatty) return false;
 
-        if (itemData == null || itemData.Type != ItemType.RawPatty)
-            return false;
-
-        CookingSlot emptySlot = GetActiveEmptySlot();
-
-        if (emptySlot == null)
-            return false;
+        CookingSlot empty = null;
+        foreach (var slot in pans)
+        {
+            if (slot != null && slot.gameObject.activeInHierarchy && slot.IsEmpty)
+            {
+                empty = slot;
+                break;
+            }
+        }
+        if (empty == null) return false;
 
         Destroy(rawPatty);
-
-        emptySlot.TryStartCooking();
-
-        RefreshPickupButton();
-
+        empty.TryStartCooking();
         return true;
     }
 }
