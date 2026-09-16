@@ -45,6 +45,15 @@ public class DeliveryStation : MonoBehaviour
     private readonly List<GameObject> spawnedEatingMoney =
         new List<GameObject>();
 
+    private readonly Dictionary<
+        RestaurantTable,
+        List<GameObject>
+    > eatingMoneyByTable =
+        new Dictionary<
+            RestaurantTable,
+            List<GameObject>
+        >();
+
     private bool waitingForMoney;
     private bool waitingForEatingMoney;
 
@@ -981,6 +990,20 @@ public class DeliveryStation : MonoBehaviour
             eatingMoney /
             MoneyBillValue;
 
+        if (!eatingMoneyByTable.TryGetValue(
+        table,
+        out List<GameObject> tableMoney
+        ))
+            {
+                tableMoney =
+                    new List<GameObject>();
+
+                eatingMoneyByTable.Add(
+                    table,
+                    tableMoney
+                );
+            }
+
         if (moneyCount <= 0)
         {
             Debug.LogWarning(
@@ -995,9 +1018,9 @@ public class DeliveryStation : MonoBehaviour
             return;
         }
 
-        RecycleMoneyList(
+        /*RecycleMoneyList(
             spawnedEatingMoney
-        );
+        );*/
 
         eatingCustomer =
             customer;
@@ -1015,12 +1038,18 @@ public class DeliveryStation : MonoBehaviour
             i++
         )
         {
+            int existingMoneyCount =
+                tableMoney.Count;
+
+            int globalIndex =
+                existingMoneyCount + i;
+
             int layer =
-                i /
+                globalIndex /
                 moneyPerLayer;
 
             int indexInLayer =
-                i %
+                globalIndex %
                 moneyPerLayer;
 
             int column =
@@ -1099,6 +1128,14 @@ public class DeliveryStation : MonoBehaviour
             spawnedEatingMoney.Add(
                 moneyObject
             );
+
+            spawnedEatingMoney.Add(
+                moneyObject
+            );
+
+            tableMoney.Add(
+                moneyObject
+            );
         }
 
         waitingForEatingMoney = true;
@@ -1118,10 +1155,54 @@ public class DeliveryStation : MonoBehaviour
         DeliveryMoney collectedMoney
     )
     {
-        if (collectedMoney != null)
+        if (collectedMoney == null)
+            return;
+
+        GameObject moneyObject =
+            collectedMoney.gameObject;
+
+        // حذف از لیست کلی
+        spawnedEatingMoney.Remove(
+            moneyObject
+        );
+
+        // حذف از لیست میز مربوطه
+        List<RestaurantTable> tablesToClean =
+            new List<RestaurantTable>();
+
+        foreach (
+            KeyValuePair<
+                RestaurantTable,
+                List<GameObject>
+            > pair
+            in eatingMoneyByTable
+        )
         {
-            spawnedEatingMoney.Remove(
-                collectedMoney.gameObject
+            if (
+                pair.Value.Remove(
+                    moneyObject
+                )
+            )
+            {
+                if (pair.Value.Count == 0)
+                {
+                    tablesToClean.Add(
+                        pair.Key
+                    );
+                }
+
+                break;
+            }
+        }
+
+        for (
+            int i = 0;
+            i < tablesToClean.Count;
+            i++
+        )
+        {
+            eatingMoneyByTable.Remove(
+                tablesToClean[i]
             );
         }
 

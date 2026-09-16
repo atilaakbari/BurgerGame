@@ -140,6 +140,9 @@ public class CustomerAI : MonoBehaviour
         deliveryStation = station;
     }
 
+
+
+
     // =========================================================
     // AWAKE
     // =========================================================
@@ -195,6 +198,11 @@ public class CustomerAI : MonoBehaviour
         UpdateEating();
         TryTakeFreeTable();
         UpdateLocomotionAnimation();
+
+        if (sitState && carryState)
+        {
+            SetCarry(false);
+        }
     }
 
     // =========================================================
@@ -444,10 +452,9 @@ public class CustomerAI : MonoBehaviour
 
     private bool HasAnyReceivedFood()
     {
-        return
-            servedTray != null ||
-            burgerReceived ||
-            sodaReceived;
+        // فقط وقتی واقعاً Tray دست مشتری است،
+        // انیمیشن Carry فعال باشد.
+        return servedTray != null;
     }
 
     private void UpdateLocomotionAnimation()
@@ -513,20 +520,15 @@ public class CustomerAI : MonoBehaviour
         );
     }
 
-    public void SetCarry(
-        bool value
-    )
+    public void SetCarry(bool value)
     {
-        if (
-            animator == null ||
-            carryState == value
-        )
-        {
-            return;
-        }
-
         carryState = value;
 
+        if (animator == null)
+            return;
+
+        // همیشه مقدار Animator را تنظیم کن
+        // حتی اگر مقدار داخلی قبلاً همان بوده باشد.
         animator.SetBool(
             isCarryParameter,
             value
@@ -819,11 +821,14 @@ public class CustomerAI : MonoBehaviour
 
         waitingForTable = false;
 
+        // سینی را روی میز قرار بده
         PlaceTrayOnTable();
 
-        SetCarry(false);
-
+        // اول Sit
         SetSit(true);
+
+        // بعد Carry حتماً خاموش شود
+        SetCarry(false);
 
         if (currentOrder != null)
         {
@@ -882,6 +887,11 @@ public class CustomerAI : MonoBehaviour
         );
 
         ClearFoodFromTable();
+
+        // سفارش قبلی تمام شده؛
+        // وضعیت دریافت غذا هم ریست شود.
+        burgerReceived = false;
+        sodaReceived = false;
 
         if (deliveryStation != null)
         {
