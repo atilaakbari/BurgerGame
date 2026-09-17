@@ -73,36 +73,62 @@ public class BurgerAssemblyStation : MonoBehaviour
         if (placeButton == null)
             return;
 
-        GameObject topItem = playerPickup != null ? playerPickup.GetTopItem() : null;
-
-        bool show = playerInside && !burgerClosed && topItem != null;
-
-        // اگه آیتمی که دستشه اصلاً قابل Assembly نیست، دکمه نیاد
-        if (show)
+        // بیرون تریگر یا برگر بسته شده
+        if (!playerInside || burgerClosed)
         {
-            Item itemData = topItem.GetComponent<Item>();
-
-            if (itemData == null || !itemData.CanAssemble)
-                show = false;
+            placeButton.SetActive(false);
+            return;
         }
 
-        placeButton.SetActive(show);
-
-        if (!show)
+        if (playerPickup == null)
+        {
+            placeButton.SetActive(false);
             return;
+        }
 
-        if (placeButtonIcon == null)
+        // اگر برگر کامل دستش است → دکمه Place خاموش
+        if (playerPickup.HasBurger())
+        {
+            placeButton.SetActive(false);
             return;
+        }
 
-        Item iconItemData = topItem.GetComponent<Item>();
-
-        if (iconItemData == null)
+        GameObject topItem = playerPickup.GetTopItem();
+        if (topItem == null)
+        {
+            placeButton.SetActive(false);
             return;
+        }
 
-        Sprite sprite = GetIconSprite(iconItemData.Type);
+        // خود آبجکت برگر روی دست
+        if (topItem.GetComponent<Burger>() != null)
+        {
+            placeButton.SetActive(false);
+            return;
+        }
 
-        if (sprite != null)
-            placeButtonIcon.sprite = sprite;
+        Item itemData = topItem.GetComponent<Item>();
+        if (itemData == null || !itemData.CanAssemble)
+        {
+            placeButton.SetActive(false);
+            return;
+        }
+
+        // فقط وقتی واقعاً بشود گذاشت (مثلاً اول باید نون زیر باشد)
+        if (!CanPlaceItem(itemData))
+        {
+            placeButton.SetActive(false);
+            return;
+        }
+
+        placeButton.SetActive(true);
+
+        if (placeButtonIcon != null)
+        {
+            Sprite sprite = GetIconSprite(itemData.Type);
+            if (sprite != null)
+                placeButtonIcon.sprite = sprite;
+        }
     }
 
 
@@ -442,6 +468,117 @@ public class BurgerAssemblyStation : MonoBehaviour
 
         currentTop =
             GetTopPoint(placedItem);
+    }
+
+    /// <summary>
+    /// همان قوانین PlaceItem — بدون برداشتن از دست
+    /// </summary>
+    private bool CanPlaceItem(Item itemData)
+    {
+        if (itemData == null)
+            return false;
+
+        if (!itemData.CanAssemble)
+            return false;
+
+        // میز خالی → فقط نون پایین
+        if (burgerItems.Count == 0)
+            return itemData.Type == ItemType.BunBottem;
+
+        // نون بالا نمی‌تواند اول باشد (بالا پوشش داده شده)
+        // بقیه لایه‌ها بعد از نون پایین OK هستند
+        // اگر قانون دیگری داری اینجا اضافه کن
+
+        return true;
+    }
+
+    // =========================================================
+    // Worker API
+    // =========================================================
+
+    public bool IsBurgerClosed => burgerClosed;
+    public int AssembledCount => burgerItems.Count;
+
+    public List<ItemType> GetAssembledTypes()
+    {
+        if (burger != null && burger.items != null)
+            return new List<ItemType>(burger.items);
+        return new List<ItemType>();
+    }
+
+    public bool TryPlaceItemFromWorker(GameObject item)
+    {
+        if (item == null || burgerClosed || assemblyPoint == null)
+            return false;
+
+        Item itemData = item.GetComponent<Item>();
+        if (itemData == null || !itemData.CanAssemble)
+            return false;
+
+        if (burgerItems.Count == 0 && itemData.Type != ItemType.BunBottem)
+            return false;
+
+        if (itemData.Type == ItemType.BunTop && burgerItems.Count == 0)
+            return false;
+
+        item.transform.SetParent(null);
+        PlaceItemOnBurger(item, itemData);
+
+        if (itemData.Type == ItemType.BunTop)
+        {
+            burgerClosed = true;
+            BurgerPickupStation pickup = GetComponent<BurgerPickupStation>();
+            if (pickup != null)
+                pickup.SetBurgerReady(true);
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// برگر کامل را برای وورکر برمی‌دارد و میز را ریست می‌کند
+    /// </summary>
+    public GameObject TakeCompletedBurgerForWorker()
+    {
+        if (!burgerClosed || burger == null || burgerRootMissing())
+            return null;
+
+        // burger روی assemblyPoint / burger component
+        Transform root = burger.transform;
+        if (root == null)
+            return null;
+
+        if (burger.items == null || burger.items.Count == 0)
+            return null;
+
+        GameObject clone = Instantiate(root.gameObject);
+        clone.name = "Burger_Worker";
+
+        Burger cloneBurger = clone.GetComponent<Burger>();
+        if (cloneBurger != null)
+            cloneBurger.items = new List<ItemType>(burger.items);
+
+        BurgerAssemblyStation ca = clone.GetComponent<BurgerAssemblyStation>();
+        if (ca != null) ca.enabled = false;
+        BurgerPickupStation cp = clone.GetComponent<BurgerPickupStation>();
+        if (cp != null) cp.enabled = false;
+
+        foreach (var col in clone.GetComponentsInChildren<Collider>())
+            col.enabled = false;
+        foreach (var rb in clone.GetComponentsInChildren<Rigidbody>())
+        {
+            rb.isKinematic = true;
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+
+        ResetAssembly();
+        return clone;
+    }
+
+    private bool burgerRootMissing()
+    {
+        return burger == null;
     }
 
 }

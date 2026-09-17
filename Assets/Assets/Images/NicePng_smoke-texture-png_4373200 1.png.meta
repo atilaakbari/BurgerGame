@@ -1,0 +1,1538 @@
+fileFormatVersion: 2
+guid: cbe00d0b0ccb950458b0ba997b4634c3
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 0
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1726
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1071038b06411f4c83231028dca40b0
+      internalID: -1521518445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_1
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 1726
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a4e7d92c58f3fe645872e2f9b8b0bc53
+      internalID: 1287594125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_2
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 1726
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6fb0a8b9920838542ad4d3f90c9cbc89
+      internalID: 1587043829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_3
+      rect:
+        serializedVersion: 2
+        x: 1020
+        y: 1726
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e3482be2adfdc646bd3390640455ae7
+      internalID: -1722138083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_4
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 1726
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0d5b6e580718844c9c258f6a1f87244
+      internalID: -1564022681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_5
+      rect:
+        serializedVersion: 2
+        x: 1700
+        y: 1726
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: addc21f8e4c7cff46900dda087db1a06
+      internalID: -190721142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_6
+      rect:
+        serializedVersion: 2
+        x: 2040
+        y: 1726
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b23f9fe7331d67b4498687efbbe96bd7
+      internalID: 62679459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_7
+      rect:
+        serializedVersion: 2
+        x: 2380
+        y: 1726
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 281964bf7cb479a48ac62600393179ef
+      internalID: -342932914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_8
+      rect:
+        serializedVersion: 2
+        x: 2720
+        y: 1726
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37bda736dfa92684eb909aecaf469f23
+      internalID: -1837196650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_9
+      rect:
+        serializedVersion: 2
+        x: 3060
+        y: 1726
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 262be92cc59ade44ca2b142db7a5ba11
+      internalID: -1175285343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_10
+      rect:
+        serializedVersion: 2
+        x: 3400
+        y: 1726
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d7bbf0e63821cb4f8c8813419ec518b
+      internalID: -250349393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_11
+      rect:
+        serializedVersion: 2
+        x: 3740
+        y: 1726
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75abea9c9193b444d8b8719a3381ddfa
+      internalID: 678997928
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1451
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa669ae04085a664087b214208320290
+      internalID: -1004780033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_13
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 1451
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: afc6f7d5dc9c3b849b883fb76b4925ea
+      internalID: 1142972532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_14
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 1451
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 279345f0c716252488c9b9c00c2529dd
+      internalID: 1229407998
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_15
+      rect:
+        serializedVersion: 2
+        x: 1020
+        y: 1451
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c93b162312790ff42ae3226d38c00b5e
+      internalID: -335739188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_16
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 1451
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 601d035d723d51b4bb0938b9db1de8de
+      internalID: -1926660053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_17
+      rect:
+        serializedVersion: 2
+        x: 1700
+        y: 1451
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df52ba5bc6aee6643a797eb2f4f753ad
+      internalID: 1790314277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_18
+      rect:
+        serializedVersion: 2
+        x: 2040
+        y: 1451
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9cdc85263753d3b4aa9ef50adf9b887d
+      internalID: 1360690857
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_19
+      rect:
+        serializedVersion: 2
+        x: 2380
+        y: 1451
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a9e8de22e851b9e4785c53e8447293de
+      internalID: 619716587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_20
+      rect:
+        serializedVersion: 2
+        x: 2720
+        y: 1451
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 567bf58ff47228f4e93d2e28dd0007c8
+      internalID: 2007747637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_21
+      rect:
+        serializedVersion: 2
+        x: 3060
+        y: 1451
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b8c7f5bcce391dd46a53d0639495cbd9
+      internalID: 714340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_22
+      rect:
+        serializedVersion: 2
+        x: 3400
+        y: 1451
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0ac18520ead4ea4da42c1eaf4d61c01
+      internalID: -814166620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_23
+      rect:
+        serializedVersion: 2
+        x: 3740
+        y: 1451
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 589cacadefb46404ca334b1dffa01f30
+      internalID: 760510316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1176
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e50d809a3e1fe8f4893aba7e7f2b0640
+      internalID: 1701664466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_25
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 1176
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a147f912547e87a4e81868d489e3c604
+      internalID: 1359908601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_26
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 1176
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d49a6dc414bd97e479a5772fc264544d
+      internalID: -1652880449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_27
+      rect:
+        serializedVersion: 2
+        x: 1020
+        y: 1176
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad0c4478b8ecc2a48b3e75324767fcaa
+      internalID: 2033732653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_28
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 1176
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f09c3924adb0a04593c0aa854567e54
+      internalID: -1834897323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_29
+      rect:
+        serializedVersion: 2
+        x: 1700
+        y: 1176
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 886e2a62193d4fe49954ba12556c19ae
+      internalID: 409300569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_30
+      rect:
+        serializedVersion: 2
+        x: 2040
+        y: 1176
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee57145d50dec7d4fa4ba3d3048b8f85
+      internalID: 1170385592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_31
+      rect:
+        serializedVersion: 2
+        x: 2380
+        y: 1176
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 28a57ec0bd5f2d343b6b07a3ae5124ed
+      internalID: -381760884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_32
+      rect:
+        serializedVersion: 2
+        x: 2720
+        y: 1176
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ebe33ff4abce78f4c8f49a282e79663f
+      internalID: -792258430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_33
+      rect:
+        serializedVersion: 2
+        x: 3060
+        y: 1176
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0381b8b3373ae804daeb3f8691f20ace
+      internalID: -266601061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_34
+      rect:
+        serializedVersion: 2
+        x: 3400
+        y: 1176
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 972cee64a61dc8843a478de1e145ff1a
+      internalID: -2061364930
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_35
+      rect:
+        serializedVersion: 2
+        x: 3740
+        y: 1176
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2301b6ce594902a4b80b77f998327032
+      internalID: 1834442545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_36
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 901
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 49d37f465c3c9174794a3d9187e87c55
+      internalID: -210526486
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_37
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 901
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd63303e70bd06a4185bc41d1f2aa8b7
+      internalID: 1937422503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_38
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 901
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 921788ceb3fca0941a539f9cab6c0b79
+      internalID: 1366250289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_39
+      rect:
+        serializedVersion: 2
+        x: 1020
+        y: 901
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 57b311547b692654b90692724c1b6cc9
+      internalID: 836346325
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_40
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 901
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c3a50f0d20e42b4f817a81deb2d147e
+      internalID: 449742837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_41
+      rect:
+        serializedVersion: 2
+        x: 1700
+        y: 901
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c7c5bcdbde61a8a4197923facb430fa9
+      internalID: 1759763888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_42
+      rect:
+        serializedVersion: 2
+        x: 2040
+        y: 901
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1776382831b8b1d47905cdf3b6e4f885
+      internalID: -1444777690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_43
+      rect:
+        serializedVersion: 2
+        x: 2380
+        y: 901
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 057e97078f8f34446a1aa477791a7f41
+      internalID: 2042517505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_44
+      rect:
+        serializedVersion: 2
+        x: 2720
+        y: 901
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c602b3edc92242742a9e77f86a17d199
+      internalID: 1002163324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_45
+      rect:
+        serializedVersion: 2
+        x: 3060
+        y: 901
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c36f4c6e71ecd5f4ebec12cc15061323
+      internalID: 146545212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_46
+      rect:
+        serializedVersion: 2
+        x: 3400
+        y: 901
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 99d1f17640c508d49acac7780ae3365d
+      internalID: -792005708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_47
+      rect:
+        serializedVersion: 2
+        x: 3740
+        y: 901
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e8ee1022cf5e564c99ba54ad5720d11
+      internalID: -917585869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 626
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2136043f1d17ad45a3d0e102dd54484
+      internalID: -1406829971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_49
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 626
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25fe6b38d8b614c4f80f3f97a5b58d44
+      internalID: 1896486334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_50
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 626
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93655eb3130705741b837c9c6d94cf7a
+      internalID: -235386329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_51
+      rect:
+        serializedVersion: 2
+        x: 1020
+        y: 626
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c5c4384ee430bae429f709d37c962e4e
+      internalID: 1998793231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_52
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 626
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97a0133ee8763d74f812be5c22b57067
+      internalID: -697730686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_53
+      rect:
+        serializedVersion: 2
+        x: 1700
+        y: 626
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d83ba6f8a953204e801bc20eef796f9
+      internalID: -1795540386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_54
+      rect:
+        serializedVersion: 2
+        x: 2040
+        y: 626
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6afc98be158290a439b64c380d04c3de
+      internalID: 1995435888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_55
+      rect:
+        serializedVersion: 2
+        x: 2380
+        y: 626
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d15ce7d0df8ae8c44bd079d5795bbe0d
+      internalID: 347258135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_56
+      rect:
+        serializedVersion: 2
+        x: 2720
+        y: 626
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d514dd3831cf4fa4ebe4ae77c29fc925
+      internalID: 912976064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_57
+      rect:
+        serializedVersion: 2
+        x: 3060
+        y: 626
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: db45b64458ffe51428fa08c203018afd
+      internalID: 2008767142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_58
+      rect:
+        serializedVersion: 2
+        x: 3400
+        y: 626
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4511e001196a94f43a98816e42aa0c22
+      internalID: 128192366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NicePng_smoke-texture-png_4373200 1_59
+      rect:
+        serializedVersion: 2
+        x: 3740
+        y: 626
+        width: 340
+        height: 275
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6ca9a635262b214a9af0c7a6248d6d6
+      internalID: 1984935861
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 1ceac3868b0260d4ea05f488423ae905
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":340.0,"y":275.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      NicePng_smoke-texture-png_4373200 1_0: -1521518445
+      NicePng_smoke-texture-png_4373200 1_1: 1287594125
+      NicePng_smoke-texture-png_4373200 1_10: -250349393
+      NicePng_smoke-texture-png_4373200 1_11: 678997928
+      NicePng_smoke-texture-png_4373200 1_12: -1004780033
+      NicePng_smoke-texture-png_4373200 1_13: 1142972532
+      NicePng_smoke-texture-png_4373200 1_14: 1229407998
+      NicePng_smoke-texture-png_4373200 1_15: -335739188
+      NicePng_smoke-texture-png_4373200 1_16: -1926660053
+      NicePng_smoke-texture-png_4373200 1_17: 1790314277
+      NicePng_smoke-texture-png_4373200 1_18: 1360690857
+      NicePng_smoke-texture-png_4373200 1_19: 619716587
+      NicePng_smoke-texture-png_4373200 1_2: 1587043829
+      NicePng_smoke-texture-png_4373200 1_20: 2007747637
+      NicePng_smoke-texture-png_4373200 1_21: 714340
+      NicePng_smoke-texture-png_4373200 1_22: -814166620
+      NicePng_smoke-texture-png_4373200 1_23: 760510316
+      NicePng_smoke-texture-png_4373200 1_24: 1701664466
+      NicePng_smoke-texture-png_4373200 1_25: 1359908601
+      NicePng_smoke-texture-png_4373200 1_26: -1652880449
+      NicePng_smoke-texture-png_4373200 1_27: 2033732653
+      NicePng_smoke-texture-png_4373200 1_28: -1834897323
+      NicePng_smoke-texture-png_4373200 1_29: 409300569
+      NicePng_smoke-texture-png_4373200 1_3: -1722138083
+      NicePng_smoke-texture-png_4373200 1_30: 1170385592
+      NicePng_smoke-texture-png_4373200 1_31: -381760884
+      NicePng_smoke-texture-png_4373200 1_32: -792258430
+      NicePng_smoke-texture-png_4373200 1_33: -266601061
+      NicePng_smoke-texture-png_4373200 1_34: -2061364930
+      NicePng_smoke-texture-png_4373200 1_35: 1834442545
+      NicePng_smoke-texture-png_4373200 1_36: -210526486
+      NicePng_smoke-texture-png_4373200 1_37: 1937422503
+      NicePng_smoke-texture-png_4373200 1_38: 1366250289
+      NicePng_smoke-texture-png_4373200 1_39: 836346325
+      NicePng_smoke-texture-png_4373200 1_4: -1564022681
+      NicePng_smoke-texture-png_4373200 1_40: 449742837
+      NicePng_smoke-texture-png_4373200 1_41: 1759763888
+      NicePng_smoke-texture-png_4373200 1_42: -1444777690
+      NicePng_smoke-texture-png_4373200 1_43: 2042517505
+      NicePng_smoke-texture-png_4373200 1_44: 1002163324
+      NicePng_smoke-texture-png_4373200 1_45: 146545212
+      NicePng_smoke-texture-png_4373200 1_46: -792005708
+      NicePng_smoke-texture-png_4373200 1_47: -917585869
+      NicePng_smoke-texture-png_4373200 1_48: -1406829971
+      NicePng_smoke-texture-png_4373200 1_49: 1896486334
+      NicePng_smoke-texture-png_4373200 1_5: -190721142
+      NicePng_smoke-texture-png_4373200 1_50: -235386329
+      NicePng_smoke-texture-png_4373200 1_51: 1998793231
+      NicePng_smoke-texture-png_4373200 1_52: -697730686
+      NicePng_smoke-texture-png_4373200 1_53: -1795540386
+      NicePng_smoke-texture-png_4373200 1_54: 1995435888
+      NicePng_smoke-texture-png_4373200 1_55: 347258135
+      NicePng_smoke-texture-png_4373200 1_56: 912976064
+      NicePng_smoke-texture-png_4373200 1_57: 2008767142
+      NicePng_smoke-texture-png_4373200 1_58: 128192366
+      NicePng_smoke-texture-png_4373200 1_59: 1984935861
+      NicePng_smoke-texture-png_4373200 1_6: 62679459
+      NicePng_smoke-texture-png_4373200 1_60: 1217350037
+      NicePng_smoke-texture-png_4373200 1_61: 265223992
+      NicePng_smoke-texture-png_4373200 1_62: -1119999111
+      NicePng_smoke-texture-png_4373200 1_63: 701511296
+      NicePng_smoke-texture-png_4373200 1_64: 1594045623
+      NicePng_smoke-texture-png_4373200 1_65: -1387033746
+      NicePng_smoke-texture-png_4373200 1_66: -1582506585
+      NicePng_smoke-texture-png_4373200 1_67: -1721094327
+      NicePng_smoke-texture-png_4373200 1_68: -4992217
+      NicePng_smoke-texture-png_4373200 1_69: 1618979682
+      NicePng_smoke-texture-png_4373200 1_7: -342932914
+      NicePng_smoke-texture-png_4373200 1_70: 1580535960
+      NicePng_smoke-texture-png_4373200 1_71: -2129153922
+      NicePng_smoke-texture-png_4373200 1_72: -1549143104
+      NicePng_smoke-texture-png_4373200 1_73: -505249246
+      NicePng_smoke-texture-png_4373200 1_74: -652610011
+      NicePng_smoke-texture-png_4373200 1_75: 1420950569
+      NicePng_smoke-texture-png_4373200 1_76: 1733211869
+      NicePng_smoke-texture-png_4373200 1_77: -1557949391
+      NicePng_smoke-texture-png_4373200 1_78: 65950755
+      NicePng_smoke-texture-png_4373200 1_79: -213863034
+      NicePng_smoke-texture-png_4373200 1_8: -1837196650
+      NicePng_smoke-texture-png_4373200 1_80: -147653211
+      NicePng_smoke-texture-png_4373200 1_81: 191985433
+      NicePng_smoke-texture-png_4373200 1_82: 1179321973
+      NicePng_smoke-texture-png_4373200 1_83: 1160397048
+      NicePng_smoke-texture-png_4373200 1_9: -1175285343
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

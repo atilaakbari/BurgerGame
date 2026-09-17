@@ -263,4 +263,23 @@ public class CookingStation : MonoBehaviour
         empty.TryStartCooking();
         return true;
     }
+
+        public bool HasReadyCookedPatty()
+    {
+        return GetActiveReadySlot() != null;
+    }
+
+    public bool TryTakeCookedPattyForWorker(out GameObject cooked)
+    {
+        cooked = null;
+        CookingSlot slot = GetActiveReadySlot();
+        if (slot == null || cookedPattyPrefab == null)
+            return false;
+
+        cooked = Instantiate(cookedPattyPrefab);
+        slot.Collect();
+        RefreshPickupButton();
+        return true;
+    }
+
 }

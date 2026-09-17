@@ -304,4 +304,34 @@ public class CuttingStation : MonoBehaviour
         return emptySlot.TryStartCutting(inputItem, recipe);
     }
 
+    public bool HasReadyOutput(ItemType type)
+    {
+        if (slots == null) return false;
+        foreach (var s in slots)
+        {
+            if (s != null && s.gameObject.activeInHierarchy &&
+                s.IsReady && s.GetReadyItemType() == type)
+                return true;
+        }
+        return false;
+    }
+
+    public bool TryTakeOutputForWorker(ItemType type, out GameObject output)
+    {
+        output = null;
+        if (slots == null) return false;
+
+        foreach (var s in slots)
+        {
+            if (s == null || !s.gameObject.activeInHierarchy || !s.IsReady)
+                continue;
+            if (s.GetReadyItemType() != type)
+                continue;
+
+            if (s.TryTakeOneOutput(out output))
+                return output != null;
+        }
+        return false;
+    }
+
 }

@@ -744,151 +744,74 @@ public class DeliveryStation : MonoBehaviour
     // DELIVERY MONEY
     // =========================================================
 
-    private void SpawnMoneyPile(
-        int totalValue
-    )
+    private void SpawnMoneyPile(int totalValue)
     {
         if (totalValue <= 0)
             return;
 
-        if (
-            moneyPrefab == null ||
-            moneyPoint == null
-        )
+        if (moneyPrefab == null || moneyPoint == null)
         {
-            Debug.LogError(
-                "Money Prefab or Money Point is not assigned!"
-            );
-
+            Debug.LogError("Money Prefab or Money Point is not assigned!");
             return;
         }
 
-        int moneyCount =
-            totalValue /
-            MoneyBillValue;
-
-        if (moneyCount <= 0)
-        {
-            Debug.LogWarning(
-                "Amount is too low to spawn money!"
-            );
-
+        int billsToAdd = totalValue / MoneyBillValue;
+        if (billsToAdd <= 0)
             return;
+
+        // پول‌های null را از لیست پاک کن
+        for (int i = spawnedMoney.Count - 1; i >= 0; i--)
+        {
+            if (spawnedMoney[i] == null)
+                spawnedMoney.RemoveAt(i);
         }
 
-        RecycleMoneyList(
-            spawnedMoney
-        );
+        // ❌ RecycleMoneyList نزن — پول قبلی می‌ماند
 
-        int moneyPerLayer =
-            moneyColumns *
-            moneyRows;
+        int cols = Mathf.Max(1, moneyColumns);
+        int rows = Mathf.Max(1, moneyRows);
+        int perLayer = cols * rows;
 
-        if (moneyPerLayer <= 0)
-            moneyPerLayer = 1;
+        int startIndex = spawnedMoney.Count; // ادامه از اسکناس بعدی خالی
 
-        for (
-            int i = 0;
-            i < moneyCount;
-            i++
-        )
+        for (int i = 0; i < billsToAdd; i++)
         {
-            int layer =
-                i /
-                moneyPerLayer;
+            int index = startIndex + i;
 
-            int indexInLayer =
-                i %
-                moneyPerLayer;
+            int layer = index / perLayer;          // وقتی صفحه پر شد می‌رود بالا
+            int indexInLayer = index % perLayer;
 
-            int column =
-                indexInLayer %
-                moneyColumns;
+            int column = indexInLayer % cols;      // چپ → راست
+            int row = indexInLayer / cols;         // جلو → عقب (ردیف بعدی)
 
-            int row =
-                indexInLayer /
-                moneyColumns;
+            // وسط‌چین نسبت به moneyPoint
+            float x = (column - (cols - 1) * 0.5f) * moneySpacingX;
+            float z = (row - (rows - 1) * 0.5f) * moneySpacingZ;
+            float y = layer * moneyLayerHeight;
 
-            float offsetX =
-                (
-                    column -
-                    (
-                        moneyColumns - 1
-                    ) * 0.5f
-                ) *
-                moneySpacingX;
+            Vector3 worldPos = moneyPoint.TransformPoint(new Vector3(x, y, z));
 
-            float offsetZ =
-                (
-                    row -
-                    (
-                        moneyRows - 1
-                    ) * 0.5f
-                ) *
-                moneySpacingZ;
-
-            float offsetY =
-                layer *
-                moneyLayerHeight;
-
-            Vector3 localOffset =
-                new Vector3(
-                    offsetX,
-                    offsetY,
-                    offsetZ
-                );
-
-            Vector3 spawnPosition =
-                moneyPoint.TransformPoint(
-                    localOffset
-                );
-
-            GameObject moneyObject =
-                SpawnMoneyBill(
-                    spawnPosition,
-                    Quaternion.Euler(
-                        90f,
-                        0f,
-                        0f
-                    )
-                );
+            GameObject moneyObject = SpawnMoneyBill(
+                worldPos,
+                moneyPoint.rotation * Quaternion.Euler(90f, 0f, 0f)
+            );
 
             if (moneyObject == null)
                 continue;
 
-            DeliveryMoney money =
-                moneyObject.GetComponent<DeliveryMoney>();
-
+            DeliveryMoney money = moneyObject.GetComponent<DeliveryMoney>();
             if (money == null)
             {
-                RecycleMoney(
-                    moneyObject
-                );
-
+                RecycleMoney(moneyObject);
                 continue;
             }
 
-            money.Setup(
-                MoneyBillValue,
-                this
-            );
-
-            spawnedMoney.Add(
-                moneyObject
-            );
+            money.Setup(MoneyBillValue, this);
+            spawnedMoney.Add(moneyObject);
         }
 
         waitingForMoney = true;
-
         SyncMoneyPileToSave();
-
-        Debug.Log(
-            "Spawned money pile. Total value = " +
-            (
-                spawnedMoney.Count *
-                MoneyBillValue
-            )
-        );
     }
 
     // =========================================================
@@ -1328,5 +1251,83 @@ public class DeliveryStation : MonoBehaviour
                 moneyObject
             );
         }
+    }
+
+    // =========================================================
+    // Worker API
+    // =========================================================
+
+    public bool TryDeliverBurgerFromWorker(GameObject burgerObject, CustomerAI customer)
+    {
+        if (burgerObject == null || customer == null)
+            return false;
+
+        if (customer.CurrentOrder == null)
+            return false;
+
+        if (!customer.NeedsBurger)
+            return false;
+
+        if (currentTray == null)
+            CreateTray();
+
+        if (currentTray == null)
+            return false;
+
+        if (currentTray.ContainsBurger())
+            return false;
+
+        Burger burger = burgerObject.GetComponent<Burger>();
+        if (burger == null)
+            return false;
+
+        // تطبیق سفارش (اگر لایه‌ها فرق داشت لاگ بده)
+        if (!AreOrdersSame(burger.items, customer.CurrentOrder.items))
+        {
+            Debug.LogWarning("Worker burger does not match order items!");
+            // اگر هنوز می‌خوای سخت‌گیر باشی:
+            // return false;
+            // فعلاً برای وورکر اجازه می‌دهیم رد شود تا گیر نکند:
+            // اگر مطابقت اجباری است، خط بالا را uncomment و این را حذف کن
+        }
+
+        if (!AddBurgerToTray(burgerObject))
+            return false;
+
+        customer.SetDeliveryStation(this);
+        customer.SetQueueManager(queueManager);
+
+        TryFinishTrayDelivery(customer);
+        return true;
+    }
+
+    public bool TryDeliverSodaFromWorker(GameObject sodaObject, CustomerAI customer)
+    {
+        if (sodaObject == null || customer == null)
+            return false;
+
+        if (customer.CurrentOrder == null)
+            return false;
+
+        if (!customer.NeedsSoda)
+            return false;
+
+        if (currentTray == null)
+            CreateTray();
+
+        if (currentTray == null)
+            return false;
+
+        if (currentTray.ContainsSoda())
+            return false;
+
+        if (!AddSodaToTray(sodaObject))
+            return false;
+
+        customer.SetDeliveryStation(this);
+        customer.SetQueueManager(queueManager);
+
+        TryFinishTrayDelivery(customer);
+        return true;
     }
 }

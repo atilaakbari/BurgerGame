@@ -113,7 +113,7 @@ MonoBehaviour:
   moneyRows: 2
   moneySpacingX: 0.25
   moneySpacingZ: 0.55
-  moneyLayerHeight: 0.025
+  moneyLayerHeight: 0.2
 --- !u!1 &3746367973492058655
 GameObject:
   m_ObjectHideFlags: 0
