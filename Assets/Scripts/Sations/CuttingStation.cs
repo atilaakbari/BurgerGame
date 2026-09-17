@@ -234,4 +234,74 @@ public class CuttingStation : MonoBehaviour
         }
     }
 
+    // =========================================================
+    // Worker API
+    // =========================================================
+
+    public int GetEmptySlotCount()
+    {
+        int count = 0;
+        if (slots == null) return 0;
+
+        foreach (CuttingSlot slot in slots)
+        {
+            if (slot != null &&
+                slot.gameObject.activeInHierarchy &&
+                slot.IsEmpty)
+                count++;
+        }
+        return count;
+    }
+
+    public bool CanCut(ItemType type)
+    {
+        return FindRecipe(type) != null;
+    }
+
+    public CuttingRecipe GetRecipe(ItemType type)
+    {
+        return FindRecipe(type);
+    }
+
+    /// <summary>
+    /// تایپ داخل سفارش (مثلاً Lettuce_Cut) را به ورودی برش (Lettuce) تبدیل می‌کند
+    /// </summary>
+    public ItemType GetCutInputFromOrderItem(ItemType orderItem)
+    {
+        switch (orderItem)
+        {
+            case ItemType.Lettuce_Cut: return ItemType.Lettuce;
+            case ItemType.Tomato_Cut:  return ItemType.Tomato;
+            case ItemType.Onion_Cut:   return ItemType.Onion;
+            case ItemType.Cheese_Cut:  return ItemType.Cheese;
+
+            // اگر خود خام هم در سفارش بود
+            case ItemType.Lettuce:
+            case ItemType.Tomato:
+            case ItemType.Onion:
+            case ItemType.Cheese:
+                return orderItem;
+
+            default:
+                return ItemType.None;
+        }
+    }
+
+    public bool TryPlaceItemFromWorker(GameObject inputItem)
+    {
+        if (inputItem == null) return false;
+
+        Item itemData = inputItem.GetComponent<Item>();
+        if (itemData == null) return false;
+
+        CuttingRecipe recipe = FindRecipe(itemData.Type);
+        if (recipe == null) return false;
+
+        CuttingSlot emptySlot = GetActiveEmptySlot();
+        if (emptySlot == null) return false;
+
+        inputItem.transform.SetParent(null);
+        return emptySlot.TryStartCutting(inputItem, recipe);
+    }
+
 }
