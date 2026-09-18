@@ -71,7 +71,17 @@ public class TrashBin : MonoBehaviour
 
                 if (item != null)
                 {
-                    Destroy(item);
+                    //Destroy(item);
+
+                    //GameObject item = playerPickup.DropItem();
+                    if (item != null)
+                    {
+                        Item data = item.GetComponent<Item>();
+                        if (data != null)
+                            GameFoodEvents.RaiseItemTrashed(data.Type);
+
+                        Destroy(item);
+                    }
 
                     Debug.Log(
                         "Item Destroyed By Trash"

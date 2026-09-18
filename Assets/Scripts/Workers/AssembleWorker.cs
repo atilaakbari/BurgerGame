@@ -18,7 +18,8 @@ public class AssembleWorker : MonoBehaviour
         TakingBurger,
         GoingToSoda,
         GoingToDelivery,
-        Delivering
+        Delivering,
+        GoingToTrash
     }
 
     [Serializable]
@@ -37,9 +38,9 @@ public class AssembleWorker : MonoBehaviour
     [SerializeField] private CookingStation cookingStation;
     [SerializeField] private CuttingStation cuttingStation;
     [SerializeField] private DeliveryStation deliveryStation;
-    [SerializeField] private PlayerPickup playerPickup; // برای تشخیص اینکه پلیر آیتم لازم را برداشته
+    [SerializeField] private PlayerPickup playerPickup;
 
-    [Header("Sources - نون و سودا")]
+    [Header("Sources")]
     [SerializeField] private ItemSource bottomBunSource;
     [SerializeField] private ItemSource topBunSource;
     [SerializeField] private ItemSource sodaSource;
@@ -49,59 +50,84 @@ public class AssembleWorker : MonoBehaviour
     [SerializeField] private Transform deliveryPoint;
     [SerializeField] private Transform cookingPoint;
     [SerializeField] private Transform cuttingPoint;
+    [SerializeField] private Transform trashPoint;
 
     [Header("Animation")]
     [SerializeField] private string isWalkParameter = "IsWalk";
     [SerializeField] private string isCarryParameter = "IsCarry";
 
     [Header("Carry / Speed")]
-    [Min(1)] [SerializeField] private int carryCapacity = 1;
+    [Min(1)]
+    [SerializeField] private int carryCapacity = 1;
     [SerializeField] private float moveSpeed = 2.5f;
     [SerializeField] private float stoppingDistance = 0.35f;
+    [SerializeField] private float burgerCarryScale = 0.45f;
 
     [Header("Carry Visual")]
     [SerializeField] private Transform carryPoint;
     [SerializeField] private float carryHeightStart = 0.8f;
     [SerializeField] private float carryHeightStep = 0.15f;
-    [SerializeField] private float burgerCarryScale = 0.45f; // مثل پلیر تنظیم کن
 
+    [Header("Settings")]
     [SerializeField] private float checkInterval = 0.25f;
 
     private WorkerState currentState = WorkerState.Idle;
     private readonly List<GameObject> carried = new List<GameObject>();
-    private Coroutine loop;
     private GameObject carriedBurger;
+    private Coroutine loop;
 
     public int CarryCapacity => carryCapacity;
     public float MoveSpeed => moveSpeed;
+    public WorkerState CurrentState => currentState;
 
     private void Awake()
     {
-        if (agent == null) agent = GetComponent<NavMeshAgent>();
-        if (animator == null) animator = GetComponentInChildren<Animator>();
+        if (agent == null)
+            agent = GetComponent<NavMeshAgent>();
+
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
+
         if (agent != null)
         {
             agent.speed = moveSpeed;
             agent.stoppingDistance = stoppingDistance;
+            agent.autoBraking = true;
         }
-        ForceIdle();
+
+        SetWalk(false);
+        SetCarry(false);
     }
 
-    private void Start() => StartWorker();
+    private void Start()
+    {
+        StartWorker();
+    }
 
     public void StartWorker()
     {
-        if (loop != null) StopCoroutine(loop);
+        if (loop != null)
+            StopCoroutine(loop);
+
         loop = StartCoroutine(WorkerLoop());
     }
 
     public void StopWorker()
     {
-        if (loop != null) { StopCoroutine(loop); loop = null; }
+        if (loop != null)
+        {
+            StopCoroutine(loop);
+            loop = null;
+        }
+
         StopAgent();
-        ForceIdle();
+        SetWalk(false);
+        UpdateCarryAnim();
     }
 
+    // =========================================================
+    // MAIN LOOP
+    // =========================================================
     private IEnumerator WorkerLoop()
     {
         while (true)
@@ -109,32 +135,54 @@ public class AssembleWorker : MonoBehaviour
             if (!RefsOk())
             {
                 currentState = WorkerState.Idle;
-                ForceIdle();
+                StopAgent();
+                SetWalk(false);
+                UpdateCarryAnim();
                 yield return new WaitForSeconds(checkInterval);
                 continue;
             }
 
             CustomerAI customer = queueManager.GetFirstCustomer();
+
             if (customer == null || customer.CurrentOrder == null)
             {
                 currentState = WorkerState.Idle;
-                ForceIdle();
+                yield return DiscardAllCarried();
+                ClearCarriedBurger();
+                StopAgent();
+                SetWalk(false);
+                SetCarry(false);
                 yield return new WaitForSeconds(checkInterval);
                 continue;
             }
 
             BurgerOrder order = customer.CurrentOrder;
 
-            // اگر برگر هنوز کامل نشده → اسمبل لایه به لایه
+            // پلیر برگر را برداشته تا خودش تحویل دهد
+            if (customer.NeedsBurger && PlayerHoldingBurger())
+            {
+                currentState = WorkerState.WaitingPlayer;
+                yield return DiscardAllCarried();
+                ClearCarriedBurger();
+                StopAgent();
+                SetWalk(false);
+                SetCarry(false);
+                yield return new WaitForSeconds(checkInterval);
+                continue;
+            }
+
+            // برگر روی میز آماده است و دست پلیر نیست
+            if (assemblyStation.IsBurgerClosed && !PlayerHoldingBurger())
+            {
+                yield return DeliverOrder(customer, order);
+                yield return new WaitForSeconds(0.2f);
+                continue;
+            }
+
+            // ادامه اسمبل
             if (!assemblyStation.IsBurgerClosed)
             {
                 yield return AssembleOrder(order);
-            }
-
-            // برگر آماده → بردار، سودا (در صورت نیاز)، تحویل
-            if (assemblyStation.IsBurgerClosed)
-            {
-                yield return DeliverOrder(customer, order);
             }
 
             yield return null;
@@ -142,55 +190,52 @@ public class AssembleWorker : MonoBehaviour
     }
 
     // =========================================================
-    // اسمبل بر اساس سفارش از پایین به بالا
+    // ASSEMBLE
     // =========================================================
     private IEnumerator AssembleOrder(BurgerOrder order)
     {
-        if (order.items == null) yield break;
-
         while (!assemblyStation.IsBurgerClosed)
         {
-            List<ItemType> assembled = assemblyStation.GetAssembledTypes();
-            int nextIndex = assembled.Count;
-
-            // همه لایه‌های برگر چیده شده ولی نون بالا نرفته؟
-            // سفارش ممکن است BunTop داشته باشد
-            if (nextIndex >= order.items.Count)
+            if (PlayerHoldingBurger())
             {
-                // اگر سفارش نون بالا ندارد ولی برگر باز است — صبر
-                currentState = WorkerState.WaitingIngredients;
-                ForceIdle();
+                currentState = WorkerState.WaitingPlayer;
+                yield return DiscardAllCarried();
+                yield break;
+            }
+
+            if (!TryGetNextNeeded(order, out ItemType needed, out int idx))
+            {
                 yield return new WaitForSeconds(checkInterval);
                 yield break;
             }
 
-            ItemType needed = order.items[nextIndex];
+            // آیتم اضافه در دست (نون تکراری و ...) را دور بینداز
+            yield return DiscardUnneededCarried(needed);
 
-            // سودا جزو لایه‌های برگر نیست
-            if (needed == ItemType.Soda)
+            // پلیر همان آیتم لازم را در دست دارد → صبر تا بگذارد
+            if (PlayerHolding(needed))
             {
-                // رد کن — در سفارش نباید وسط لایه‌ها باشد
+                currentState = WorkerState.WaitingPlayer;
+                StopAgent();
+                SetWalk(false);
+                UpdateCarryAnim();
                 yield return new WaitForSeconds(checkInterval);
                 continue;
             }
 
-            // اگر پلیر همان لایه را خودش گذاشته، برو بعدی
-            // (assembled.Count قبلاً nextIndex بوده؛ اگر بیشتر شد یعنی پلیر گذاشت)
-            if (assembled.Count > nextIndex)
+            // صبر برای آماده شدن از کوک/کات
+            yield return WaitUntilAvailableOrPlayerPlaced(needed, idx);
+
+            // شاید پلیر وسط صبر گذاشت
+            if (assemblyStation.GetAssembledTypes().Count > idx)
                 continue;
 
-            // صبر برای آماده شدن توسط وورکرهای دیگر / یا پلیر
-            yield return WaitUntilItemAvailableOrPlayerPlaced(needed, nextIndex, order);
-
-            // دوباره چک کن شاید پلیر گذاشته
-            assembled = assemblyStation.GetAssembledTypes();
-            if (assembled.Count > nextIndex)
+            if (PlayerHolding(needed))
                 continue;
 
-            if (assemblyStation.IsBurgerClosed)
+            if (assemblyStation.IsBurgerClosed || PlayerHoldingBurger())
                 yield break;
 
-            // گرفتن آیتم
             yield return FetchItem(needed);
 
             if (carried.Count == 0)
@@ -199,56 +244,76 @@ public class AssembleWorker : MonoBehaviour
                 continue;
             }
 
-            // گذاشتن روی میز اسمبل
+            // قبل از گذاشتن: پلیر همان لایه را گذاشت؟
+            if (assemblyStation.GetAssembledTypes().Count > idx)
+            {
+                yield return DiscardUnneededCarried(ItemType.None);
+                continue;
+            }
+
             yield return PlaceCarriedOnAssembly();
         }
     }
 
-    /// <summary>
-    /// صبر می‌کند تا:
-    /// - آیتم روی کوک/کات آماده شود، یا
-    /// - پلیر آن را بردارد و روی اسمبل بگذارد، یا
-    /// - نون/سودا باشد (همیشه در دسترس از اسپانر)
-    /// </summary>
-    private IEnumerator WaitUntilItemAvailableOrPlayerPlaced(
-        ItemType needed, int expectedIndex, BurgerOrder order)
+    private bool TryGetNextNeeded(BurgerOrder order, out ItemType needed, out int index)
+    {
+        needed = ItemType.None;
+        index = -1;
+
+        if (order == null || order.items == null)
+            return false;
+
+        List<ItemType> onTable = assemblyStation.GetAssembledTypes();
+        index = onTable.Count;
+
+        if (index >= order.items.Count)
+            return false;
+
+        needed = order.items[index];
+
+        if (needed == ItemType.Soda)
+            return false;
+
+        return true;
+    }
+
+    private IEnumerator WaitUntilAvailableOrPlayerPlaced(ItemType needed, int expectedIndex)
     {
         while (true)
         {
-            // پلیر گذاشت؟
-            List<ItemType> assembled = assemblyStation.GetAssembledTypes();
-            if (assembled.Count > expectedIndex)
+            if (assemblyStation.GetAssembledTypes().Count > expectedIndex)
                 yield break;
 
-            if (assemblyStation.IsBurgerClosed)
+            if (assemblyStation.IsBurgerClosed || PlayerHoldingBurger())
                 yield break;
 
-            // نون‌ها را خود وورکر می‌آورد — منتظر دیگران نیست
+            // نون را خود وورکر می‌آورد
             if (needed == ItemType.BunBottem || needed == ItemType.BunTop)
                 yield break;
 
-            // پتی پخته
             if (needed == ItemType.CookedPatty)
             {
                 if (cookingStation != null && cookingStation.HasReadyCookedPatty())
                     yield break;
 
-                // پلیر برداشته؟ (دستش پتی است) → صبر تا روی اسمبل بگذارد
                 if (PlayerHolding(needed))
                 {
                     currentState = WorkerState.WaitingPlayer;
-                    ForceIdle();
+                    StopAgent();
+                    SetWalk(false);
+                    UpdateCarryAnim();
                     yield return new WaitForSeconds(checkInterval);
                     continue;
                 }
 
                 currentState = WorkerState.WaitingIngredients;
-                ForceIdle();
+                StopAgent();
+                SetWalk(false);
+                UpdateCarryAnim();
                 yield return new WaitForSeconds(checkInterval);
                 continue;
             }
 
-            // آیتم‌های برش‌خورده
             if (IsCutOutput(needed))
             {
                 if (cuttingStation != null && cuttingStation.HasReadyOutput(needed))
@@ -257,18 +322,21 @@ public class AssembleWorker : MonoBehaviour
                 if (PlayerHolding(needed))
                 {
                     currentState = WorkerState.WaitingPlayer;
-                    ForceIdle();
+                    StopAgent();
+                    SetWalk(false);
+                    UpdateCarryAnim();
                     yield return new WaitForSeconds(checkInterval);
                     continue;
                 }
 
                 currentState = WorkerState.WaitingIngredients;
-                ForceIdle();
+                StopAgent();
+                SetWalk(false);
+                UpdateCarryAnim();
                 yield return new WaitForSeconds(checkInterval);
                 continue;
             }
 
-            // بقیه — تلاش برای آوردن
             yield break;
         }
     }
@@ -281,17 +349,13 @@ public class AssembleWorker : MonoBehaviour
                t == ItemType.Cheese_Cut;
     }
 
-    private bool PlayerHolding(ItemType type)
-    {
-        if (playerPickup == null) return false;
-        return playerPickup.HasItem(type);
-    }
-
+    // =========================================================
+    // FETCH
+    // =========================================================
     private IEnumerator FetchItem(ItemType needed)
     {
-        // ظرفیت: چند تا پشت‌سرهم (فعلاً برای اسمبل معمولاً ۱ به ۱ دقیق‌تر است)
-        int space = carryCapacity - carried.Count;
-        if (space <= 0) yield break;
+        if (carryCapacity - carried.Count <= 0)
+            yield break;
 
         if (needed == ItemType.BunBottem)
         {
@@ -308,29 +372,33 @@ public class AssembleWorker : MonoBehaviour
         if (needed == ItemType.CookedPatty)
         {
             currentState = WorkerState.GoingToSource;
-            yield return MoveTo(cookingPoint != null ? cookingPoint : cookingStation.transform);
+            Transform p = cookingPoint != null ? cookingPoint : cookingStation.transform;
+            yield return MoveTo(p);
 
-            if (cookingStation.TryTakeCookedPattyForWorker(out GameObject patty))
+            if (cookingStation != null &&
+                cookingStation.TryTakeCookedPattyForWorker(out GameObject patty))
             {
                 carried.Add(patty);
                 PrepareCarry(patty, carried.Count - 1);
                 UpdateCarryAnim();
             }
+
             yield break;
         }
 
         if (IsCutOutput(needed))
         {
             currentState = WorkerState.GoingToSource;
-            yield return MoveTo(cuttingPoint != null ? cuttingPoint : cuttingStation.transform);
+            Transform p = cuttingPoint != null ? cuttingPoint : cuttingStation.transform;
+            yield return MoveTo(p);
 
-            if (cuttingStation.TryTakeOutputForWorker(needed, out GameObject cut))
+            if (cuttingStation != null &&
+                cuttingStation.TryTakeOutputForWorker(needed, out GameObject cut))
             {
                 carried.Add(cut);
                 PrepareCarry(cut, carried.Count - 1);
                 UpdateCarryAnim();
             }
-            yield break;
         }
     }
 
@@ -340,6 +408,7 @@ public class AssembleWorker : MonoBehaviour
             yield break;
 
         currentState = WorkerState.GoingToSource;
+
         Transform stand = source.standPoint != null
             ? source.standPoint
             : source.spawner.transform;
@@ -354,25 +423,26 @@ public class AssembleWorker : MonoBehaviour
 
         carried.Add(item);
         PrepareCarry(item, carried.Count - 1);
-
-        // اجباری
         SetCarry(true);
-        if (animator != null)
-            animator.SetBool(isCarryParameter, true);
-
         UpdateCarryAnim();
     }
 
     private IEnumerator PlaceCarriedOnAssembly()
     {
         currentState = WorkerState.GoingToAssembly;
-        yield return MoveTo(assemblyPoint != null ? assemblyPoint : assemblyStation.transform);
+
+        Transform p = assemblyPoint != null
+            ? assemblyPoint
+            : assemblyStation.transform;
+
+        yield return MoveTo(p);
 
         currentState = WorkerState.PlacingItem;
 
         for (int i = carried.Count - 1; i >= 0; i--)
         {
             GameObject item = carried[i];
+
             if (item == null)
             {
                 carried.RemoveAt(i);
@@ -388,35 +458,50 @@ public class AssembleWorker : MonoBehaviour
         }
 
         StopAgent();
-        UpdateCarryAnim();
         SetWalk(false);
+        UpdateCarryAnim();
     }
 
     // =========================================================
-    // تحویل برگر + سودا
+    // DELIVER — اول برگر، بعد سودا (جدا)
     // =========================================================
     private IEnumerator DeliverOrder(CustomerAI customer, BurgerOrder order)
     {
         if (customer == null || order == null)
             yield break;
 
-        // ---------- ۱) فقط برگر ----------
+        // اگر وسط کار پلیر برگر را برداشت
+        if (PlayerHoldingBurger())
+            yield break;
+
+        // ----- برگر -----
         currentState = WorkerState.TakingBurger;
-        yield return MoveTo(assemblyPoint != null ? assemblyPoint : assemblyStation.transform);
+
+        Transform ap = assemblyPoint != null
+            ? assemblyPoint
+            : assemblyStation.transform;
+
+        yield return MoveTo(ap);
+
+        if (!assemblyStation.IsBurgerClosed || PlayerHoldingBurger())
+            yield break;
 
         GameObject burgerObj = assemblyStation.TakeCompletedBurgerForWorker();
         if (burgerObj == null)
-        {
-            yield return new WaitForSeconds(checkInterval);
             yield break;
-        }
 
         carriedBurger = burgerObj;
         PrepareCarry(burgerObj, 0);
+        SetCarry(true);
         UpdateCarryAnim();
 
         currentState = WorkerState.GoingToDelivery;
-        yield return MoveTo(deliveryPoint != null ? deliveryPoint : deliveryStation.transform);
+
+        Transform dp = deliveryPoint != null
+            ? deliveryPoint
+            : deliveryStation.transform;
+
+        yield return MoveTo(dp);
 
         currentState = WorkerState.Delivering;
 
@@ -424,56 +509,164 @@ public class AssembleWorker : MonoBehaviour
         if (burgerOk)
             carriedBurger = null;
         else
-        {
-            // برگر روی دست نماند — اگر نشد، نابود نکن؛ یک فریم بعد دوباره تلاش
             Debug.LogWarning("AssembleWorker: burger delivery failed");
+
+        SetWalk(false);
+        UpdateCarryAnim();
+
+        // بدون سودا تمام
+        if (!order.wantsSoda)
+        {
+            SetCarry(false);
+            yield break;
+        }
+
+        // ----- سودا (سفر جدا) -----
+        if (customer.NeedsSoda)
+        {
+            currentState = WorkerState.GoingToSoda;
+            yield return TakeFromSource(sodaSource);
+
+            if (carried.Count == 0)
+            {
+                Debug.LogWarning("AssembleWorker: could not get soda");
+                yield break;
+            }
+
+            // IsCarry باید true بماند تا MoveTo
+            SetCarry(true);
+
+            GameObject sodaObj = carried[carried.Count - 1];
+
+            currentState = WorkerState.GoingToDelivery;
+            yield return MoveTo(dp);
+
+            currentState = WorkerState.Delivering;
+
+            carried.Remove(sodaObj);
+            bool sodaOk = deliveryStation.TryDeliverSodaFromWorker(sodaObj, customer);
+
+            if (!sodaOk)
+            {
+                Debug.LogWarning("AssembleWorker: soda delivery failed");
+                if (sodaObj != null)
+                    Destroy(sodaObj);
+            }
+
+            SetWalk(false);
+            SetCarry(false);
+            UpdateCarryAnim();
+        }
+    }
+
+    // =========================================================
+    // DISCARD / TRASH
+    // =========================================================
+    private IEnumerator DiscardUnneededCarried(ItemType currentlyNeeded)
+    {
+        bool needTrashMove = false;
+
+        for (int i = 0; i < carried.Count; i++)
+        {
+            if (carried[i] == null)
+                continue;
+
+            Item item = carried[i].GetComponent<Item>();
+            if (item == null || item.Type != currentlyNeeded)
+            {
+                needTrashMove = true;
+                break;
+            }
+        }
+
+        if (!needTrashMove && currentlyNeeded != ItemType.None)
+            yield break;
+
+        if (needTrashMove && trashPoint != null)
+        {
+            currentState = WorkerState.GoingToTrash;
+            yield return MoveTo(trashPoint);
+        }
+
+        for (int i = carried.Count - 1; i >= 0; i--)
+        {
+            GameObject go = carried[i];
+
+            if (go == null)
+            {
+                carried.RemoveAt(i);
+                continue;
+            }
+
+            Item item = go.GetComponent<Item>();
+
+            // currentlyNeeded == None یعنی همه را دور بینداز
+            if (currentlyNeeded == ItemType.None ||
+                item == null ||
+                item.Type != currentlyNeeded)
+            {
+                Destroy(go);
+                carried.RemoveAt(i);
+            }
         }
 
         UpdateCarryAnim();
-        ForceIdle();
+    }
 
-        // اگر سفارش کامل شد (بدون سودا) مشتری سینی را گرفته
-        // بعد از برگر — دست خالی
-        carriedBurger = null;
-        SetWalk(false);
-        SetCarry(false);
+    private IEnumerator DiscardAllCarried()
+    {
+        if (carried.Count == 0)
+            yield break;
 
-        if (order.wantsSoda && customer.NeedsSoda)
+        if (trashPoint != null)
         {
-            yield return TakeFromSource(sodaSource);
-
-            // بعد از گرفتن سودا حتماً:
-            SetCarry(carried.Count > 0);
-
-            if (carried.Count == 0)
-                yield break;
-
-            GameObject sodaObj = carried[carried.Count - 1];
-            // تا لحظه تحویل در carried بماند تا MoveTo با IsCarry راه برود
-
-            currentState = WorkerState.GoingToDelivery;
-            yield return MoveTo(deliveryPoint != null ? deliveryPoint : deliveryStation.transform);
-
-            // اینجا از لیست بردار و تحویل بده
-            carried.Remove(sodaObj);
-            deliveryStation.TryDeliverSodaFromWorker(sodaObj, customer);
-
-            SetCarry(false);
-            SetWalk(false);
+            currentState = WorkerState.GoingToTrash;
+            yield return MoveTo(trashPoint);
         }
 
-        yield return new WaitForSeconds(0.3f);
+        for (int i = carried.Count - 1; i >= 0; i--)
+        {
+            if (carried[i] != null)
+                Destroy(carried[i]);
+            carried.RemoveAt(i);
+        }
+
+        UpdateCarryAnim();
+    }
+
+    private void ClearCarriedBurger()
+    {
+        if (carriedBurger != null)
+        {
+            Destroy(carriedBurger);
+            carriedBurger = null;
+        }
     }
 
     // =========================================================
-    // Move / Anim / Carry
+    // HELPERS
     // =========================================================
     private bool RefsOk()
     {
-        return agent != null && queueManager != null &&
-               assemblyStation != null && deliveryStation != null;
+        return agent != null &&
+               queueManager != null &&
+               assemblyStation != null &&
+               deliveryStation != null;
     }
 
+    private bool PlayerHolding(ItemType type)
+    {
+        return playerPickup != null && playerPickup.HasItem(type);
+    }
+
+    private bool PlayerHoldingBurger()
+    {
+        return playerPickup != null && playerPickup.HasBurger();
+    }
+
+    // =========================================================
+    // MOVE
+    // =========================================================
     private IEnumerator MoveTo(Transform target)
     {
         if (target == null || agent == null)
@@ -484,6 +677,7 @@ public class AssembleWorker : MonoBehaviour
 
         agent.isStopped = false;
         agent.speed = moveSpeed;
+        agent.stoppingDistance = stoppingDistance;
         agent.SetDestination(target.position);
 
         while (true)
@@ -493,12 +687,14 @@ public class AssembleWorker : MonoBehaviour
             if (animator != null)
             {
                 animator.SetBool(isWalkParameter, true);
-                animator.SetBool(isCarryParameter, carrying); // با سودا true
+                animator.SetBool(isCarryParameter, carrying);
             }
 
             if (!agent.pathPending &&
                 agent.remainingDistance <= agent.stoppingDistance + 0.05f)
+            {
                 break;
+            }
 
             yield return null;
         }
@@ -506,6 +702,7 @@ public class AssembleWorker : MonoBehaviour
         StopAgent();
 
         bool stillCarrying = carried.Count > 0 || carriedBurger != null;
+
         if (animator != null)
         {
             animator.SetBool(isWalkParameter, false);
@@ -515,15 +712,21 @@ public class AssembleWorker : MonoBehaviour
 
     private void StopAgent()
     {
-        if (agent == null || !agent.enabled) return;
+        if (agent == null || !agent.enabled)
+            return;
+
         agent.isStopped = true;
         agent.ResetPath();
         agent.velocity = Vector3.zero;
     }
 
+    // =========================================================
+    // CARRY VISUAL + ANIM
+    // =========================================================
     private void PrepareCarry(GameObject item, int index)
     {
-        if (item == null) return;
+        if (item == null)
+            return;
 
         Transform parent = carryPoint != null ? carryPoint : transform;
         item.transform.SetParent(parent, false);
@@ -531,7 +734,6 @@ public class AssembleWorker : MonoBehaviour
             Vector3.up * (carryHeightStart + index * carryHeightStep);
         item.transform.localRotation = Quaternion.identity;
 
-        // برگر کوچک‌تر در دست
         if (item.GetComponent<Burger>() != null)
             item.transform.localScale = Vector3.one * burgerCarryScale;
 
@@ -544,28 +746,13 @@ public class AssembleWorker : MonoBehaviour
         }
 
         Collider col = item.GetComponent<Collider>();
-        if (col != null) col.enabled = false;
-    }
-
-    private void ForceIdle()
-    {
-        SetWalk(false);
-        if (carried.Count == 0 && carriedBurger == null)
-            SetCarry(false);
-        else
-            UpdateCarryAnim();
+        if (col != null)
+            col.enabled = false;
     }
 
     private void UpdateCarryAnim()
     {
-        bool hasSomething = carried.Count > 0 || carriedBurger != null;
-        SetCarry(hasSomething);
-    }
-
-    private void SetCarry(bool value)
-    {
-        if (animator != null)
-            animator.SetBool(isCarryParameter, value);
+        SetCarry(carried.Count > 0 || carriedBurger != null);
     }
 
     private void SetWalk(bool value)
@@ -574,11 +761,28 @@ public class AssembleWorker : MonoBehaviour
             animator.SetBool(isWalkParameter, value);
     }
 
-    public void UpgradeCapacity(int c) => carryCapacity = Mathf.Max(1, c);
-    public void UpgradeSpeed(float s)
+    private void SetCarry(bool value)
     {
-        if (s <= 0) return;
-        moveSpeed = s;
-        if (agent != null) agent.speed = s;
+        if (animator != null)
+            animator.SetBool(isCarryParameter, value);
+    }
+
+    // =========================================================
+    // UPGRADES
+    // =========================================================
+    public void UpgradeCapacity(int newCapacity)
+    {
+        carryCapacity = Mathf.Max(1, newCapacity);
+    }
+
+    public void UpgradeSpeed(float newSpeed)
+    {
+        if (newSpeed <= 0f)
+            return;
+
+        moveSpeed = newSpeed;
+
+        if (agent != null)
+            agent.speed = moveSpeed;
     }
 }

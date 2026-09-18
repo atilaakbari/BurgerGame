@@ -6,17 +6,32 @@ public class GameSaveData
 {
     public int playerLevel = 1;
     public int currentXP = 0;
-
     public int money = 0;
 
-    // آپگرید همه‌ی استیشن‌ها (کوکینگ، کاتینگ، هر چی بعداً اضافه شد) با شناسه‌ی یکتا
     public List<StationSaveEntry> stationLevels = new List<StationSaveEntry>();
-
-    // وضعیت همه‌ی UnlockZone ها - هم باز شده یا نه، هم اگه نشده چقدر پول باقی مونده
     public List<ZoneSaveEntry> zones = new List<ZoneSaveEntry>();
-
-    // پول‌های نقدی که رو زمین (کنار DeliveryStation) مونده و برداشته نشده
     public List<MoneyPileEntry> moneyPiles = new List<MoneyPileEntry>();
+
+    public int totalBurgersDelivered = 0;
+    public List<AchievementSaveEntry> achievements = new List<AchievementSaveEntry>();
+
+    public void EnsureLists()
+    {
+        if (stationLevels == null)
+            stationLevels = new List<StationSaveEntry>();
+
+        if (zones == null)
+            zones = new List<ZoneSaveEntry>();
+
+        if (moneyPiles == null)
+            moneyPiles = new List<MoneyPileEntry>();
+
+        if (achievements == null)
+            achievements = new List<AchievementSaveEntry>();
+
+        if (totalBurgersDelivered < 0)
+            totalBurgersDelivered = 0;
+    }
 }
 
 [Serializable]
@@ -31,13 +46,20 @@ public class ZoneSaveEntry
 {
     public string id;
     public bool unlocked;
-    public int remainingCost; // فقط وقتی unlocked=false معنی داره
+    public int remainingCost;
 }
 
 [Serializable]
 public class MoneyPileEntry
 {
     public string stationId;
-    public int amount; // مجموع ارزش پول‌های نقدیِ روی زمین این ایستگاه
+    public int amount;
 }
 
+[Serializable]
+public class AchievementSaveEntry
+{
+    public string id;
+    public bool unlocked;
+    public int progress;
+}

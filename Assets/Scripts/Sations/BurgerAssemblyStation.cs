@@ -36,6 +36,7 @@ public class BurgerAssemblyStation : MonoBehaviour
     private bool playerInside = false;
 
 
+
     private void Update()
     {
         RefreshPlaceButton();
@@ -497,8 +498,7 @@ public class BurgerAssemblyStation : MonoBehaviour
     // =========================================================
 
     public bool IsBurgerClosed => burgerClosed;
-    public int AssembledCount => burgerItems.Count;
-
+    public int AssembledCount => burgerItems != null ? burgerItems.Count : 0;
     public List<ItemType> GetAssembledTypes()
     {
         if (burger != null && burger.items != null)

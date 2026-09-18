@@ -549,49 +549,30 @@ public class DeliveryStation : MonoBehaviour
     // FINALIZE ORDER
     // =========================================================
 
-    private void FinalizeCompletedOrder(
-        CustomerAI customer
-    )
+    private void FinalizeCompletedOrder(CustomerAI customer)
     {
         if (customer == null)
             return;
 
-        BurgerOrder order =
-            customer.CurrentOrder;
+        BurgerOrder order = customer.CurrentOrder;
 
         if (order == null)
             return;
 
-        // -----------------------------------------
-        // DELIVERY MONEY
-        // -----------------------------------------
-
-        int totalPrice =
-            order.price;
+        int totalPrice = order.price;
 
         if (order.wantsSoda)
+            totalPrice += order.sodaPrice;
+
+        SpawnMoneyPile(totalPrice);
+
+        if (XPManager.Instance != null && order.xpReward > 0)
         {
-            totalPrice +=
-                order.sodaPrice;
+            XPManager.Instance.AddXP(order.xpReward);
         }
 
-        SpawnMoneyPile(
-            totalPrice
-        );
-
-        // -----------------------------------------
-        // XP
-        // -----------------------------------------
-
-        if (
-            XPManager.Instance != null &&
-            order.xpReward > 0
-        )
-        {
-            XPManager.Instance.AddXP(
-                order.xpReward
-            );
-        }
+        if (AchievementManager.Instance != null)
+            AchievementManager.Instance.ReportBurgerDelivered();
     }
 
     // =========================================================

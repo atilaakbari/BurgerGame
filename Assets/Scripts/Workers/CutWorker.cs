@@ -451,4 +451,31 @@ public class CutWorker : MonoBehaviour
             alreadyHandledInputs.Clear();
         }
     }
+
+    private void OnEnable()
+    {
+        GameFoodEvents.OnItemTrashed += OnItemTrashed;
+    }
+
+    private void OnDisable()
+    {
+        GameFoodEvents.OnItemTrashed -= OnItemTrashed;
+    }
+
+    private void OnItemTrashed(ItemType trashedType)
+    {
+        // Lettuce_Cut → دوباره Lettuce باید کات شود
+        ItemType input = trashedType;
+
+        if (trashedType == ItemType.Lettuce_Cut) input = ItemType.Lettuce;
+        else if (trashedType == ItemType.Tomato_Cut) input = ItemType.Tomato;
+        else if (trashedType == ItemType.Onion_Cut) input = ItemType.Onion;
+        else if (trashedType == ItemType.Cheese_Cut) input = ItemType.Cheese;
+
+        if (alreadyHandledInputs.Contains(input))
+        {
+            alreadyHandledInputs.Remove(input);
+            Debug.Log("CutWorker: will recut " + input);
+        }
+    }
 }
