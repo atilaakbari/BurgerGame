@@ -24,6 +24,9 @@ public class CustomerAI : MonoBehaviour
     [SerializeField] private Transform carryPoint;
     [SerializeField] private float trayCarryHeight = 0f;
 
+    [Header("Patience")]
+    [SerializeField] private CustomerPatience patience;
+
     private Transform exitPoint;
 
     private QueueManager queueManager;
@@ -636,20 +639,30 @@ public class CustomerAI : MonoBehaviour
     {
         if (orderUI != null)
             orderUI.SetActive(true);
+
+        if (patience != null)
+        {
+            float wait = 60f;
+            if (currentOrder != null && currentOrder.patienceTime > 0.01f)
+                wait = currentOrder.patienceTime;
+
+            patience.StartPatience(wait);
+        }
     }
 
     public void HideOrder()
     {
-        if (
-            orderUIController != null
-        )
-        {
+        if (orderUIController != null)
             orderUIController.ClearUI();
-        }
 
         if (orderUI != null)
             orderUI.SetActive(false);
+
+        if (patience != null)
+            patience.StopPatience();
     }
+
+    
 
     // =========================================================
     // RECEIVE TRAY
@@ -1067,5 +1080,13 @@ public class CustomerAI : MonoBehaviour
         ReachedTarget = true;
 
         PlayStandingIdle();
+    }
+
+    public float FinishPatienceAndGetPayMultiplier()
+    {
+        if (patience == null)
+            return 1f;
+
+        return patience.FinishAndGetMultiplier();
     }
 }

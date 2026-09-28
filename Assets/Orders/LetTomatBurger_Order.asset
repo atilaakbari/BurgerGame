@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BurgerOrder
   items: 0100000004000000080000000a00000002000000
   price: 40
+  wantsSoda: 0
+  sodaPrice: 5
   eatingMoney: 10
   eatingTime: 10
+  patienceTime: 100
   xpReward: 7

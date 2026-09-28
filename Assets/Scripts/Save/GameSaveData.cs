@@ -13,25 +13,22 @@ public class GameSaveData
     public List<MoneyPileEntry> moneyPiles = new List<MoneyPileEntry>();
 
     public int totalBurgersDelivered = 0;
+    public int totalSodasDelivered = 0;
+    public int totalMoneyEarned = 0;
+    public int totalPattiesCooked = 0;
     public List<AchievementSaveEntry> achievements = new List<AchievementSaveEntry>();
 
     public void EnsureLists()
     {
-        if (stationLevels == null)
-            stationLevels = new List<StationSaveEntry>();
-
-        if (zones == null)
-            zones = new List<ZoneSaveEntry>();
-
-        if (moneyPiles == null)
-            moneyPiles = new List<MoneyPileEntry>();
-
-        if (achievements == null)
-            achievements = new List<AchievementSaveEntry>();
-
-        if (totalBurgersDelivered < 0)
-            totalBurgersDelivered = 0;
+        if (stationLevels == null) stationLevels = new List<StationSaveEntry>();
+        if (zones == null) zones = new List<ZoneSaveEntry>();
+        if (moneyPiles == null) moneyPiles = new List<MoneyPileEntry>();
+        if (achievements == null) achievements = new List<AchievementSaveEntry>();
+        if (totalBurgersDelivered < 0) totalBurgersDelivered = 0;
     }
+
+    public string dailyMissionDate = "";
+    public List<DailyMissionSaveEntry> dailyMissions = new List<DailyMissionSaveEntry>();
 }
 
 [Serializable]
@@ -62,4 +59,13 @@ public class AchievementSaveEntry
     public string id;
     public bool unlocked;
     public int progress;
+}
+
+[Serializable]
+public class DailyMissionSaveEntry
+{
+    public string id;
+    public int progress;
+    public bool completed;
+    public bool rewardClaimed;
 }

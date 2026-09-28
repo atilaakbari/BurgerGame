@@ -77,6 +77,10 @@ public class XPManager : MonoBehaviour
             currentXP -= XPNeededForNextLevel;
             level++;
 
+            // بعد از اینکه playerLevel زیاد شد و سیو شد:
+            if (AchievementManager.Instance != null)
+                AchievementManager.Instance.ReportPlayerLevel(level);
+
             Debug.Log($"Level Up! Now Level {level}");
             OnLevelUp?.Invoke(level);
         }

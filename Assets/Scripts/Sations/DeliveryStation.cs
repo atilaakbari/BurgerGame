@@ -555,24 +555,47 @@ public class DeliveryStation : MonoBehaviour
             return;
 
         BurgerOrder order = customer.CurrentOrder;
-
         if (order == null)
             return;
 
         int totalPrice = order.price;
-
         if (order.wantsSoda)
             totalPrice += order.sodaPrice;
 
-        SpawnMoneyPile(totalPrice);
+        float mult = customer.FinishPatienceAndGetPayMultiplier();
+        int finalPay = Mathf.Max(1, Mathf.RoundToInt(totalPrice * mult));
+
+        Debug.Log(
+            "Delivery pay | base=" + totalPrice +
+            " mult=" + mult.ToString("0.00") +
+            " final=" + finalPay
+        );
+
+        SpawnMoneyPile(finalPay);
 
         if (XPManager.Instance != null && order.xpReward > 0)
-        {
             XPManager.Instance.AddXP(order.xpReward);
+
+        if (AchievementManager.Instance != null)
+        {
+            AchievementManager.Instance.ReportBurgerDelivered();
+            if (order.wantsSoda)
+                AchievementManager.Instance.ReportSodaDelivered();
         }
 
         if (AchievementManager.Instance != null)
+        {
             AchievementManager.Instance.ReportBurgerDelivered();
+            if (order.wantsSoda)
+                AchievementManager.Instance.ReportSodaDelivered();
+        }
+
+        if (DailyMissionManager.Instance != null)
+        {
+            DailyMissionManager.Instance.ReportBurgers(1);
+            if (order.wantsSoda)
+                DailyMissionManager.Instance.ReportSodas(1);
+        }
     }
 
     // =========================================================

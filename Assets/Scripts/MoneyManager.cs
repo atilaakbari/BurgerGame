@@ -33,6 +33,13 @@ public class MoneyManager : MonoBehaviour
         money += amount;
         OnMoneyChanged?.Invoke(money);
 
+        if (AchievementManager.Instance != null)
+            AchievementManager.Instance.ReportMoneyEarned(amount);
+        
+
+        if (DailyMissionManager.Instance != null)
+                DailyMissionManager.Instance.ReportMoneyEarned(amount);
+    
         SyncToSave();
     }
 

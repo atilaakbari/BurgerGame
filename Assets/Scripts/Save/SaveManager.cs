@@ -101,6 +101,8 @@ public class SaveManager : MonoBehaviour
 
         Data.EnsureLists();
 
+        
+
         Debug.Log("Game Loaded <- " + SavePath);
     }
 
@@ -280,61 +282,136 @@ public class SaveManager : MonoBehaviour
     // ==========================================================
     // Achievements
     // ==========================================================
-
-    public int GetTotalBurgersDelivered()
-    {
-        if (Data == null) return 0;
-        return Mathf.Max(0, Data.totalBurgersDelivered);
-    }
-
-    public void SetTotalBurgersDelivered(int value)
-    {
-        if (Data == null) return;
-        Data.totalBurgersDelivered = Mathf.Max(0, value);
-        RequestSave();
-    }
-
-    private AchievementSaveEntry FindAchievement(string id)
-    {
-        if (Data == null) return null;
-        Data.EnsureLists();
-
-        foreach (AchievementSaveEntry e in Data.achievements)
+        public int GetTotalBurgersDelivered()
         {
-            if (e != null && e.id == id)
-                return e;
+            if (Data == null) return 0;
+            return Mathf.Max(0, Data.totalBurgersDelivered);
         }
 
-        return null;
-    }
-
-    public bool IsAchievementUnlocked(string id)
-    {
-        AchievementSaveEntry e = FindAchievement(id);
-        return e != null && e.unlocked;
-    }
-
-    public int GetAchievementProgress(string id)
-    {
-        AchievementSaveEntry e = FindAchievement(id);
-        return e != null ? e.progress : 0;
-    }
-
-    public void SetAchievementState(string id, bool unlocked, int progress)
-    {
-        if (Data == null) return;
-        Data.EnsureLists();
-
-        AchievementSaveEntry e = FindAchievement(id);
-
-        if (e == null)
+        public void SetTotalBurgersDelivered(int value)
         {
-            e = new AchievementSaveEntry { id = id };
-            Data.achievements.Add(e);
+            if (Data == null) return;
+            Data.totalBurgersDelivered = Mathf.Max(0, value);
+            RequestSave();
         }
 
-        e.unlocked = unlocked;
-        e.progress = Mathf.Max(0, progress);
-        RequestSave();
-    }
+        private AchievementSaveEntry FindAchievement(string id)
+        {
+            if (Data == null) return null;
+            Data.EnsureLists();
+            foreach (var e in Data.achievements)
+                if (e != null && e.id == id) return e;
+            return null;
+        }
+
+        public bool IsAchievementUnlocked(string id)
+        {
+            var e = FindAchievement(id);
+            return e != null && e.unlocked;
+        }
+
+        public int GetAchievementProgress(string id)
+        {
+            var e = FindAchievement(id);
+            return e != null ? e.progress : 0;
+        }
+
+        public void SetAchievementState(string id, bool unlocked, int progress)
+        {
+            if (Data == null) return;
+            Data.EnsureLists();
+
+            var e = FindAchievement(id);
+            if (e == null)
+            {
+                e = new AchievementSaveEntry { id = id };
+                Data.achievements.Add(e);
+            }
+            e.unlocked = unlocked;
+            e.progress = Mathf.Max(0, progress);
+            RequestSave();
+        }
+
+        /*public int GetTotalBurgersDelivered()
+        {
+            if (Data == null) return 0;
+            return Mathf.Max(0, Data.totalBurgersDelivered);
+        }
+
+        public void SetTotalBurgersDelivered(int value)
+        {
+            if (Data == null) return;
+            Data.totalBurgersDelivered = Mathf.Max(0, value);
+            RequestSave();
+        }*/
+
+        public int GetTotalSodasDelivered()
+        {
+            if (Data == null) return 0;
+            return Mathf.Max(0, Data.totalSodasDelivered);
+        }
+
+        public void SetTotalSodasDelivered(int value)
+        {
+            if (Data == null) return;
+            Data.totalSodasDelivered = Mathf.Max(0, value);
+            RequestSave();
+        }
+
+        public int GetTotalMoneyEarned()
+        {
+            if (Data == null) return 0;
+            return Mathf.Max(0, Data.totalMoneyEarned);
+        }
+
+        public void SetTotalMoneyEarned(int value)
+        {
+            if (Data == null) return;
+            Data.totalMoneyEarned = Mathf.Max(0, value);
+            RequestSave();
+        }
+
+        public int GetTotalPattiesCooked()
+        {
+            if (Data == null) return 0;
+            return Mathf.Max(0, Data.totalPattiesCooked);
+        }
+
+        public void SetTotalPattiesCooked(int value)
+        {
+            if (Data == null) return;
+            Data.totalPattiesCooked = Mathf.Max(0, value);
+            RequestSave();
+        }
+
+        public string GetDailyMissionDate()
+        {
+            if (Data == null) return "";
+            return Data.dailyMissionDate ?? "";
+        }
+
+        public void SetDailyMissionDate(string date)
+        {
+            if (Data == null) return;
+            Data.dailyMissionDate = date ?? "";
+            RequestSave();
+        }
+
+        public List<DailyMissionSaveEntry> GetDailyMissions()
+        {
+            if (Data == null) return new List<DailyMissionSaveEntry>();
+            if (Data.dailyMissions == null)
+                Data.dailyMissions = new List<DailyMissionSaveEntry>();
+            return Data.dailyMissions;
+        }
+
+        public void SetDailyMissions(List<DailyMissionSaveEntry> list)
+        {
+            if (Data == null) return;
+            Data.dailyMissions = list ?? new List<DailyMissionSaveEntry>();
+            RequestSave();
+        }
+
+        // FindAchievement / IsAchievementUnlocked / GetAchievementProgress / SetAchievementState
+        // همان قبلی‌ها بمانند
 }

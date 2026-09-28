@@ -20,6 +20,10 @@ public class BurgerOrder : ScriptableObject
     [Header("Eating")]
     public float eatingTime = 10f;
 
+    [Header("Patience / Wait")]
+    [Tooltip("حداکثر زمان انتظار این سفارش (ثانیه). سفارش پیچیده‌تر = عدد بزرگ‌تر")]
+    public float patienceTime = 60f;
+
     [Header("XP")]
     public int xpReward = 15;
 }

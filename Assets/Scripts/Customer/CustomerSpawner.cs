@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class CustomerSpawner : MonoBehaviour
 {
-    [Header("Customer Prefabs")]
-    [SerializeField] private GameObject[] customerPrefabs;
+    [Header("Single Customer Prefab")]
+    [SerializeField] private GameObject customerPrefab;
 
     [Header("Spawn")]
     [SerializeField] private Transform spawnPoint;
@@ -15,174 +15,76 @@ public class CustomerSpawner : MonoBehaviour
     [SerializeField] private float spawnDelay = 5f;
 
     private float timer;
-    private int lastCustomerIndex = -1;
-
 
     private void Update()
     {
         timer += Time.deltaTime;
 
-        if (timer >= spawnDelay)
-        {
-            timer = 0f;
+        if (timer < spawnDelay)
+            return;
 
-            TrySpawnCustomer();
-        }
+        timer = 0f;
+        TrySpawnCustomer();
     }
-
-
-    // =========================================================
-    // SPAWN CUSTOMER
-    // =========================================================
 
     private void TrySpawnCustomer()
     {
-        // QueueManager
         if (queueManager == null)
         {
-            Debug.LogError(
-                "CustomerSpawner: QueueManager is not assigned!"
-            );
-
+            Debug.LogError("CustomerSpawner: QueueManager is not assigned!");
             return;
         }
 
-
-        // Spawn Point
         if (spawnPoint == null)
         {
-            Debug.LogError(
-                "CustomerSpawner: Spawn Point is not assigned!"
-            );
-
+            Debug.LogError("CustomerSpawner: Spawn Point is not assigned!");
             return;
         }
 
-
-        // Prefabs
-        if (
-            customerPrefabs == null ||
-            customerPrefabs.Length == 0
-        )
+        if (customerPrefab == null)
         {
-            Debug.LogError(
-                "CustomerSpawner: No Customer Prefabs assigned!"
-            );
-
+            Debug.LogError("CustomerSpawner: Customer Prefab is not assigned!");
             return;
         }
 
-
-        // Queue Full
         if (!queueManager.HasFreeSpace())
         {
             Debug.Log("Queue Full!");
-
             return;
-        }
+        } 
+
+        GameObject obj = Instantiate(
+            customerPrefab,
+            spawnPoint.position,
+            spawnPoint.rotation
+        );
+
+        // ظاهر رندوم
+        CustomerAppearance appearance = obj.GetComponent<CustomerAppearance>();
+        if (appearance != null)
+            appearance.Randomize();
+        else
+            Debug.LogWarning("CustomerAppearance missing on prefab.");
 
 
-        // ?????? ???
-        int index =
-            GetRandomCustomerIndex();
-
-
-        if (
-            index < 0 ||
-            index >= customerPrefabs.Length
-        )
+        Animator anim = GetComponentInChildren<Animator>();
+        if (anim != null)
         {
-            Debug.LogError(
-                "Invalid customer prefab index!"
-            );
-
-            return;
+            anim.Play(0, 0, Random.Range(0f, 1f));
+            anim.speed = Random.Range(0.95f, 1.05f);
         }
 
-
-        GameObject selectedPrefab =
-            customerPrefabs[index];
-
-
-        if (selectedPrefab == null)
-        {
-            Debug.LogError(
-                "Customer Prefab at index " +
-                index +
-                " is NULL!"
-            );
-
-            return;
-        }
-
-
-        // ???? ?????
-        GameObject obj =
-            Instantiate(
-                selectedPrefab,
-                spawnPoint.position,
-                spawnPoint.rotation
-            );
-
-
-        // ????? ????? ???
-        lastCustomerIndex = index;
-
-
-        // ????? CustomerAI
-        CustomerAI customer =
-            obj.GetComponent<CustomerAI>();
-
-
+        CustomerAI customer = obj.GetComponent<CustomerAI>();
         if (customer == null)
         {
-            Debug.LogError(
-                "CustomerAI not found on prefab: " +
-                selectedPrefab.name
-            );
-
+            Debug.LogError("CustomerAI not found on prefab: " + customerPrefab.name);
             Destroy(obj);
-
             return;
         }
-
 
         customer.SetQueueManager(queueManager);
         customer.SetExitPoint(queueManager.ExitPoint);
 
         queueManager.AddCustomer(customer);
-    }
-
-
-    // =========================================================
-    // RANDOM CUSTOMER
-    // =========================================================
-
-    private int GetRandomCustomerIndex()
-    {
-        // ??? ?? ???
-        if (customerPrefabs.Length == 1)
-            return 0;
-
-
-        int index;
-
-
-        // ??? ???? ??? ?? ?? ????? ????
-        do
-        {
-            index =
-                Random.Range(
-                    0,
-                    customerPrefabs.Length
-                );
-
-        }
-        while (
-            index == lastCustomerIndex
-        );
-
-
-        return index;
     }
 }

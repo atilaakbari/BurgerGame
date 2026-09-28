@@ -101,9 +101,15 @@ public class CookingSlot : MonoBehaviour
     {
         StopCookRoutine();
 
+
+
         isCooking = false;
         isReady = true;
         currentProgress = 1f;
+
+        // جایی که isCooking = false و cookedReady / IsReady = true می‌شود:
+        /*if (AchievementManager.Instance != null)
+            AchievementManager.Instance.ReportPattyCooked();*/
 
         if (rawPatty != null) rawPatty.SetActive(false);
         if (cookedPatty != null) cookedPatty.SetActive(true);
@@ -155,12 +161,18 @@ public class CookingSlot : MonoBehaviour
         if (panAnimator != null)
             panAnimator.SetBool(cookingBool, false);
 
+        // پخت واقعی تمام شد → اچیومنت
+        if (AchievementManager.Instance != null)
+            AchievementManager.Instance.ReportPattyCooked();
+
+        if (DailyMissionManager.Instance != null)
+            DailyMissionManager.Instance.ReportPattiesCooked(1);
+
         yield return new WaitForSeconds(tickDelay);
 
         if (timerTick != null)
             timerTick.SetActive(true);
     }
-
     public void Collect()
     {
         ResetSlot();

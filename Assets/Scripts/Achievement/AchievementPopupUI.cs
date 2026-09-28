@@ -5,73 +5,78 @@ using UnityEngine.UI;
 
 public class AchievementPopupUI : MonoBehaviour
 {
-    [SerializeField] private GameObject root;
+    [Header("همین Panel که باید روشن شود")]
+    [SerializeField] private GameObject panelRoot;
+
     [SerializeField] private TextMeshProUGUI titleText;
     [SerializeField] private TextMeshProUGUI descText;
     [SerializeField] private Image iconImage;
+
     [SerializeField] private float showDuration = 3f;
 
     private Coroutine routine;
     private bool subscribed;
 
-    private void Start()
+    private void Awake()
     {
-        if (root != null)
-            root.SetActive(false);
+        // اگر panelRoot خالی بود، خود این آبجکت
+        if (panelRoot == null)
+            panelRoot = gameObject;
 
-        TrySubscribe();
+        SetPanelVisible(false);
     }
 
     private void Update()
     {
-        // اگر Manager بعداً ساخته شد، وصل شو
-        if (!subscribed)
-            TrySubscribe();
+        if (subscribed) return;
+        if (AchievementManager.Instance == null) return;
+
+        AchievementManager.Instance.OnUnlocked += HandleUnlocked;
+        subscribed = true;
+        Debug.Log("AchievementPopupUI subscribed");
     }
 
     private void OnDestroy()
     {
-        Unsubscribe();
+        if (subscribed && AchievementManager.Instance != null)
+            AchievementManager.Instance.OnUnlocked -= HandleUnlocked;
     }
 
-    private void TrySubscribe()
+    private void HandleUnlocked(
+        string id,
+        string title,
+        string desc,
+        Sprite icon,
+        int progress,
+        int target)
     {
-        if (subscribed) return;
-        if (AchievementManager.Instance == null) return;
+        Debug.Log("Popup HandleUnlocked: " + title);
 
-        AchievementManager.Instance.OnAchievementUnlocked += Show;
-        subscribed = true;
-        Debug.Log("AchievementPopupUI subscribed.");
-    }
+        if (titleText != null)
+            titleText.text = title;
 
-    private void Unsubscribe()
-    {
-        if (!subscribed) return;
-        if (AchievementManager.Instance != null)
-            AchievementManager.Instance.OnAchievementUnlocked -= Show;
-        subscribed = false;
-    }
+        if (descText != null)
+            descText.text = string.IsNullOrEmpty(desc) ? "" : desc;
 
-    private void Show(AchievementDefinition def)
-    {
-        if (def == null) return;
-
-        Debug.Log("Popup Show: " + def.title);
-
-        if (titleText != null) titleText.text = def.title;
-        if (descText != null) descText.text = def.description;
-
+        // آیکون
         if (iconImage != null)
         {
-            if (def.icon != null)
+            if (icon != null)
             {
-                iconImage.sprite = def.icon;
+                iconImage.sprite = icon;
                 iconImage.enabled = true;
+                iconImage.color = Color.white;
+                Debug.Log("Icon set: " + icon.name);
             }
             else
             {
                 iconImage.enabled = false;
+                Debug.LogWarning("Achievement icon is null — در Manager روی آن دستاورد Sprite بگذار");
             }
+        }
+        else
+        {
+            Debug.LogWarning("iconImage reference is null in Popup");
         }
 
         if (routine != null)
@@ -82,16 +87,53 @@ public class AchievementPopupUI : MonoBehaviour
 
     private IEnumerator ShowRoutine()
     {
-        if (root != null)
-            root.SetActive(true);
-        else
-            Debug.LogWarning("AchievementPopupUI: Root is null!");
+        SetPanelVisible(true);
+        Debug.Log("Popup panel ON");
 
         yield return new WaitForSeconds(showDuration);
 
-        if (root != null)
-            root.SetActive(false);
-
+        SetPanelVisible(false);
+        Debug.Log("Popup panel OFF");
         routine = null;
+    }
+
+    private void SetPanelVisible(bool visible)
+    {
+        if (panelRoot == null)
+        {
+            Debug.LogError("panelRoot is null");
+            return;
+        }
+
+        // اگر والد خاموش باشد، فرزند دیده نمی‌شود
+        if (visible)
+        {
+            Transform t = panelRoot.transform;
+            while (t != null)
+            {
+                if (!t.gameObject.activeSelf)
+                    t.gameObject.SetActive(true);
+                t = t.parent;
+            }
+        }
+
+        panelRoot.SetActive(visible);
+
+        CanvasGroup cg = panelRoot.GetComponent<CanvasGroup>();
+        if (cg != null)
+        {
+            cg.alpha = visible ? 1f : 0f;
+            cg.interactable = visible;
+            cg.blocksRaycasts = visible;
+        }
+
+        if (visible)
+            panelRoot.transform.SetAsLastSibling();
+    }
+
+    [ContextMenu("Test Show Popup")]
+    private void TestShow()
+    {
+        HandleUnlocked("test", "تست", "توضیح تست", null, 1, 1);
     }
 }
