@@ -562,26 +562,35 @@ public class DeliveryStation : MonoBehaviour
         if (order.wantsSoda)
             totalPrice += order.sodaPrice;
 
-        float mult = customer.FinishPatienceAndGetPayMultiplier();
-        int finalPay = Mathf.Max(1, Mathf.RoundToInt(totalPrice * mult));
+        float patienceMult = 1f;
+        try
+        {
+            patienceMult = customer.FinishPatienceAndGetPayMultiplier();
+        }
+        catch
+        {
+            patienceMult = 1f;
+        }
+
+        float comboMult = 1f;
+        if (ComboManager.Instance != null)
+            comboMult = ComboManager.Instance.RegisterSuccessfulDelivery();
+        else
+            Debug.LogError("[Delivery] ComboManager.Instance is NULL");
+
+        int finalPay = Mathf.Max(1, Mathf.RoundToInt(totalPrice * patienceMult * comboMult));
 
         Debug.Log(
-            "Delivery pay | base=" + totalPrice +
-            " mult=" + mult.ToString("0.00") +
-            " final=" + finalPay
+            "[Delivery] base=" + totalPrice +
+            " patience=" + patienceMult.ToString("0.00") +
+            " combo=" + comboMult.ToString("0.00") +
+            " pay=" + finalPay
         );
 
         SpawnMoneyPile(finalPay);
 
         if (XPManager.Instance != null && order.xpReward > 0)
             XPManager.Instance.AddXP(order.xpReward);
-
-        if (AchievementManager.Instance != null)
-        {
-            AchievementManager.Instance.ReportBurgerDelivered();
-            if (order.wantsSoda)
-                AchievementManager.Instance.ReportSodaDelivered();
-        }
 
         if (AchievementManager.Instance != null)
         {
