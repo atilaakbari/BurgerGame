@@ -14,6 +14,9 @@ public class OrderManager : MonoBehaviour
     [Range(0f, 1f)]
     [SerializeField] private float sodaOrderChance = 0.4f;
 
+    [Header("VIP Orders")]
+    [SerializeField] private BurgerOrder[] vipOrders;
+
     private BurgerOrder lastOrder;
 
     private void OnEnable()
@@ -38,20 +41,34 @@ public class OrderManager : MonoBehaviour
         CustomerAI customer =
             queueManager.GetFirstCustomer();
 
+        BurgerOrder baseOrder;
+
+        if (customer.IsVIP && vipOrders != null && vipOrders.Length > 0)
+            baseOrder = PickVipOrder();
+        else
+            baseOrder = PickOrder();
+
+        if (baseOrder == null)
+            return;
+
+        BurgerOrder runtimeOrder = Instantiate(baseOrder);
+        // ... همان wantsSoda ...
+        
+
         if (customer == null)
             return;
 
         if (customer.CurrentOrder != null)
             return;
 
-        BurgerOrder baseOrder =
-            PickOrder();
+        //BurgerOrder baseOrder =
+        //    PickOrder();
 
         if (baseOrder == null)
             return;
 
-        BurgerOrder runtimeOrder =
-            Instantiate(baseOrder);
+        //BurgerOrder runtimeOrder =
+        //    Instantiate(baseOrder);
 
         runtimeOrder.name =
             baseOrder.name + "_Runtime";
@@ -145,5 +162,22 @@ public class OrderManager : MonoBehaviour
         lastOrder = selected;
 
         return selected;
+    }
+
+    private BurgerOrder PickVipOrder()
+    {
+        if (vipOrders == null || vipOrders.Length == 0)
+            return PickOrder();
+
+        BurgerOrder selected = null;
+        int guard = 0;
+
+        do
+        {
+            selected = vipOrders[Random.Range(0, vipOrders.Length)];
+            guard++;
+        } while (selected == null && guard < 8);
+
+        return selected != null ? selected : PickOrder();
     }
 }

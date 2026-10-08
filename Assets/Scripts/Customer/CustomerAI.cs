@@ -27,6 +27,13 @@ public class CustomerAI : MonoBehaviour
     [Header("Patience")]
     [SerializeField] private CustomerPatience patience;
 
+    [Header("VIP")]
+    [SerializeField] private GameObject vipBadgeRoot;
+    [SerializeField] private Transform vipPosCenter;
+    [SerializeField] private Transform vipPosAboveOrder;
+    [SerializeField] private GameObject vipEffectRoot; // نور / پارتیکل
+    [SerializeField] private ParticleSystem vipParticles; // اختیاری
+
     private Transform exitPoint;
 
     private QueueManager queueManager;
@@ -57,6 +64,15 @@ public class CustomerAI : MonoBehaviour
     private bool walkState;
     private bool carryState;
     private bool sitState;
+
+    private bool isVIP;
+    private float vipMoneyMult = 1f;
+    private float vipXpMult = 1f;
+    private float vipPatienceBonus = 0f; // ثانیه اضافه
+
+    public bool IsVIP => isVIP;
+    public float VipMoneyMultiplier => isVIP ? vipMoneyMult : 1f;
+    public float VipXpMultiplier => isVIP ? vipXpMult : 1f;
 
     // =========================================================
     // PUBLIC PROPERTIES
@@ -185,6 +201,7 @@ public class CustomerAI : MonoBehaviour
         }
 
         HideOrder();
+        ClearVIP(); // یا فقط خاموش کردن badge
 
         SetWalk(false);
         SetCarry(false);
@@ -646,8 +663,13 @@ public class CustomerAI : MonoBehaviour
             if (currentOrder != null && currentOrder.patienceTime > 0.01f)
                 wait = currentOrder.patienceTime;
 
+            if (isVIP)
+                wait += vipPatienceBonus;
+
             patience.StartPatience(wait);
         }
+
+        PlaceVipBadge(true);
     }
 
     public void HideOrder()
@@ -660,8 +682,13 @@ public class CustomerAI : MonoBehaviour
 
         if (patience != null)
             patience.StopPatience();
-    }
 
+        // مثل اوردر: بج و مه VIP خاموش
+        if (vipBadgeRoot != null)
+            vipBadgeRoot.SetActive(false);
+
+        StopVipEffect();
+    }
     
 
     // =========================================================
@@ -1089,4 +1116,99 @@ public class CustomerAI : MonoBehaviour
 
         return patience.FinishAndGetMultiplier();
     }
+
+    public void SetAsVIP(float moneyMult, float xpMult, float patienceBonusSeconds)
+    {
+        isVIP = true;
+        vipMoneyMult = moneyMult;
+        vipXpMult = xpMult;
+        vipPatienceBonus = patienceBonusSeconds;
+
+        // لباس مخصوص VIP
+        CustomerAppearance appearance = GetComponent<CustomerAppearance>();
+        if (appearance != null)
+            appearance.ApplyVipOutfit();
+
+        if (vipBadgeRoot != null)
+            vipBadgeRoot.SetActive(true);
+
+        PlaceVipBadge(false);
+        PlayVipEffect();
+    }
+
+    public void ClearVIP()
+    {
+        isVIP = false;
+        vipMoneyMult = 1f;
+        vipXpMult = 1f;
+        vipPatienceBonus = 0f;
+
+        if (vipBadgeRoot != null)
+            vipBadgeRoot.SetActive(false);
+
+        StopVipEffect();
+    }
+
+    private Coroutine vipPlayRoutine;
+
+    private void PlayVipEffect()
+    {
+        if (vipPlayRoutine != null)
+            StopCoroutine(vipPlayRoutine);
+
+        vipPlayRoutine = StartCoroutine(PlayVipEffectNextFrame());
+    }
+
+    private IEnumerator PlayVipEffectNextFrame()
+    {
+        if (vipEffectRoot != null)
+            vipEffectRoot.SetActive(true);
+
+        if (vipParticles == null)
+        {
+            Debug.LogWarning("[VIP] vipParticles is NULL");
+            yield break;
+        }
+
+        if (!vipParticles.gameObject.activeSelf)
+            vipParticles.gameObject.SetActive(true);
+
+        // یک فریم صبر کن تا Active کامل شود
+        yield return null;
+
+        vipParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        vipParticles.Play(true);
+
+        Debug.Log("[VIP] Particles Play after activate");
+        vipPlayRoutine = null;
+    }
+
+    private void StopVipEffect()
+    {
+        if (vipPlayRoutine != null)
+        {
+            StopCoroutine(vipPlayRoutine);
+            vipPlayRoutine = null;
+        }
+
+        if (vipParticles != null)
+            vipParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+        if (vipEffectRoot != null)
+            vipEffectRoot.SetActive(false);
+    }
+    private void PlaceVipBadge(bool orderVisible)
+    {
+        if (!isVIP || vipBadgeRoot == null)
+            return;
+
+        Transform target = orderVisible ? vipPosAboveOrder : vipPosCenter;
+        if (target == null)
+            return;
+
+        vipBadgeRoot.transform.position = target.position;
+        vipBadgeRoot.transform.rotation = target.rotation;
+    }
+
+
 }

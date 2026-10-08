@@ -412,6 +412,57 @@ public class SaveManager : MonoBehaviour
             RequestSave();
         }
 
+        public string GetLastLogoutUtc()
+        {
+            if (Data == null) return "";
+            return Data.lastLogoutUtc ?? "";
+        }
+
+        public void SetLastLogoutUtc(string utc)
+        {
+            if (Data == null) return;
+            Data.lastLogoutUtc = utc ?? "";
+            RequestSave();
+        }
+
+        public int GetOfflineProfitLevel()
+        {
+            if (Data == null) return 1;
+            return Mathf.Max(1, Data.offlineProfitLevel);
+        }
+
+        public void SetOfflineProfitLevel(int level)
+        {
+            if (Data == null) return;
+            Data.offlineProfitLevel = Mathf.Max(1, level);
+            RequestSave();
+        }
         // FindAchievement / IsAchievementUnlocked / GetAchievementProgress / SetAchievementState
         // همان قبلی‌ها بمانند
+
+        public string GetLastDailyRewardDate()
+        {
+            if (Data == null) return "";
+            return Data.lastDailyRewardDate ?? "";
+        }
+
+        public void SetLastDailyRewardDate(string date)
+        {
+            if (Data == null) return;
+            Data.lastDailyRewardDate = date ?? "";
+            RequestSave();
+        }
+
+        public int GetDailyRewardDayIndex()
+        {
+            if (Data == null) return 0;
+            return Mathf.Clamp(Data.dailyRewardDayIndex, 0, 6);
+        }
+
+        public void SetDailyRewardDayIndex(int index)
+        {
+            if (Data == null) return;
+            Data.dailyRewardDayIndex = Mathf.Clamp(index, 0, 6);
+            RequestSave();
+        }
 }

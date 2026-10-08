@@ -551,17 +551,31 @@ public class DeliveryStation : MonoBehaviour
 
     private void FinalizeCompletedOrder(CustomerAI customer)
     {
-        if (customer == null)
-            return;
+        if (customer == null) return;
 
         BurgerOrder order = customer.CurrentOrder;
-        if (order == null)
-            return;
+        if (order == null) return;
 
         int totalPrice = order.price;
         if (order.wantsSoda)
             totalPrice += order.sodaPrice;
 
+
+        float vipMoney = customer.VipMoneyMultiplier;
+        float vipXp = customer.VipXpMultiplier;
+
+        
+
+        //SpawnMoneyPile(finalPay);
+
+        if (XPManager.Instance != null && order.xpReward > 0)
+        {
+            int xp = Mathf.Max(1, Mathf.RoundToInt(order.xpReward * vipXp));
+            XPManager.Instance.AddXP(xp);
+        }
+
+
+        // ضریب صبر مشتری
         float patienceMult = 1f;
         try
         {
@@ -572,25 +586,26 @@ public class DeliveryStation : MonoBehaviour
             patienceMult = 1f;
         }
 
+        //float patienceMult = customer.FinishPatienceAndGetPayMultiplier();
+
+        //float patienceMult = customer.FinishPatienceAndGetPayMultiplier();
+
         float comboMult = 1f;
         if (ComboManager.Instance != null)
-            comboMult = ComboManager.Instance.RegisterSuccessfulDelivery();
-        else
-            Debug.LogError("[Delivery] ComboManager.Instance is NULL");
+            comboMult = ComboManager.Instance.OnDelivered();
 
-        int finalPay = Mathf.Max(1, Mathf.RoundToInt(totalPrice * patienceMult * comboMult));
+        float rushMult = 1f;
+        if (RushHourManager.Instance != null)
+            rushMult = RushHourManager.Instance.GetMoneyMultiplier();
 
-        Debug.Log(
-            "[Delivery] base=" + totalPrice +
-            " patience=" + patienceMult.ToString("0.00") +
-            " combo=" + comboMult.ToString("0.00") +
-            " pay=" + finalPay
-        );
+        int finalPay = Mathf.Max(1, Mathf.RoundToInt(
+            totalPrice * patienceMult * comboMult * rushMult * vipMoney
+        ));
 
         SpawnMoneyPile(finalPay);
 
-        if (XPManager.Instance != null && order.xpReward > 0)
-            XPManager.Instance.AddXP(order.xpReward);
+        /*if (XPManager.Instance != null && order.xpReward > 0)
+            XPManager.Instance.AddXP(order.xpReward);*/
 
         if (AchievementManager.Instance != null)
         {
@@ -605,6 +620,8 @@ public class DeliveryStation : MonoBehaviour
             if (order.wantsSoda)
                 DailyMissionManager.Instance.ReportSodas(1);
         }
+
+        
     }
 
     // =========================================================

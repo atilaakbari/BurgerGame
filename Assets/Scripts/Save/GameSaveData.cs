@@ -4,6 +4,7 @@ using System.Collections.Generic;
 [Serializable]
 public class GameSaveData
 {
+
     public int playerLevel = 1;
     public int currentXP = 0;
     public int money = 0;
@@ -29,6 +30,13 @@ public class GameSaveData
 
     public string dailyMissionDate = "";
     public List<DailyMissionSaveEntry> dailyMissions = new List<DailyMissionSaveEntry>();
+
+    public string lastLogoutUtc = "";
+    public int offlineProfitLevel = 1;
+
+    public string lastDailyRewardDate = ""; // yyyy-MM-dd
+    public int dailyRewardDayIndex = 0;     // 0..6 = روز بعدی که باید بگیرد
+    
 }
 
 [Serializable]

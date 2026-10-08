@@ -1,31 +1,23 @@
-using System;
 using UnityEngine;
 
 public class ComboManager : MonoBehaviour
 {
     public static ComboManager Instance { get; private set; }
 
-    public event Action OnComboUpdated;
-
-    [Header("Timing")]
-    [SerializeField] private float comboWindow = 18f;
-
-    [Header("Reward")]
+    [Header("Settings")]
+    [SerializeField] private float windowSeconds = 18f;
     [SerializeField] private float bonusPerStep = 0.1f;
     [SerializeField] private float maxMultiplier = 2f;
     [SerializeField] private int maxCombo = 10;
-
     [SerializeField] private bool logDebug = true;
 
-    private int currentCombo;
+    private int combo;
     private float timer;
-    private bool running;
 
-    public int CurrentCombo => currentCombo;
-    public float TimeLeft => Mathf.Max(0f, timer);
-    public float TimeLeftNormalized =>
-        comboWindow <= 0.01f ? 0f : Mathf.Clamp01(timer / comboWindow);
-    public bool IsActive => running && currentCombo > 0;
+    public int Combo => combo;
+    public bool IsActive => combo > 0 && timer > 0f;
+    public float TimerNormalized =>
+        windowSeconds <= 0.01f ? 0f : Mathf.Clamp01(timer / windowSeconds);
 
     private void Awake()
     {
@@ -34,7 +26,10 @@ public class ComboManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
         Instance = this;
+        combo = 0;
+        timer = 0f;
     }
 
     private void OnDestroy()
@@ -45,62 +40,57 @@ public class ComboManager : MonoBehaviour
 
     private void Update()
     {
-        if (!running)
+        if (timer <= 0f)
             return;
 
         timer -= Time.deltaTime;
+
         if (timer <= 0f)
-            ResetCombo();
-        else
-            OnComboUpdated?.Invoke(); // نوار تایمر هر فریم
+        {
+            timer = 0f;
+            combo = 0;
+
+            if (logDebug)
+                Debug.Log("[Combo] timeout → reset");
+        }
     }
 
-    /// <summary>بعد از هر تحویل موفق — ضریب همان تحویل را برمی‌گرداند</summary>
-    public float RegisterSuccessfulDelivery()
+    /// <summary>
+    /// یک بار بعد از هر تحویل موفق سفارش.
+    /// ضریب پول همان تحویل را برمی‌گرداند.
+    /// </summary>
+    public float OnDelivered()
     {
-        currentCombo = Mathf.Min(currentCombo + 1, maxCombo);
-        timer = comboWindow;
-        running = true;
+        combo = Mathf.Min(combo + 1, maxCombo);
+        timer = windowSeconds;
 
-        float mult = GetMultiplier(currentCombo);
+        float mult = GetMultiplier(combo);
 
         if (logDebug)
-            Debug.Log("[Combo] delivery → x" + currentCombo + " mult=" + mult.ToString("0.00"));
+            Debug.Log("[Combo] OnDelivered x" + combo + " mult=" + mult.ToString("0.00"));
 
-        OnComboUpdated?.Invoke();
         return mult;
     }
 
-    public float GetMultiplier(int combo)
+    public float GetMultiplier(int value)
     {
-        if (combo <= 1)
+        if (value <= 1)
             return 1f;
 
-        float mult = 1f + (combo - 1) * bonusPerStep;
+        float mult = 1f + (value - 1) * bonusPerStep;
         return Mathf.Min(mult, maxMultiplier);
     }
 
-    public void ResetCombo()
+    [ContextMenu("Debug/OnDelivered")]
+    private void DebugDeliver()
     {
-        currentCombo = 0;
-        timer = 0f;
-        running = false;
-
-        if (logDebug)
-            Debug.Log("[Combo] reset");
-
-        OnComboUpdated?.Invoke();
-    }
-
-    [ContextMenu("Debug/+1")]
-    private void DebugPlus()
-    {
-        RegisterSuccessfulDelivery();
+        OnDelivered();
     }
 
     [ContextMenu("Debug/Reset")]
     private void DebugReset()
     {
-        ResetCombo();
+        combo = 0;
+        timer = 0f;
     }
 }

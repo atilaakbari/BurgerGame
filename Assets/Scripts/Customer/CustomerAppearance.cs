@@ -26,6 +26,9 @@ public class CustomerAppearance : MonoBehaviour
     [SerializeField] private Renderer[] skinRenderers;
     [SerializeField] private Color[] skinColors;
 
+    [Header("ست VIP (اجباری برای مشتری ویژه)")]
+    [SerializeField] private string vipOutfitName = "VIP";
+
 
     public void Randomize()
     {
@@ -167,5 +170,46 @@ public class CustomerAppearance : MonoBehaviour
             for (int i = 0; i < outfits.Length; i++)
                 remainingOutfitIndices.Add(i);
         }
+    }
+
+    public void ApplyOutfitByName(string outfitName)
+    {
+        if (string.IsNullOrEmpty(outfitName) || outfits == null)
+            return;
+
+        Outfit chosen = null;
+        for (int i = 0; i < outfits.Length; i++)
+        {
+            if (outfits[i] != null && outfits[i].outfitName == outfitName)
+            {
+                chosen = outfits[i];
+                break;
+            }
+        }
+
+        if (chosen == null)
+        {
+            Debug.LogWarning("CustomerAppearance: VIP outfit not found: " + outfitName);
+            return;
+        }
+
+        DisableAllParts();
+
+        if (chosen.enableParts != null)
+        {
+            for (int i = 0; i < chosen.enableParts.Length; i++)
+            {
+                if (chosen.enableParts[i] != null)
+                    chosen.enableParts[i].SetActive(true);
+            }
+        }
+
+        // پوست را می‌توانی رندوم بگذاری یا ثابت
+        ApplyRandomSkin();
+    }
+
+    public void ApplyVipOutfit()
+    {
+        ApplyOutfitByName(vipOutfitName);
     }
 }
