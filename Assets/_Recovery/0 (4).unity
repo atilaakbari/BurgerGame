@@ -12236,7 +12236,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee5d77284175c7d4baa413dd38d41ab2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OfflineEarningsManager
-  minHours: 1
+  minHours: 0.01
   maxHours: 6
   profitPerHourByLevel: 320000005000000078000000b4000000fa0000005e010000f4010000
   upgradeCosts: 64000000fa000000f4010000e8030000d0070000a00f0000
@@ -13795,6 +13795,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1096805930}
+        m_TargetAssemblyTypeName: DailyRewardUI, Assembly-CSharp
+        m_MethodName: Close
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

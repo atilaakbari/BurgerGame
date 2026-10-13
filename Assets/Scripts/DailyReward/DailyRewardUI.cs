@@ -30,7 +30,6 @@ public class DailyRewardUI : MonoBehaviour
         if (panelRoot != null)
             panelRoot.SetActive(false);
 
-        // Offline بعد از بستن Daily
         if (OfflineEarningsManager.Instance != null)
             OfflineEarningsManager.Instance.CheckOfflineEarnings();
     }

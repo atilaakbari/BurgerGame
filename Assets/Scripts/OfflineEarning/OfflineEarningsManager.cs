@@ -91,19 +91,33 @@ public class OfflineEarningsManager : MonoBehaviour
 
     private void Start()
     {
-        // اگر Daily امروز باز می‌شود، Offline را خود Daily بعد از Close صدا می‌زند
+        // کمی صبر تا DailyRewardManager هم Awake/Start شود
+        Invoke(nameof(TryShowOfflineAfterDaily), 0.25f);
+    }
+
+    private void TryShowOfflineAfterDaily()
+    {
+        // اگر امروز Daily باید نشان داده شود، صبر کن تا Close
         if (DailyRewardManager.Instance != null && DailyRewardManager.Instance.CanClaimToday)
             return;
 
-        Invoke(nameof(CheckOfflineEarnings), 0.2f);
+        CheckOfflineEarnings();
     }
 
     private void OnApplicationPause(bool pause)
     {
         if (pause)
+        {
             SaveLogoutTime();
-        else
-            CheckOfflineEarnings();
+            return;
+        }
+
+        // برگشت به بازی — اگر Daily هنوز قابل ادعا / باز است، offline را ننشان بده
+        if (DailyRewardManager.Instance != null && DailyRewardManager.Instance.CanClaimToday)
+            return;
+
+        // فقط اگر این سشن هنوز چک نشده
+        CheckOfflineEarnings();
     }
 
     private void OnApplicationQuit()
