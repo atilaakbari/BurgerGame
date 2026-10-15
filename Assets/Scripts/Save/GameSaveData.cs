@@ -39,6 +39,9 @@ public class GameSaveData
     public int dailyRewardDayIndex = 0;     // 0..6 = روز بعدی که باید بگیرد
 
     public string lastFreeWheelDate = ""; // yyyy-MM-dd
+
+    public string lastMoneyBoostDate = ""; // yyyy-MM-dd
+    public string lastMoneyPackDate = "";
     
 }
 

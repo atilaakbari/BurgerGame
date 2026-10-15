@@ -598,8 +598,12 @@ public class DeliveryStation : MonoBehaviour
         if (RushHourManager.Instance != null)
             rushMult = RushHourManager.Instance.GetMoneyMultiplier();
 
+        float boostMult = 1f;
+        if (MoneyBoostManager.Instance != null)
+            boostMult = MoneyBoostManager.Instance.GetPayMultiplier();
+
         int finalPay = Mathf.Max(1, Mathf.RoundToInt(
-            totalPrice * patienceMult * comboMult * rushMult * vipMoney
+            totalPrice * patienceMult * comboMult * rushMult * vipMoney * boostMult
         ));
 
         SpawnMoneyPile(finalPay);

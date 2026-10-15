@@ -478,4 +478,31 @@ public class SaveManager : MonoBehaviour
             Data.lastFreeWheelDate = date ?? "";
             RequestSave();
         }
+
+
+        public string GetLastMoneyBoostDate()
+        {
+            if (Data == null) return "";
+            return Data.lastMoneyBoostDate ?? "";
+        }
+
+        public void SetLastMoneyBoostDate(string date)
+        {
+            if (Data == null) return;
+            Data.lastMoneyBoostDate = date ?? "";
+            RequestSave();
+        }
+
+        public string GetLastMoneyPackDate()
+        {
+            if (Data == null) return "";
+            return Data.lastMoneyPackDate ?? "";
+        }
+
+        public void SetLastMoneyPackDate(string date)
+        {
+            if (Data == null) return;
+            Data.lastMoneyPackDate = date ?? "";
+            RequestSave();
+        }
 }
