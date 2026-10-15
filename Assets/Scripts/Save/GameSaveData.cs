@@ -8,6 +8,7 @@ public class GameSaveData
     public int playerLevel = 1;
     public int currentXP = 0;
     public int money = 0;
+    public int gems = 0;
 
     public List<StationSaveEntry> stationLevels = new List<StationSaveEntry>();
     public List<ZoneSaveEntry> zones = new List<ZoneSaveEntry>();
@@ -36,6 +37,8 @@ public class GameSaveData
 
     public string lastDailyRewardDate = ""; // yyyy-MM-dd
     public int dailyRewardDayIndex = 0;     // 0..6 = روز بعدی که باید بگیرد
+
+    public string lastFreeWheelDate = ""; // yyyy-MM-dd
     
 }
 

@@ -13,8 +13,8 @@ public class CookingStationUpgrade : MonoBehaviour
     [Header("Models (1 Flame, 2 Flame, 3 Flame)")]
     [SerializeField] private GameObject[] levelModels;
 
-    [Header("Upgrade Cost (هزینه هر آپگرید - ایندکس 0 = هزینه رفتن از لول 1 به 2)")]
-    [SerializeField] private int[] upgradeCosts;
+    [Header("Upgrade Cost (ایندکس 0 = از لول 1 به 2)")]
+    [SerializeField] private UpgradeCost[] upgradeCosts;
 
     [Header("Cost Text (روی دکمه یا کنارش)")]
     [SerializeField] private TextMeshProUGUI costText;
@@ -113,7 +113,13 @@ public class CookingStationUpgrade : MonoBehaviour
         if (costText == null)
             return;
 
-        costText.text = CanUpgrade() ? GetCurrentUpgradeCost().ToString("N0") : "MAX";
+        if (!CanUpgrade())
+        {
+            costText.text = "MAX";
+            return;
+        }
+
+        costText.text = GetCurrentUpgradeCost().ToString("N0");
     }
 
     public bool CanUpgrade()
@@ -122,7 +128,7 @@ public class CookingStationUpgrade : MonoBehaviour
     }
 
     // هزینه‌ی آپگرید از لول فعلی به لول بعدی
-    public int GetCurrentUpgradeCost()
+    /*public int GetCurrentUpgradeCost()
     {
         if (upgradeCosts == null)
             return 0;
@@ -133,7 +139,7 @@ public class CookingStationUpgrade : MonoBehaviour
             return 0;
 
         return upgradeCosts[index];
-    }
+    }*/
 
     public void ForceDisableUpgrade()
     {
@@ -149,17 +155,30 @@ public class CookingStationUpgrade : MonoBehaviour
 
     public void Upgrade()
     {
+
         if (!CanUpgrade() || forceUpgradeOff)
+        return;
+
+        UpgradeCost cost = GetCurrentUpgradeCostData();
+        if (cost == null)
             return;
 
-        int cost = GetCurrentUpgradeCost();
-
-        // پول کافی نیست - دکمه رو قرمز کن و بی‌خیال شو
-        if (MoneyManager.Instance == null || !MoneyManager.Instance.TrySpend(cost))
+        if (!UpgradePayment.TryPay(cost))
         {
             FlashNotEnoughMoney();
             return;
         }
+        if (!CanUpgrade() || forceUpgradeOff)
+            return;
+
+        //int cost = GetCurrentUpgradeCost();
+
+        // پول کافی نیست - دکمه رو قرمز کن و بی‌خیال شو
+        /*if (MoneyManager.Instance == null || !MoneyManager.Instance.TrySpend(cost))
+        {
+            FlashNotEnoughMoney();
+            return;
+        }*/
 
         List<CookingSlot.SlotState> savedStates = null;
         if (cookingStation != null)
@@ -239,5 +258,29 @@ public class CookingStationUpgrade : MonoBehaviour
             SaveManager.Instance.SetStationLevel(stationId, currentLevel);
 
         RefreshUpgradeState();
+    }
+
+    public UpgradeCost GetCurrentUpgradeCostData()
+    {
+        if (upgradeCosts == null)
+            return null;
+
+        int index = currentLevel - 1;
+        if (index < 0 || index >= upgradeCosts.Length)
+            return null;
+
+        return upgradeCosts[index];
+    }
+
+    public int GetCurrentUpgradeCost()
+    {
+        var c = GetCurrentUpgradeCostData();
+        return c != null ? c.amount : 0;
+    }
+
+    public bool IsCurrentUpgradeGem()
+    {
+        var c = GetCurrentUpgradeCostData();
+        return c != null && c.currency == UpgradeCurrency.Gem;
     }
 }

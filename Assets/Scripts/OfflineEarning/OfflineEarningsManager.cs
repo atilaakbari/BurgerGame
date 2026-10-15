@@ -91,14 +91,17 @@ public class OfflineEarningsManager : MonoBehaviour
 
     private void Start()
     {
-        // کمی صبر تا DailyRewardManager هم Awake/Start شود
-        Invoke(nameof(TryShowOfflineAfterDaily), 0.25f);
+        Invoke(nameof(TryShowOfflineAfterPopups), 0.3f);
     }
 
-    private void TryShowOfflineAfterDaily()
+    private void TryShowOfflineAfterPopups()
     {
-        // اگر امروز Daily باید نشان داده شود، صبر کن تا Close
+        // Daily هنوز باید بیاید
         if (DailyRewardManager.Instance != null && DailyRewardManager.Instance.CanClaimToday)
+            return;
+
+        // گردونه رایگان هنوز باید بیاید
+        if (LuckyWheelManager.Instance != null && LuckyWheelManager.Instance.HasFreeSpinToday)
             return;
 
         CheckOfflineEarnings();

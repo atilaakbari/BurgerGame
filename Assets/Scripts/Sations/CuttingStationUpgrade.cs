@@ -14,7 +14,7 @@ public class CuttingStationUpgrade : MonoBehaviour
     [SerializeField] private GameObject[] levelModels;
 
     [Header("Upgrade Cost (هزینه هر آپگرید - ایندکس 0 = هزینه رفتن از لول 1 به 2)")]
-    [SerializeField] private int[] upgradeCosts;
+    [SerializeField] private UpgradeCost[] upgradeCosts;
 
     [Header("Cost Text (روی دکمه یا کنارش)")]
     [SerializeField] private TextMeshProUGUI costText;
@@ -112,7 +112,13 @@ public class CuttingStationUpgrade : MonoBehaviour
         if (costText == null)
             return;
 
-        costText.text = CanUpgrade() ? GetCurrentUpgradeCost().ToString("N0") : "MAX";
+        if (!CanUpgrade())
+        {
+            costText.text = "MAX";
+            return;
+        }
+
+        costText.text = GetCurrentUpgradeCost().ToString("N0");
     }
 
     public bool CanUpgrade()
@@ -120,7 +126,7 @@ public class CuttingStationUpgrade : MonoBehaviour
         return levelModels != null && currentLevel < levelModels.Length;
     }
 
-    public int GetCurrentUpgradeCost()
+    /*public int GetCurrentUpgradeCost()
     {
         if (upgradeCosts == null)
             return 0;
@@ -131,7 +137,7 @@ public class CuttingStationUpgrade : MonoBehaviour
             return 0;
 
         return upgradeCosts[index];
-    }
+    }*/
 
     public void ForceDisableUpgrade()
     {
@@ -238,5 +244,29 @@ public class CuttingStationUpgrade : MonoBehaviour
             SaveManager.Instance.SetStationLevel(stationId, currentLevel);
 
         RefreshUpgradeState();
+    }
+
+    public UpgradeCost GetCurrentUpgradeCostData()
+    {
+        if (upgradeCosts == null)
+            return null;
+
+        int index = currentLevel - 1;
+        if (index < 0 || index >= upgradeCosts.Length)
+            return null;
+
+        return upgradeCosts[index];
+    }
+
+    public int GetCurrentUpgradeCost()
+    {
+        var c = GetCurrentUpgradeCostData();
+        return c != null ? c.amount : 0;
+    }
+
+    public bool IsCurrentUpgradeGem()
+    {
+        var c = GetCurrentUpgradeCostData();
+        return c != null && c.currency == UpgradeCurrency.Gem;
     }
 }

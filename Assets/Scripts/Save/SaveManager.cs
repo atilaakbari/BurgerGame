@@ -465,4 +465,17 @@ public class SaveManager : MonoBehaviour
             Data.dailyRewardDayIndex = Mathf.Clamp(index, 0, 6);
             RequestSave();
         }
+
+        public string GetLastFreeWheelDate()
+        {
+            if (Data == null) return "";
+            return Data.lastFreeWheelDate ?? "";
+        }
+
+        public void SetLastFreeWheelDate(string date)
+        {
+            if (Data == null) return;
+            Data.lastFreeWheelDate = date ?? "";
+            RequestSave();
+        }
 }

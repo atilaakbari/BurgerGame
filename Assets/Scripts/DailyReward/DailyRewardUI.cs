@@ -30,6 +30,14 @@ public class DailyRewardUI : MonoBehaviour
         if (panelRoot != null)
             panelRoot.SetActive(false);
 
+        if (LuckyWheelManager.Instance != null &&
+            LuckyWheelManager.Instance.HasFreeSpinToday &&
+            LuckyWheelManager.Instance.UI != null)
+        {
+            LuckyWheelManager.Instance.UI.Open();
+            return;
+        }
+
         if (OfflineEarningsManager.Instance != null)
             OfflineEarningsManager.Instance.CheckOfflineEarnings();
     }

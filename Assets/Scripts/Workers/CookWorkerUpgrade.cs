@@ -15,10 +15,10 @@ public class CookWorkerUpgrade : MonoBehaviour
     [SerializeField] private float[] speedLevels = { 2.5f, 3.5f, 4.5f };
 
     [Header("Costs - Capacity (هزینه رفتن به سطح بعدی)")]
-    [SerializeField] private int[] capacityCosts = { 50, 100 };
+    [SerializeField] private UpgradeCost[] capacityCosts;
 
     [Header("Costs - Speed")]
-    [SerializeField] private int[] speedCosts = { 40, 80 };
+    [SerializeField] private UpgradeCost[] speedCosts;
 
     [Header("UI - پنل اصلی (همین آبجکت با ورود به تریگر روشن می‌شود)")]
     [SerializeField] private GameObject upgradePanel;
@@ -102,9 +102,8 @@ public class CookWorkerUpgrade : MonoBehaviour
         if (!playerInside || !CanUpgradeCapacity())
             return;
 
-        int cost = GetCapacityCost();
-
-        if (MoneyManager.Instance == null || !MoneyManager.Instance.TrySpend(cost))
+        UpgradeCost cost = GetCapacityCostData();
+        if (cost == null || !UpgradePayment.TryPay(cost))
         {
             FlashButton(capacityButtonImage);
             return;
@@ -115,7 +114,6 @@ public class CookWorkerUpgrade : MonoBehaviour
         SaveProgress();
         RefreshUI();
     }
-
     public void OnSpeedUpgradePressed()
     {
         if (!playerInside || !CanUpgradeSpeed())
@@ -168,16 +166,28 @@ public class CookWorkerUpgrade : MonoBehaviour
 
     private int GetCapacityCost()
     {
-        if (capacityCosts == null || capacityLevelIndex >= capacityCosts.Length)
-            return 0;
-
-        return capacityCosts[capacityLevelIndex];
+        UpgradeCost cost = GetCapacityCostData();
+        return cost != null ? cost.amount : 0;
     }
 
     private int GetSpeedCost()
     {
-        if (speedCosts == null || speedLevelIndex >= speedCosts.Length)
-            return 0;
+        UpgradeCost cost = GetSpeedCostData();
+        return cost != null ? cost.amount : 0;
+    }
+
+    private UpgradeCost GetCapacityCostData()
+    {
+        if (capacityCosts == null || capacityLevelIndex < 0 || capacityLevelIndex >= capacityCosts.Length)
+            return null;
+
+        return capacityCosts[capacityLevelIndex];
+    }
+
+    private UpgradeCost GetSpeedCostData()
+    {
+        if (speedCosts == null || speedLevelIndex < 0 || speedLevelIndex >= speedCosts.Length)
+            return null;
 
         return speedCosts[speedLevelIndex];
     }
@@ -244,4 +254,5 @@ public class CookWorkerUpgrade : MonoBehaviour
         img.color = normalColor;
         flashRoutine = null;
     }
+
 }

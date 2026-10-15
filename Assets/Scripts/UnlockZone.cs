@@ -29,6 +29,9 @@ public class UnlockZone : MonoBehaviour
     [SerializeField] private ParticleSystem unlockEffect;
     [SerializeField] private AudioSource unlockSound;
 
+    [Header("Gem reward on unlock")]
+    [SerializeField] private int gemReward = 0;
+
 
     [Space]
     [SerializeField] private int xp;
@@ -137,6 +140,9 @@ public class UnlockZone : MonoBehaviour
 
         if (SaveManager.Instance != null)
             SaveManager.Instance.MarkZoneUnlocked(zoneId);
+        
+        if (gemReward > 0 && GemManager.Instance != null)
+            GemManager.Instance.AddGems(gemReward);
 
         // XP برای تحویل موفق برگر
     if (XPManager.Instance != null)

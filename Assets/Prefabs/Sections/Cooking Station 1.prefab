@@ -1987,7 +1987,13 @@ MonoBehaviour:
   - {fileID: 8136985749988497570}
   - {fileID: 2426637317602916302}
   - {fileID: 7282794901593629993}
-  upgradeCosts: 960000002c010000
+  upgradeCosts:
+  - currency: 0
+    amount: 150
+  - currency: 0
+    amount: 300
+  - currency: 1
+    amount: 10
   costText: {fileID: 0}
   upgradeButtonImage: {fileID: 0}
   normalButtonColor: {r: 1, g: 1, b: 1, a: 1}

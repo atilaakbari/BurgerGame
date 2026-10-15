@@ -15,10 +15,10 @@ public class CutWorkerUpgrade : MonoBehaviour
     [SerializeField] private float[] speedLevels = { 2.5f, 3.5f, 4.5f };
 
     [Header("Costs - Capacity")]
-    [SerializeField] private int[] capacityCosts = { 50, 100 };
+    [SerializeField] private UpgradeCost[] capacityCosts;
 
     [Header("Costs - Speed")]
-    [SerializeField] private int[] speedCosts = { 40, 80 };
+    [SerializeField] private UpgradeCost[] speedCosts;
 
     [Header("UI - پنل (با ورود به تریگر روشن می‌شود)")]
     [SerializeField] private GameObject upgradePanel;
@@ -87,10 +87,11 @@ public class CutWorkerUpgrade : MonoBehaviour
 
     public void OnCapacityUpgradePressed()
     {
-        if (!playerInside || !CanUpgradeCapacity()) return;
+        if (!playerInside || !CanUpgradeCapacity())
+            return;
 
-        int cost = GetCapacityCost();
-        if (MoneyManager.Instance == null || !MoneyManager.Instance.TrySpend(cost))
+        UpgradeCost cost = GetCapacityCostData();
+        if (cost == null || !UpgradePayment.TryPay(cost))
         {
             FlashButton(capacityButtonImage);
             return;
@@ -139,14 +140,33 @@ public class CutWorkerUpgrade : MonoBehaviour
     private bool CanUpgradeSpeed() =>
         speedLevels != null && speedLevelIndex < speedLevels.Length - 1;
 
-    private int GetCapacityCost() =>
-        capacityCosts != null && capacityLevelIndex < capacityCosts.Length
-            ? capacityCosts[capacityLevelIndex] : 0;
+    private int GetCapacityCost()
+    {
+        UpgradeCost cost = GetCapacityCostData();
+        return cost != null ? cost.amount : 0;
+    }
 
-    private int GetSpeedCost() =>
-        speedCosts != null && speedLevelIndex < speedCosts.Length
-            ? speedCosts[speedLevelIndex] : 0;
+    private int GetSpeedCost()
+    {
+        UpgradeCost cost = GetSpeedCostData();
+        return cost != null ? cost.amount : 0;
+    }
 
+    private UpgradeCost GetCapacityCostData()
+    {
+        if (capacityCosts == null || capacityLevelIndex < 0 || capacityLevelIndex >= capacityCosts.Length)
+            return null;
+
+        return capacityCosts[capacityLevelIndex];
+    }
+
+    private UpgradeCost GetSpeedCostData()
+    {
+        if (speedCosts == null || speedLevelIndex < 0 || speedLevelIndex >= speedCosts.Length)
+            return null;
+
+        return speedCosts[speedLevelIndex];
+    }
     private void RefreshUI()
     {
         if (upgradePanel != null)

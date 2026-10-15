@@ -2083,7 +2083,11 @@ MonoBehaviour:
   levelModels:
   - {fileID: 1570272270577026746}
   - {fileID: 8965359726383128464}
-  upgradeCosts: c8000000
+  upgradeCosts:
+  - currency: 0
+    amount: 300
+  - currency: 1
+    amount: 10
   costText: {fileID: 0}
   upgradeButtonImage: {fileID: 0}
   normalButtonColor: {r: 1, g: 1, b: 1, a: 1}
